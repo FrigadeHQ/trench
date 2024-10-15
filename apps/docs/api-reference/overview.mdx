@@ -1,0 +1,30 @@
+---
+title: Overview
+description: Overview of the Trench API
+---
+
+## Trench API Overview
+
+The Trench API provides a comprehensive suite of endpoints to interact with the Trench platform. It is designed to be fully compatible with the [Segment Spec](https://segment.com/docs/spec/) schema, allowing you to seamlessly integrate and send events using familiar methods such as `track`, `identify`, and `group`.
+
+### Events
+
+The `/events` endpoint allows you to create events using the `track`, `identify`, and `group` methods. These methods enable you to send detailed event data to Trench, including user interactions, identity information, and group associations. For more information, refer to the [Create Events](./events-create) documentation.
+
+### Queries
+
+The `/queries` endpoint enables you to execute queries against the Trench platform. This allows you to retrieve and analyze data based on the events and interactions recorded. For more details, refer to the [Execute Queries](./queries-execute) documentation.
+
+### Webhooks
+
+The Trench API also supports webhooks, which allow you to receive real-time notifications about specific events or changes within the platform. You can create, retrieve, and delete webhooks using the respective endpoints. For more information, refer to the following documentation:
+
+- [Get Webhooks](./webhooks-get)
+- [Create Webhooks](./webhooks-create)
+- [Delete Webhooks](./webhooks-delete)
+
+### Authentication
+
+The Trench API uses bearer token authentication to secure access to its endpoints. You will be issued a public api key and a private api key to use when making requests. The public key is used only in the [Events](./events-create) endpoint to send data to Trench. It is safe to expose this key to the public internet.
+
+The private key is used on all other endpoints and should be kept secret.

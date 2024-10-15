@@ -1,0 +1,12 @@
+services:
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: build
+    command: pnpm run start:dev
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/certs
+      - /app/schemas

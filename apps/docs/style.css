@@ -1,0 +1,22 @@
+hr {
+  margin-bottom: 1.5rem !important;
+}
+
+#topbar-cta-button {
+  border-radius: 100px;
+  border: 1px solid #627ee910;
+  background: radial-gradient(
+      77.34% 100% at 50% 0%,
+      rgba(255, 255, 255, 0.17) 0%,
+      rgba(255, 255, 255, 0) 100%
+    ),
+    linear-gradient(0deg, #12228f 0%, #12228f 100%), #090f1b;
+  background-blend-mode: normal, overlay, normal;
+  box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.47) inset,
+    0px 0px 140px 28px rgba(53, 79, 255, 0.5),
+    0px 0px 0px 5px rgba(255, 255, 255, 0.08) inset,
+    0px 0px 0px 4px rgba(0, 0, 0, 0.2), 0px 0px 36px 0px #242b5a,
+    0px 1.864px 0.466px -1.553px rgba(255, 255, 255, 0.7) inset,
+    0px 0.621px 0.311px -0.155px rgba(255, 255, 255, 0.3),
+    0px -0.311px 0.621px 0.621px rgba(0, 0, 0, 0.9) inset;
+}

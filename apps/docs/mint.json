@@ -1,0 +1,70 @@
+{
+  "name": "Trench",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/dark.svg"
+  },
+  "modeToggle": {
+    "default": "dark",
+    "isHidden": true
+  },
+  "favicon": "/favicon.png",
+  "colors": {
+    "primary": "#0F1FA1",
+    "light": "#FFFFFF",
+    "anchors": {
+      "from": "#17A9F9",
+      "to": "#443AFA"
+    },
+    "background": {
+      "dark": "#010101"
+    }
+  },
+  "topbarCtaButton": {
+    "name": "Get Started",
+    "url": "https://github.com/frigadehq/trench"
+  },
+  "topbarLinks": [
+    {
+      "name": "Website",
+      "url": "https://trench.dev"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/frigadehq/trench"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": ["introduction", "quickstart"]
+    },
+    {
+      "group": "API",
+      "pages": [
+        "api-reference/overview",
+        "api-reference/events-create",
+        "api-reference/webhooks-get",
+        "api-reference/webhooks-create",
+        "api-reference/webhooks-delete",
+        "api-reference/queries-execute"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "twitter": "https://twitter.com/FrigadeHQ",
+    "github": "https://github.com/FrigadeHQ/trench",
+    "linkedin": "https://www.linkedin.com/company/frigade/",
+    "website": "https://trench.dev"
+  },
+  "api": {
+    "baseUrl": "https://api.frigade.com",
+    "auth": {
+      "method": "bearer"
+    }
+  },
+  "integrations": {}
+}

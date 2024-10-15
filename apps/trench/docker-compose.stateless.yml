@@ -1,0 +1,23 @@
+# This docker configuration is used to run the trench api with an external clickhouse and kafka instance
+services:
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: production-build
+      args:
+        API_DOMAIN: ${API_DOMAIN}
+    env_file:
+      - .env
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/certs
+      - /app/schemas
+      - /app/dist
+    command: node /app/dist/main.js -i -1
+    ports:
+      - '${API_PORT}:${API_PORT}'
+    networks:
+      - app-network
+    restart: unless-stopped

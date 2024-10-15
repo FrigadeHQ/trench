@@ -1,0 +1,71 @@
+services:
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: production-build
+      args:
+        API_DOMAIN: ${API_DOMAIN}
+    env_file:
+      - .env
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/certs
+      - /app/schemas
+      - /app/dist
+    command: node /app/dist/main.js -i -1
+    ports:
+      - '${API_PORT}:${API_PORT}'
+    depends_on:
+      - clickhouse
+      - kafka
+    networks:
+      - app-network
+    restart: unless-stopped
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    restart: always
+    ports:
+      - '8123:8123'
+      - '9000:9000'
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse # Data storage
+      # - ./config:/etc/clickhouse-server # Configuration files (optional)
+    environment:
+      - CLICKHOUSE_USER=${CLICKHOUSE_USER}
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    networks:
+      - app-network
+  kafka:
+    image: bitnami/kafka:latest
+    ports:
+      - 9092:9092
+      - 9093:9093
+      - 9094:9094
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+    volumes:
+      - kafka-data:/bitnami/kafka
+    networks:
+      - app-network
+volumes:
+  clickhouse-data:
+  kafka-data:
+networks:
+  app-network:

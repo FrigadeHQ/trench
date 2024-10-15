@@ -1,0 +1,75 @@
+---
+title: Quickstart Guide
+sidebarTitle: Quickstart
+description: Get set up with Trench in less than 5 minutes
+---
+
+<Steps>
+  <Step title="Send a sample event">
+    Once you've obtained your [public and private API key](/api-reference/overview), you can send a sample event to Trench as such:
+
+    ```bash
+    curl -i -X POST \
+       -H "Authorization:Bearer public-d613be4e-di03-4b02-9058-70aa4j04ff28" \
+       -H "Content-Type:application/json" \
+       -d \
+    '{
+      "events": [
+        {
+          "userId": "550e8400-e29b-41d4-a716-446655440000",
+          "event": "ConnectedAccount",
+          "properties": {
+            "totalAccounts": 4,
+            "country": "Denmark"
+          },
+          "type": "track"
+        }]
+    }' \
+     'https://sandbox.trench.dev/events'
+    ```
+
+  </Step>
+
+  <Step title="Create a throttled webhook">
+    Use the webhooks endpoint to create a throttled webhook that will trigger based on the conditions. It leverages a Kafka consumer underneath so it will be throttled and supports batching too. Example:
+
+    ```bash
+    curl -i -X POST \
+       -H "Authorization:Bearer public-d613be4e-di03-4b02-9058-70aa4j04ff28" \
+       -H "Content-Type:application/json" \
+       -d \
+    '{
+      "url": "https://your-webhook-url.com",
+      "enableBatching": true,
+      "eventTypes": ["ConnectedAccount"],
+      "eventNames": ["*"]
+    }' \
+     'https://sandbox.trench.dev/webhooks'
+    ```
+
+  </Step>
+
+  <Step title="Execute raw SQL queries">
+    Use the queries endpoint to analyze your data.  Example:
+
+    ```bash
+    curl -i -X POST \
+       -H "Authorization:Bearer public-d613be4e-di03-4b02-9058-70aa4j04ff28" \
+       -H "Content-Type:application/json" \
+       -d \
+    '{
+      "query": "SELECT COUNT(*) FROM events WHERE userId = '550e8400-e29b-41d4-a716-446655440000'"
+    }' \
+     'https://sandbox.trench.dev/queries'
+    ```
+
+    Sample query result:
+
+    ```json
+    {
+      "count": 5
+    }
+    ```
+
+  </Step>
+</Steps>

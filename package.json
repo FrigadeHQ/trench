@@ -1,0 +1,30 @@
+{
+  "name": "@frigadehq/trench",
+  "version": "0.0.1",
+  "license": "MIT",
+  "description": "trench is an open source library and server with the same API as localStorage that allows you to store data in a centralized storage.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo build",
+    "test": "turbo test",
+    "dev": "turbo dev --no-cache --continue",
+    "lint": "turbo lint",
+    "clean": "turbo clean && rm -rf node_modules",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.22.0",
+    "eslint": "^7.32.0",
+    "prettier": "^2.5.1",
+    "rimraf": "^5.0.0",
+    "turbo": "^1.10.14"
+  },
+  "author": "Frigade Inc.",
+  "packageManager": "pnpm@8.6.12"
+}
