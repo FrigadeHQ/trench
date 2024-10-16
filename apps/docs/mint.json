@@ -35,6 +35,11 @@
       "name": "GitHub",
       "icon": "github",
       "url": "https://github.com/frigadehq/trench"
+    },
+    {
+      "name": "Slack Community",
+      "icon": "slack",
+      "url": "https://join.slack.com/t/trench-community/shared_invite/zt-2sjet5kh2-v31As3yC_zRIadk_AGn~3A"
     }
   ],
   "navigation": [
