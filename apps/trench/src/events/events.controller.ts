@@ -18,7 +18,7 @@ export class EventsController {
   })
   @Post('/events')
   @UseGuards(PublicApiGuard)
-  async handleEvent(@Request() request: Request, @Body() eventDTOs: EventsDTO): Promise<void> {
-    await this.eventsService.handleEvents(eventDTOs.events)
+  async createEvents(@Request() request: Request, @Body() eventDTOs: EventsDTO): Promise<void> {
+    await this.eventsService.createEvents(eventDTOs.events)
   }
 }

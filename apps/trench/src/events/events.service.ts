@@ -8,33 +8,10 @@ import { Event } from './events.interface'
 
 @Injectable()
 export class EventsService {
-  constructor(
-    private kafkaService: KafkaService,
-    private eventsDao: EventsDao
-  ) {}
+  constructor(private eventsDao: EventsDao) {}
 
-  async handleEvents(eventDTOs: EventDTO[]): Promise<void> {
-    const records: KafkaEventWithUUID[] = eventDTOs.map((eventDTO) => {
-      const uuid = uuidv4()
-      return {
-        uuid,
-        value: {
-          uuid,
-          event: eventDTO.event,
-          type: eventDTO.type,
-          user_id: eventDTO.userId,
-          group_id: eventDTO.groupId,
-          anonymous_id: eventDTO.anonymousId,
-          properties: eventDTO.properties,
-          traits: eventDTO.traits,
-          context: eventDTO.context,
-          timestamp: eventDTO.timestamp ? new Date(eventDTO.timestamp) : new Date(),
-          instance_id: eventDTO.instanceId,
-        },
-      }
-    })
-
-    this.kafkaService.produceEvents(process.env.KAFKA_TOPIC, records)
+  async createEvents(eventDTOs: EventDTO[]): Promise<void> {
+    await this.eventsDao.createEvents(eventDTOs)
   }
 
   async getEventsByUUIDs(uuids: string[]): Promise<Event[]> {
