@@ -11,18 +11,23 @@ export class EventsDao {
     const escapedUUIDs = uuids.map((uuid) => `'${escapeString(uuid)}'`).join(', ')
     const query = `SELECT * FROM events WHERE uuid IN (${escapedUUIDs})`
     const result = await this.clickhouse.query(query)
-    return result.map((row: any) => ({
+    return result.map((row: any) => this.mapRowToEvent(row))
+  }
+
+  private mapRowToEvent(row: any): Event {
+    return {
       uuid: row.uuid,
       type: row.type,
       event: row.event,
       userId: row.user_id,
       groupId: row.group_id,
       anonymousId: row.anonymous_id,
+      instanceId: row.instance_id,
       properties: row.properties,
       traits: row.traits,
       context: row.context,
       timestamp: new Date(row.timestamp),
       parsedAt: new Date(row.parsed_at),
-    }))
+    }
   }
 }

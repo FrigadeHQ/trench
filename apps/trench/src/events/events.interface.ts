@@ -145,12 +145,20 @@ export class EventDTO {
   traits?: {
     [key: string]: any
   }
+  @ApiProperty({
+    type: String,
+    description:
+      "Optional instance ID. Instance IDs are used to partition events by source. It is typically used for isolating data for the same customer. For instance, if you have a SaaS product, you may want to segment events by customer. In this case, you can set the instance ID to the customer's organizaiton ID.",
+    example: 'customer-1234567890',
+    required: false,
+  })
+  instanceId?: string
 }
 
 export class EventsDTO {
   @ApiProperty({
     type: [EventDTO],
-    description: 'The events to handle.',
+    description: 'The events to insert.',
   })
   events: EventDTO[]
 }
@@ -162,6 +170,7 @@ export class Event {
   userId?: string
   groupId?: string
   anonymousId?: string
+  instanceId?: string
   properties?: string
   traits?: string
   context?: string

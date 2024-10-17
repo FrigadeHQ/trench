@@ -29,6 +29,7 @@ export class EventsService {
           traits: eventDTO.traits,
           context: eventDTO.context,
           timestamp: eventDTO.timestamp ? new Date(eventDTO.timestamp) : new Date(),
+          instance_id: eventDTO.instanceId,
         },
       }
     })
