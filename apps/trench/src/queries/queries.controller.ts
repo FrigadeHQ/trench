@@ -10,7 +10,7 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger'
 export class QueriesController {
   constructor(private readonly queriesService: QueriesService) {}
 
-  @ApiOperation({ summary: 'Execute queries' })
+  @ApiOperation({ summary: 'Execute queries via SQL. Requires private API key in Bearer token.' })
   @ApiResponse({
     status: 200,
     description: 'The queries have been successfully executed.',
@@ -22,8 +22,9 @@ export class QueriesController {
       const results = await this.queriesService.sendQueries(queriesDto)
       return {
         results,
-        next: null,
-        previous: null,
+        limit: 0,
+        offset: 0,
+        total: queriesDto.queries.length,
       }
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST)

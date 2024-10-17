@@ -21,6 +21,14 @@ export class PublicApiGuard implements CanActivate {
     const apiKey = req.headers.authorization.replace('Bearer ', '')
     const isValid = await this.apiKeysService.validateApiKey(apiKey, 'public')
 
+    // check if private api key and throw error and warn user
+    const isValidPrivate = await this.apiKeysService.validateApiKey(apiKey, 'private')
+    if (isValidPrivate) {
+      throw new UnauthorizedException(
+        'Invalid public API key. Make sure you are using the correct API key and that you do not expose your private API key publicly.'
+      )
+    }
+
     if (!isValid) {
       throw new UnauthorizedException('Invalid public API key')
     }

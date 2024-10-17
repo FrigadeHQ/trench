@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { PaginatedResponse } from '../common/models'
 
 export class EventDTO {
   @ApiProperty({
@@ -162,7 +163,6 @@ export class EventsDTO {
   })
   events: EventDTO[]
 }
-
 export class Event {
   uuid: string
   type: string
@@ -176,4 +176,127 @@ export class Event {
   context?: string
   timestamp: Date
   parsedAt: Date
+}
+
+export class EventsQuery {
+  @ApiProperty({
+    type: String,
+    description: 'The event name to filter by.',
+    required: false,
+    example: 'user_signup',
+  })
+  event?: string
+
+  @ApiProperty({
+    type: String,
+    description: 'The user ID to filter by.',
+    required: false,
+    example: 'user-123',
+  })
+  userId?: string
+
+  @ApiProperty({
+    type: String,
+    description: 'The group ID to filter by.',
+    required: false,
+    example: 'group-456',
+  })
+  groupId?: string
+
+  @ApiProperty({
+    type: String,
+    description: 'The anonymous ID to filter by.',
+    required: false,
+    example: 'anon-789',
+  })
+  anonymousId?: string
+
+  @ApiProperty({
+    type: String,
+    description: 'The instance ID to filter by.',
+    required: false,
+    example: 'instance-101112',
+  })
+  instanceId?: string
+
+  @ApiProperty({
+    type: Object,
+    description: 'The properties to filter by.',
+    required: false,
+    example: { key: 'value' },
+  })
+  properties?: Record<string, any>
+
+  @ApiProperty({
+    type: Object,
+    description: 'The traits to filter by.',
+    required: false,
+    example: { key: 'value' },
+  })
+  traits?: Record<string, any>
+
+  @ApiProperty({
+    type: Object,
+    description: 'The context to filter by.',
+    required: false,
+    example: { key: 'value' },
+  })
+  context?: Record<string, any>
+
+  @ApiProperty({
+    type: String,
+    description: 'The start date to filter by.',
+    required: false,
+    example: '2022-01-01T00:00:00Z',
+  })
+  startDate?: string
+
+  @ApiProperty({
+    type: String,
+    description: 'The end date to filter by.',
+    required: false,
+    example: '2022-12-31T23:59:59Z',
+  })
+  endDate?: string
+
+  @ApiProperty({
+    type: Number,
+    description: 'The limit of records to return.',
+    required: false,
+    example: 100,
+  })
+  limit?: number
+
+  @ApiProperty({
+    type: Number,
+    description: 'The offset of records to return.',
+    required: false,
+    example: 0,
+  })
+  offset?: number
+
+  @ApiProperty({
+    type: String,
+    description: 'The field to order by.',
+    required: false,
+    example: 'timestamp',
+  })
+  orderByField?: string
+
+  @ApiProperty({
+    type: String,
+    enum: ['ASC', 'DESC'],
+    description: 'The direction to order by.',
+    required: false,
+    example: 'ASC',
+  })
+  orderByDirection?: 'ASC' | 'DESC'
+}
+
+export class PaginatedEventResponse extends PaginatedResponse<Event> {
+  @ApiProperty({
+    type: [Event],
+    description: 'The events found based on the query.',
+  })
+  results: Event[]
 }

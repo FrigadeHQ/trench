@@ -15,15 +15,17 @@ export class WebhooksController {
   @ApiOperation({ summary: 'Get all webhooks' })
   @ApiResponse({
     status: 200,
-    description: 'The webhooks have been successfully retrieved.',
+    description:
+      'The webhooks have been successfully retrieved. Requires private API key in Bearer token.',
     type: PaginatedWebhookResponse,
   })
   async getWebhooks(): Promise<PaginatedWebhookResponse> {
     const result = await this.webhooksService.getWebhooks()
     return {
       results: result,
-      next: null,
-      previous: null,
+      limit: 0,
+      offset: 0,
+      total: result.length,
     }
   }
 
@@ -31,7 +33,8 @@ export class WebhooksController {
   @ApiOperation({ summary: 'Create a webhook' })
   @ApiResponse({
     status: 200,
-    description: 'The webhook has been successfully created.',
+    description:
+      'The webhook has been successfully created. Requires private API key in Bearer token.',
     type: Webhook,
   })
   async createWebhook(@Body() webhookDTO: WebhookDTO) {
@@ -42,7 +45,8 @@ export class WebhooksController {
   @ApiOperation({ summary: 'Delete a webhook' })
   @ApiResponse({
     status: 200,
-    description: 'The webhook has been successfully deleted.',
+    description:
+      'The webhook has been successfully deleted. Requires private API key in Bearer token.',
   })
   async deleteWebhook(@Param('uuid') uuid: string) {
     return this.webhooksService.deleteWebhook(uuid)

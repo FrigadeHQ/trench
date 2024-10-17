@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { EventDTO } from './events.interface'
+import { EventDTO, EventsQuery, PaginatedEventResponse } from './events.interface'
 import { KafkaService } from '../services/data/kafka/kafka.service'
 import { v4 as uuidv4 } from 'uuid'
 import { KafkaEventWithUUID } from '../services/data/kafka/kafka.interface'
@@ -16,5 +16,9 @@ export class EventsService {
 
   async getEventsByUUIDs(uuids: string[]): Promise<Event[]> {
     return this.eventsDao.getEventsByUUIDs(uuids)
+  }
+
+  async getEventsByQuery(query: EventsQuery): Promise<PaginatedEventResponse> {
+    return this.eventsDao.getEventsByQuery(query)
   }
 }
