@@ -22,6 +22,7 @@ export class EventsDao {
 
   async getEventsByQuery(query: EventsQuery): Promise<PaginatedEventResponse> {
     const {
+      uuid,
       event,
       userId,
       groupId,
@@ -76,6 +77,9 @@ export class EventsDao {
     if (endDate) {
       conditions.push(`timestamp <= '${escapeString(new Date(endDate).toISOString())}'`)
     }
+    if (uuid) {
+      conditions.push(`uuid = '${escapeString(uuid)}'`)
+    }
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
     const limitClause = `LIMIT ${maxRecords}`
@@ -86,12 +90,11 @@ export class EventsDao {
     console.log(clickhouseQuery)
     const result = await this.clickhouse.query(clickhouseQuery)
     const results = result.map((row: any) => this.mapRowToEvent(row))
-    const total = results.length
 
     return {
       results: results,
-      limit: limit,
-      offset: offset,
+      limit: maxRecords,
+      offset: offset ?? 0,
       total: null,
     }
   }
