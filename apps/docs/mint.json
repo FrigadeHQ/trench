@@ -52,6 +52,7 @@
       "pages": [
         "api-reference/overview",
         "api-reference/events-create",
+        "api-reference/events-get",
         "api-reference/webhooks-get",
         "api-reference/webhooks-create",
         "api-reference/webhooks-delete",
@@ -66,7 +67,7 @@
     "website": "https://trench.dev"
   },
   "api": {
-    "baseUrl": "https://api.frigade.com",
+    "baseUrl": "https://sandbox.trench.dev",
     "auth": {
       "method": "bearer"
     }

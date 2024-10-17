@@ -297,6 +297,18 @@ export class PaginatedEventResponse extends PaginatedResponse<Event> {
   @ApiProperty({
     type: [Event],
     description: 'The events found based on the query.',
+    example: [
+      {
+        uuid: '123',
+        type: 'track',
+        event: 'user_signed_up',
+        userId: 'user-123',
+        groupId: 'group-456',
+        anonymousId: 'anon-789',
+        instanceId: 'instance-101112',
+        properties: '{"key":"value"}',
+      },
+    ],
   })
   results: Event[]
 }
