@@ -10,8 +10,8 @@ import { Event } from './events.interface'
 export class EventsService {
   constructor(private eventsDao: EventsDao) {}
 
-  async createEvents(eventDTOs: EventDTO[]): Promise<void> {
-    await this.eventsDao.createEvents(eventDTOs)
+  async createEvents(eventDTOs: EventDTO[]): Promise<Event[]> {
+    return this.eventsDao.createEvents(eventDTOs)
   }
 
   async getEventsByUUIDs(uuids: string[]): Promise<Event[]> {

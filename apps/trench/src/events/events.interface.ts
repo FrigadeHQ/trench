@@ -183,9 +183,17 @@ export class EventsQuery {
     type: String,
     description: 'The event name to filter by.',
     required: false,
-    example: 'user_signup',
+    example: 'Created Account',
   })
   event?: string
+
+  @ApiProperty({
+    type: String,
+    description: 'The UUID to filter by.',
+    required: false,
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  uuid?: string
 
   @ApiProperty({
     type: String,

@@ -96,28 +96,31 @@ export class EventsDao {
     }
   }
 
-  async createEvents(eventDTOs: EventDTO[]): Promise<void> {
+  async createEvents(eventDTOs: EventDTO[]): Promise<Event[]> {
     const records: KafkaEventWithUUID[] = eventDTOs.map((eventDTO) => {
       const uuid = uuidv4()
+      const row = {
+        uuid,
+        event: eventDTO.event,
+        type: eventDTO.type,
+        user_id: eventDTO.userId,
+        group_id: eventDTO.groupId,
+        anonymous_id: eventDTO.anonymousId,
+        properties: eventDTO.properties,
+        traits: eventDTO.traits,
+        context: eventDTO.context,
+        timestamp: eventDTO.timestamp ? new Date(eventDTO.timestamp) : new Date(),
+        instance_id: eventDTO.instanceId,
+      }
       return {
         uuid,
-        value: {
-          uuid,
-          event: eventDTO.event,
-          type: eventDTO.type,
-          user_id: eventDTO.userId,
-          group_id: eventDTO.groupId,
-          anonymous_id: eventDTO.anonymousId,
-          properties: eventDTO.properties,
-          traits: eventDTO.traits,
-          context: eventDTO.context,
-          timestamp: eventDTO.timestamp ? new Date(eventDTO.timestamp) : new Date(),
-          instance_id: eventDTO.instanceId,
-        },
+        value: row,
       }
     })
 
     this.kafkaService.produceEvents(process.env.KAFKA_TOPIC, records)
+
+    return records.map((record) => this.mapRowToEvent(record.value))
   }
 
   private mapRowToEvent(row: any): Event {

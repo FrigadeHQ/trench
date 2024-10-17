@@ -19,8 +19,17 @@ export class EventsController {
   })
   @Post('/events')
   @UseGuards(PublicApiGuard)
-  async createEvents(@Request() request: Request, @Body() eventDTOs: EventsDTO): Promise<void> {
-    await this.eventsService.createEvents(eventDTOs.events)
+  async createEvents(
+    @Request() request: Request,
+    @Body() eventDTOs: EventsDTO
+  ): Promise<PaginatedEventResponse> {
+    const events = await this.eventsService.createEvents(eventDTOs.events)
+    return {
+      results: events,
+      limit: eventDTOs.events.length,
+      offset: 0,
+      total: events.length,
+    }
   }
 
   @ApiOperation({
