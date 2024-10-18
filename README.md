@@ -1,24 +1,61 @@
-<img src="/img/trench-cover.png" width="100%" alt="Trench Code Snuppet" />
-
-<div align="center"><strong>Trench</strong></div>
-<div align="center">Open source infrastructure for tracking events.<br />Built with Kafka and Clickhouse for highly available and scalable tracking and analytics.</div>
 <br />
 <div align="center">
-<a href="https://trench.dev">Website</a> 
-<span> · </span>
-<a href="https://github.com/FrigadeHQ/trench">GitHub</a> 
-<span> · </span>
-<a href="">Community</a>
-<span> · </span>
-<a href="https://docs.trench.dev">Docs</a></div>
+  <a href="https://trench.dev?utm_source=github" target="_blank">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="/img/trench-dark.png">
+    <img alt="Trench Logo" src="/img/trench-light.png" width="220"/>
+  </picture>
+  </a>
+</div>
 
-## Introduction
+<br/>
 
-Trench is a powerful event tracking system built with Kafka and Clickhouse. It's designed to handle event volumes at scale and provide real-time analytics.
+<h1 align="center">Open-Source Event Tracking Infrastructure</h1>
 
-## Quickstart
+  <p align="center">
+    <br />
+    <a href="https://docs.trench.dev" rel="dofollow"><strong>Documentation</strong></a> · 
+   <a href="https://docs.trench.dev" rel="dofollow"><strong>Website</strong></a> · 
+   <a href="https://join.slack.com/t/trench-community/shared_invite/zt-2sjet5kh2-v31As3yC_zRIadk_AGn~3A"><strong>Join Our Slack</strong></a>
+    <br/>
+    <br/>
+  </p>
 
-To install and start the server, simply run the following command:
+## 🌊 What is Trench?
+
+Trench is an event tracking system built on top of Apache Kafka and Clickhouse. It can handle large event volumes and provides real-time analytics. Our team built Trench to scale up the real-time event tracking pipeline at <a href="https://frigade.com?utm_source=github-trench-readme" target="_blank">Frigade</a>.
+
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="/img/trench-cover.png">
+    <img src="/img/trench-cover.png" width="100%" alt="Trench Code Snippet" />
+  </picture>
+
+## ⭐ Features
+
+- 🤝 Compliant with the Segment API (Track, Group, Idenfity)
+- 🐳 Deploy quickly with a single production-ready Docker image
+- 💻 Process thousands of events per second on a single node
+- ⚡ Query data in real-time
+- 🔗 Connect data to other destinations with webhooks
+- 👥 Open-source and MIT Licensed
+
+
+## 🚀 Quickstart
+
+Trench has two methods of deployment:
+
+1. **Trench Self-Hosted**: An open-source version that allows you to deploy and manage Trench on your own infrastructure.
+2. **Trench Cloud**: A fully-managed serverless solution with zero ops, autoscaling, 99.99% SLAs.
+
+### 1. Trench Self-Hosted
+
+Follow our self-hosting instructions below and in our [quickstart guide](https://docs.trench.dev/quickstart) to begin using Trench Self-Hosted.
+
+If you have questions or need assistance, you can join our [Slack group](https://join.slack.com/t/trench-community/shared_invite/zt-2sjet5kh2-v31As3yC_zRIadk_AGn~3A) for support.
+
+#### Quickstart
+
+First, install and start the server by running the following command:
 
 ```bash
 git clone git@github.com:FrigadeHQ/trench.git && cd trench/apps/trench && cp .env.example .env && docker-compose up --build --force-recreate --renew-anon-volumes -d
@@ -73,14 +110,23 @@ This will example will return the total number of events in the system:
 }
 ```
 
-## Documentation and going further
+### 2. Trench Cloud
 
-Trench can do a lot more than this. Check out the [docs](https://docs.trench.dev) to learn more.
+Request access to Trench Cloud from our [website](https://trench.dev) to get started with the fully-managed version of Trench.
 
-## Authors
+
+## 🔗 Links
+
+- [Website](https://trench.dev?utm_campaign=github-readme)
+- [Documentation](https://docs.trench.dev/)
+- [Slack community](https://join.slack.com/t/trench-community/shared_invite/zt-2sjet5kh2-v31As3yC_zRIadk_AGn~3A)
+
+## 📚 Authors
 
 Trench is a project built by [Frigade](https://frigade.com).
 
-## License
+
+## 📄 License
 
 MIT License
+
