@@ -86,8 +86,6 @@ export class EventsDao {
     const offsetClause = offset ? `OFFSET ${offset}` : ''
 
     const clickhouseQuery = `SELECT * FROM events ${whereClause} ${limitClause} ${offsetClause}`
-
-    console.log(clickhouseQuery)
     const result = await this.clickhouse.query(clickhouseQuery)
     const results = result.map((row: any) => this.mapRowToEvent(row))
 
@@ -132,12 +130,12 @@ export class EventsDao {
       type: row.type,
       event: row.event,
       userId: row.user_id,
-      groupId: row.group_id,
-      anonymousId: row.anonymous_id,
-      instanceId: row.instance_id,
-      properties: row.properties,
-      traits: row.traits,
-      context: row.context,
+      groupId: row.group_id ? row.group_id : undefined,
+      anonymousId: row.anonymous_id ? row.anonymous_id : undefined,
+      instanceId: row.instance_id ? row.instance_id : undefined,
+      properties: row.properties ? JSON.parse(row.properties) : undefined,
+      traits: row.traits ? JSON.parse(row.traits) : undefined,
+      context: row.context ? JSON.parse(row.context) : undefined,
       timestamp: new Date(row.timestamp),
       parsedAt: new Date(row.parsed_at),
     }

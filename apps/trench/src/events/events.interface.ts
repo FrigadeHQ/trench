@@ -164,18 +164,87 @@ export class EventsDTO {
   events: EventDTO[]
 }
 export class Event {
-  uuid: string
-  type: string
-  event: string
-  userId?: string
-  groupId?: string
+  @ApiProperty({
+    type: String,
+    description:
+      'The anonymous ID of the user. See [anonymousId](https://segment.com/docs/connections/spec/common/#anonymousid).',
+    example: 'guest-1234567890',
+    required: false,
+  })
   anonymousId?: string
-  instanceId?: string
-  properties?: string
-  traits?: string
-  context?: string
+
+  @ApiProperty({
+    type: String,
+    description: 'The UUID of the event.',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  uuid: string
+
+  @ApiProperty({
+    type: String,
+    description: 'The type of the event.',
+    example: 'track',
+    required: true,
+  })
+  type: string
+
+  @ApiProperty({
+    type: String,
+    description: 'The event name.',
+    example: 'User SignedUp',
+    required: false,
+  })
+  event: string
+
+  @ApiProperty({
+    type: String,
+    description: 'The user ID.',
+    example: 'user-123',
+    required: false,
+  })
+  userId?: string
+
+  @ApiProperty({
+    type: String,
+    description: 'The group ID.',
+    example: 'group-456',
+    required: false,
+  })
+  groupId?: string
+
+  @ApiProperty({
+    type: Object,
+    description: 'The properties of the event. Only used with `type: "track"`.',
+    example: {
+      page: '/home',
+      referrer: 'https://www.google.com',
+    },
+    required: false,
+  })
+  properties?: {
+    [key: string]: any
+  }
+
+  context?: Record<string, any>
+  traits?: Record<string, any>
+
+  @ApiProperty({
+    type: Date,
+    description: 'The timestamp of the event.',
+    example: '2021-01-01T00:00:00Z',
+  })
   timestamp: Date
+
   parsedAt: Date
+
+  @ApiProperty({
+    type: String,
+    description:
+      "Optional instance ID. Instance IDs are used to partition events by source. It is typically used for isolating data for the same customer. For instance, if you have a SaaS product, you may want to segment events by customer. In this case, you can set the instance ID to the customer's organizaiton ID.",
+    example: 'customer-1234567890',
+    required: false,
+  })
+  instanceId?: string
 }
 
 export class EventsQuery {
@@ -314,7 +383,9 @@ export class PaginatedEventResponse extends PaginatedResponse<Event> {
         groupId: 'group-456',
         anonymousId: 'anon-789',
         instanceId: 'instance-101112',
-        properties: '{"key":"value"}',
+        properties: {
+          key: 'value',
+        },
       },
     ],
   })
