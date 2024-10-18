@@ -44,7 +44,7 @@ Trench is an event tracking system built on top of Apache Kafka and Clickhouse. 
 
 Trench has two methods of deployment:
 
-1. **Trench Self-Hosted**: An open-source version that allows you to deploy and manage Trench on your own infrastructure.
+1. **Trench Self-Hosted**: An open-source version to deploy and manage Trench on your own infrastructure.
 2. **Trench Cloud**: A fully-managed serverless solution with zero ops, autoscaling, 99.99% SLAs.
 
 ### 1. Trench Self-Hosted
@@ -98,7 +98,7 @@ curl -i -X POST \
  'http://localhost:4000/queries'
 ```
 
-This will example will return the total number of events in the system:
+This example will return the total number of events in the system:
 
 ```json
 {
