@@ -10,7 +10,7 @@
 
 <br/>
 
-<h1 align="center">Open-Source Event Tracking Infrastructure</h1>
+<h1 align="center">Open-Source Infrastructure for Tracking Events</h1>
 
   <p align="center">
     <br />
