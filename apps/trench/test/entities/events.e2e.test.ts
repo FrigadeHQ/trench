@@ -3,34 +3,44 @@ import { Test, TestingModule } from '@nestjs/testing'
 import * as request from 'supertest'
 import { AppModule } from '../../src/app.module'
 import { EventsModule } from '../../src/events/events.module'
-import { RedisModule } from '../../src/services/data/redis/redis.module'
-import { RedisService } from '../../src/services/data/redis/redis.service'
+import { authenticatedGet, authenticatedPost } from './utils'
 
 describe('events/', () => {
-  let app: INestApplication
-  afterAll(async () => {
-    await app.close()
-  })
+  async function waitForResults(query: string) {
+    const pollInterval = 100 // 100 ms
+    const maxWaitTime = 10000 // 10 seconds
+    const startTime = Date.now()
 
-  beforeAll(async () => {
-    const redisService = new RedisService()
-    const testModule: TestingModule = await Test.createTestingModule({
-      imports: [EventsModule, RedisModule, AppModule],
-    })
-      .overrideProvider(RedisService)
-      .useValue(redisService)
-      .compile()
+    while (true) {
+      const res = await authenticatedGet(`/events?${query}`)
+      if (res.body.results && res.body.results.length > 0) {
+        return res.body.results
+      }
+      if (Date.now() - startTime > maxWaitTime) {
+        throw new Error(`Timeout: No results found within ${maxWaitTime / 1000} seconds`)
+      }
+      await new Promise((resolve) => setTimeout(resolve, pollInterval))
+    }
+  }
 
-    jest.spyOn(redisService, 'onModuleInit').mockImplementation(async () => {})
+  test('should create a new event and fetch it', async () => {
+    const newEvent = {
+      uuid: '123e4567-e89b-12d3-a456-426614174000',
+      type: 'track',
+      event: 'User SignedUp',
+      timestamp: new Date().toISOString(),
+    }
 
-    app = testModule.createNestApplication()
-    await app.init()
-  })
+    // Create a new event
+    const createRes = await authenticatedPost('/events').send({ events: [newEvent] })
+    expect(createRes.statusCode).toEqual(201)
+    expect(createRes.body.results).toHaveLength(1)
+    expect(createRes.body.results[0].uuid).toBeDefined()
+    const eventUuid = createRes.body.results[0].uuid
 
-  test('should return a 201 on /events/ with userid and identify', async () => {
-    const res = await request(app.getHttpServer())
-      .post('/events/')
-      .send({ userid: '12345', type: 'identify' })
-    expect(res.statusCode).toEqual(201)
+    // Fetch the created event using the newly created util function
+    const results = await waitForResults(`uuid=${eventUuid}`)
+    expect(results).toHaveLength(1)
+    expect(results[0].uuid).toEqual(eventUuid)
   })
 })
