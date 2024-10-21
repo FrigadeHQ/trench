@@ -92,4 +92,14 @@ export class KafkaService {
       })
     }
   }
+
+  async removeConsumer(groupId: string) {
+    try {
+      const consumer = this.kafka.consumer({ groupId })
+      await consumer.disconnect()
+      console.log(`Consumer with groupId ${groupId} has been removed.`)
+    } catch (e) {
+      console.log(`Consumer with groupId ${groupId} not found.`, e)
+    }
+  }
 }

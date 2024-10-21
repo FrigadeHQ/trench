@@ -14,7 +14,7 @@ export class EventsController {
 
   @ApiOperation({ summary: 'Create one or more events. Requires public API key in Bearer token.' })
   @ApiResponse({
-    status: 200,
+    status: 201,
     description: 'The events have been successfully created.',
   })
   @Post('/events')

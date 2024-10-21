@@ -30,10 +30,14 @@ export class WebhooksService implements OnModuleInit {
     console.log('Kafka consumer successfully started!')
   }
 
+  private getGroupId(webhookUUID: string) {
+    return `${webhookUUID.substring(0, 6)}-webhook-group`
+  }
+
   async initiateConsumer(webhook: Webhook) {
     await this.kafkaService.initiateConsumer(
       process.env.KAFKA_TOPIC ?? DEFAULT_KAFKA_TOPIC,
-      `${webhook.uuid.substring(0, 6)}-webhook-group`,
+      this.getGroupId(webhook.uuid),
       (payloads) => this.processMessages(payloads, webhook.uuid),
       webhook.enableBatching
     )
@@ -44,8 +48,8 @@ export class WebhooksService implements OnModuleInit {
     const thisWebhook = webhooks.find((webhook) => webhook.uuid === webhookUUID)
 
     if (!thisWebhook) {
-      // TODO: Remove consumer
-      console.error('Webhook not found. Removing consumer.')
+      await this.kafkaService.removeConsumer(this.getGroupId(webhookUUID))
+      console.error(`Webhook not found. Removing consumer for ${webhookUUID}.`)
       return
     }
 
