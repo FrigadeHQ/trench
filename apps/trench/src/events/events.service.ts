@@ -11,6 +11,16 @@ export class EventsService {
   constructor(private eventsDao: EventsDao) {}
 
   async createEvents(eventDTOs: EventDTO[]): Promise<Event[]> {
+    // validate event types
+    const validEventTypes = ['track', 'identify', 'group']
+    eventDTOs.forEach((eventDTO) => {
+      if (!validEventTypes.includes(eventDTO.type)) {
+        throw new Error(
+          `Invalid event type: ${eventDTO.type}. Valid types are ${validEventTypes.join(', ')}.`
+        )
+      }
+    })
+
     return this.eventsDao.createEvents(eventDTOs)
   }
 
