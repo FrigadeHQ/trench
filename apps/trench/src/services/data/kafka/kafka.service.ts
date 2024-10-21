@@ -68,7 +68,7 @@ export class KafkaService {
   ) {
     const consumer = this.kafka.consumer({ groupId })
     await consumer.connect()
-    await consumer.subscribe({ topic, fromBeginning: true })
+    await consumer.subscribe({ topic, fromBeginning: false })
 
     if (enableBatching) {
       await consumer.run({

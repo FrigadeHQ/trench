@@ -3,3 +3,24 @@ title: Create Webhook
 description: Create a new webhook.
 openapi: post /webhooks
 ---
+
+Once a webhook is created, events will be sent to it based on the criteria specified in the webhook.
+The data sent follows the [Event schema](/api-reference/events-get) and is sent as a JSON array in the POST request in the `data` field. Below is an example request body:
+
+```json
+{
+  "data": [
+    {
+      "uuid": "b99b40c5-e306-4351-9f1d-9a13bb9e8bd1",
+      "type": "track",
+      "event": "ConnectedAccount",
+      "userId": "123e4567-e89b-12d3-a456-426614174000",
+      "properties": {
+        "totalAccounts": 4
+      },
+      "timestamp": "2024-10-21T21:32:17.000Z",
+      "parsedAt": "2024-10-21T21:32:23.194Z"
+    }
+  ]
+}
+```

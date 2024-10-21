@@ -1,14 +1,12 @@
 import { Injectable, OnModuleInit } from '@nestjs/common'
-import { Kafka } from 'kafkajs'
 import { KafkaService } from '../services/data/kafka/kafka.service'
 import { WebhooksDao } from './webhooks.dao'
 import { DEFAULT_KAFKA_TOPIC } from '../common/constants'
 import { KafkaEvent, KafkaEventWithUUID } from '../services/data/kafka/kafka.interface'
 import { Webhook, WebhookDTO } from './webhooks.interface'
-import { escapeString } from '../services/data/clickhouse/clickhouse.util'
-import { EventsDao } from '../events/events.dao'
-import { EventsService } from '../events/events.service'
 
+import { EventsService } from '../events/events.service'
+import { Event } from '../events/events.interface'
 @Injectable()
 export class WebhooksService implements OnModuleInit {
   constructor(
@@ -53,18 +51,19 @@ export class WebhooksService implements OnModuleInit {
       return
     }
 
-    const maxRetries = 10
+    const maxRetries = 4
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
     const numberOfEventsToFind = payloads.length
-    let eventsFound = 0
     let retries = 0
 
-    while (eventsFound < numberOfEventsToFind && retries < maxRetries) {
+    let eventsFound: Event[] = []
+
+    while (eventsFound.length < numberOfEventsToFind && retries < maxRetries) {
       const events = await this.eventsService.getEventsByUUIDs(
         payloads.map((payload) => payload.uuid)
       )
       if (events.length > 0) {
-        eventsFound += events.length
+        eventsFound = eventsFound.concat(events)
       } else {
         retries++
         const backoffTime = Math.pow(2, retries) * 1000 // Exponential backoff
@@ -72,16 +71,16 @@ export class WebhooksService implements OnModuleInit {
       }
     }
 
-    if (eventsFound < numberOfEventsToFind) {
-      console.error(`Not all events found after ${maxRetries} retries.`)
+    if (eventsFound.length < numberOfEventsToFind) {
+      console.error(`Not all events found after ${maxRetries} retries for webhook ${webhookUUID}.`)
     }
 
-    if (eventsFound > 0) {
-      await this.sendWebhook(thisWebhook, payloads)
+    if (eventsFound.length > 0) {
+      await this.sendWebhook(thisWebhook, eventsFound)
     }
   }
 
-  async sendWebhook(webhook: Webhook, payloads: KafkaEvent[]) {
+  async sendWebhook(webhook: Webhook, events: Event[]) {
     try {
       await fetch(webhook.url, {
         method: 'POST',
@@ -90,7 +89,7 @@ export class WebhooksService implements OnModuleInit {
         },
         // TODO: Add type here
         body: JSON.stringify({
-          data: payloads,
+          data: events,
         }),
       })
     } catch (error) {

@@ -5,6 +5,7 @@ import { Event, EventDTO, EventsQuery, PaginatedEventResponse } from './events.i
 import { KafkaService } from '../services/data/kafka/kafka.service'
 import { KafkaEventWithUUID } from '../services/data/kafka/kafka.interface'
 import { v4 as uuidv4 } from 'uuid'
+import { mapRowToEvent } from './events.util'
 
 @Injectable()
 export class EventsDao {
@@ -17,7 +18,7 @@ export class EventsDao {
     const escapedUUIDs = uuids.map((uuid) => `'${escapeString(uuid)}'`).join(', ')
     const query = `SELECT * FROM events WHERE uuid IN (${escapedUUIDs})`
     const result = await this.clickhouse.query(query)
-    return result.map((row: any) => this.mapRowToEvent(row))
+    return result.map((row: any) => mapRowToEvent(row))
   }
 
   async getEventsByQuery(query: EventsQuery): Promise<PaginatedEventResponse> {
@@ -87,7 +88,7 @@ export class EventsDao {
 
     const clickhouseQuery = `SELECT * FROM events ${whereClause} ${limitClause} ${offsetClause}`
     const result = await this.clickhouse.query(clickhouseQuery)
-    const results = result.map((row: any) => this.mapRowToEvent(row))
+    const results = result.map((row: any) => mapRowToEvent(row))
 
     return {
       results: results,
@@ -121,35 +122,6 @@ export class EventsDao {
 
     this.kafkaService.produceEvents(process.env.KAFKA_TOPIC, records)
 
-    return records.map((record) => this.mapRowToEvent(record.value))
-  }
-
-  private mapRowToEvent(row: any): Event {
-    return {
-      uuid: row.uuid,
-      type: row.type,
-      event: row.event,
-      userId: row.user_id,
-      groupId: row.group_id ? row.group_id : undefined,
-      anonymousId: row.anonymous_id ? row.anonymous_id : undefined,
-      instanceId: row.instance_id ? row.instance_id : undefined,
-      properties: row.properties
-        ? typeof row.properties === 'string'
-          ? JSON.parse(row.properties)
-          : row.properties
-        : undefined,
-      traits: row.traits
-        ? typeof row.traits === 'string'
-          ? JSON.parse(row.traits)
-          : row.traits
-        : undefined,
-      context: row.context
-        ? typeof row.context === 'string'
-          ? JSON.parse(row.context)
-          : row.context
-        : undefined,
-      timestamp: new Date(row.timestamp),
-      parsedAt: new Date(row.parsed_at),
-    }
+    return records.map((record) => mapRowToEvent(record.value))
   }
 }
