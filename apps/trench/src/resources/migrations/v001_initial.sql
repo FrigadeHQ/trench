@@ -22,7 +22,8 @@ create table if not exists events (
     timestamp DateTime64(6, 'UTC'),
     parsed_at DateTime64(6, 'UTC')
 ) engine = MergeTree()
-order by parsed_at;
+PARTITION BY instance_id
+ORDER BY (instance_id, user_id, -toUnixTimestamp(timestamp));
 
 CREATE MATERIALIZED VIEW kafka_events_consumer_{kafka_instance_id} TO events AS
 SELECT
