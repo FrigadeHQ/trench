@@ -11,7 +11,10 @@ export function isReadOnlyQuery(query: string): boolean {
 }
 
 export function convertToKebabCase(query: string): string {
-  return query.replace(/userId/g, 'user_id').replace(/groupId/g, 'group_id')
+  return query
+    .replaceAll(/userId/g, 'user_id')
+    .replaceAll(/groupId/g, 'group_id')
+    .replaceAll(/instanceId/g, 'instance_id')
 }
 
 export function convertJsonKeysToCamelCase(json: Record<string, any>): Record<string, any> {
