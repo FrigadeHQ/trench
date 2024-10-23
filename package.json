@@ -2,7 +2,7 @@
   "name": "@frigadehq/trench",
   "version": "0.0.1",
   "license": "MIT",
-  "description": "trench is an open source library and server with the same API as localStorage that allows you to store data in a centralized storage.",
+  "description": "Open-Source Infrastructure for Tracking Events",
   "workspaces": [
     "apps/*",
     "packages/*"

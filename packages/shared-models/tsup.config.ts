@@ -12,6 +12,6 @@ export default defineConfig([
     ...commonConfig,
     entry: ['src/index.ts'],
     outDir: 'dist',
-    // noExternal: [ /(.*)/ ],
+    noExternal: [/(.*)/],
   },
 ])
