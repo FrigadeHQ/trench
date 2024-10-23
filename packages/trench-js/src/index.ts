@@ -1,143 +1,45 @@
-import { BaseEvent } from 'shared-models';
-import fetch from 'node-fetch';
+import Analytics from '@analytics/core';
+import trench from 'analytics-plugin-trench';
 
-type Config = {
+type TrenchConfig = {
   publicApiKey: string;
   enabled: boolean;
   serverUrl: string;
 };
 
-let isTrenchLoaded = false;
-export default function trench(config: Config) {
-  return {
-    name: 'trench',
+class Trench {
+  private analytics: any;
 
-    initialize: (): void => {
-      if (config.enabled) {
-        // Assuming trench.init is a placeholder for any initialization logic
-        isTrenchLoaded = true;
-      }
-    },
+  constructor(config: TrenchConfig) {
+    this.analytics = Analytics({
+      app: 'trench-app',
+      plugins: [trench(config)],
+    });
+  }
 
-    track: async ({ payload }: { payload: BaseEvent }): Promise<void> => {
-      await fetch(`${config.serverUrl}/events`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${config.publicApiKey}`,
-        },
-        body: JSON.stringify({
-          events: [
-            {
-              userId: payload.userId,
-              event: payload.event,
-              properties: payload.properties,
-              type: 'track',
-            },
-          ],
-        }),
-      });
-    },
+  initialize() {
+    this.analytics.initialize();
+  }
 
-    page: async ({ payload }: { payload: BaseEvent }): Promise<void> => {
-      await fetch(`${config.serverUrl}/events`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${config.publicApiKey}`,
-        },
-        body: JSON.stringify({
-          events: [
-            {
-              userId: payload.userId,
-              event: '$pageview',
-              properties: payload.properties,
-              type: 'track',
-            },
-          ],
-        }),
-      });
-    },
+  track(event: string, properties: object) {
+    this.analytics.track(event, properties);
+  }
 
-    identify: async ({
-      payload,
-    }: {
-      payload: {
-        userId: string;
-        traits: {
-          $set?: object;
-          $set_once?: object;
-        } & Record<string, any>;
-      };
-    }): Promise<void> => {
-      const { userId } = payload;
+  page(properties: object) {
+    this.analytics.page(properties);
+  }
 
-      const set = payload.traits.$set ?? payload.traits;
-      const setOnce = payload.traits.$set_once ?? {};
+  identify(userId: string, traits: object) {
+    this.analytics.identify(userId, traits);
+  }
 
-      if (userId) {
-        await fetch(`${config.serverUrl}/events`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${config.publicApiKey}`,
-          },
-          body: JSON.stringify({
-            events: [
-              {
-                userId: payload.userId,
-                event: 'identify',
-                properties: { $set: set, $set_once: setOnce },
-                type: 'identify',
-              },
-            ],
-          }),
-        });
-      }
-    },
+  group(groupId: string, traits: object) {
+    this.analytics.group(groupId, traits);
+  }
 
-    loaded: (): boolean => {
-      return isTrenchLoaded;
-    },
-
-    // Custom Trench's functions to expose to analytics instance
-    methods: {
-      group: async ({
-        payload,
-      }: {
-        payload: {
-          groupId: string;
-          traits: {
-            $set?: object;
-            $set_once?: object;
-          } & Record<string, any>;
-        };
-      }): Promise<void> => {
-        const { groupId } = payload;
-
-        const set = payload.traits.$set ?? payload.traits;
-        const setOnce = payload.traits.$set_once ?? {};
-
-        if (groupId) {
-          await fetch(`${config.serverUrl}/events`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${config.publicApiKey}`,
-            },
-            body: JSON.stringify({
-              events: [
-                {
-                  groupId: payload.groupId,
-                  event: 'group',
-                  properties: { $set: set, $set_once: setOnce },
-                  type: 'group',
-                },
-              ],
-            }),
-          });
-        }
-      },
-    },
-  };
+  loaded() {
+    return this.analytics.loaded();
+  }
 }
+
+export default Trench;
