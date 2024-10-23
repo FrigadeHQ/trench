@@ -2,14 +2,7 @@
   "compilerOptions": {
     "module": "esnext",
     "target": "ES6",
-    "lib": [
-      "DOM",
-      "esnext",
-      "ES6",
-      "DOM.Iterable",
-      "ScriptHost",
-      "ES2016.Array.Include"
-    ],
+    "lib": ["DOM", "esnext", "ES6", "DOM.Iterable", "ScriptHost", "ES2016.Array.Include"],
     "declaration": true,
     // output .js.map sourcemap files for consumers
     "sourceMap": true,
@@ -34,13 +27,11 @@
     // error out if import and file system have a casing mismatch. Recommended by TS
     "forceConsistentCasingInFileNames": true,
     "alwaysStrict": false,
-    "noEmit": true
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "shared-models": ["packages/shared-models/src"]
+    }
   },
-  "exclude": [
-    "**/__tests__/*",
-    "node_modules",
-    "dist",
-    "**/dist/**",
-    "packages/*/dist/**"
-  ]
+  "exclude": ["**/__tests__/*", "node_modules", "dist", "**/dist/**", "packages/*/dist/**"]
 }

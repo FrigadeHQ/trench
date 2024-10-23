@@ -17,8 +17,8 @@
       "cache": false
     },
     "copy-version-number": {
-        "steps": ["yarn copy-version-number"],
-        "outputs": ["src/**"]
+      "steps": ["pnpm copy-version-number"],
+      "outputs": ["src/**"]
     }
   }
 }

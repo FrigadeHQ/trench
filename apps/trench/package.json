@@ -23,6 +23,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "dependencies": {
+    "shared-models": "workspace:*",
     "@clickhouse/client": "^1.6.0",
     "@fastify/static": "^7.0.1",
     "@nestjs/axios": "3.0.3",

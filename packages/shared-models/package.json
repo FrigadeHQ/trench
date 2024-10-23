@@ -1,0 +1,9 @@
+{
+  "name": "shared-models",
+  "version": "0.0.1",
+  "description": "Shared models for Trench",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "author": "Frigade Inc.",
+  "license": "MIT"
+}
