@@ -45,7 +45,7 @@
   "navigation": [
     {
       "group": "Getting Started",
-      "pages": ["introduction", "quickstart", "self-host"]
+      "pages": ["introduction", "quickstart", "client", "self-host"]
     },
     {
       "group": "API",
