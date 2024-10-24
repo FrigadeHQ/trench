@@ -102,21 +102,15 @@ export function trench(config: TrenchConfig) {
 
     // Custom Trench's functions to expose to analytics instance
     methods: {
-      group: async ({
-        payload,
-      }: {
-        payload: {
-          groupId: string;
-          traits: {
-            $set?: object;
-            $set_once?: object;
-          } & Record<string, any>;
-        };
-      }): Promise<void> => {
-        const { groupId } = payload;
-
-        const set = payload.traits.$set ?? payload.traits;
-        const setOnce = payload.traits.$set_once ?? {};
+      group: async (
+        groupId: string,
+        traits: {
+          $set?: object;
+          $set_once?: object;
+        } & Record<string, any>
+      ): Promise<void> => {
+        const set = traits.$set ?? traits;
+        const setOnce = traits.$set_once ?? {};
 
         if (groupId) {
           await fetch(`${config.serverUrl}/events`, {
@@ -128,7 +122,7 @@ export function trench(config: TrenchConfig) {
             body: JSON.stringify({
               events: [
                 {
-                  groupId: payload.groupId,
+                  groupId,
                   event: 'group',
                   properties: { $set: set, $set_once: setOnce },
                   type: 'group',

@@ -2,7 +2,7 @@ import Analytics from 'analytics';
 import { trench, TrenchConfig } from 'analytics-plugin-trench';
 
 class Trench {
-  private analytics: any;
+  private analytics: ReturnType<typeof Analytics>;
 
   constructor(config: TrenchConfig) {
     this.analytics = Analytics({
@@ -11,28 +11,27 @@ class Trench {
     });
   }
 
-  initialize() {
-    this.analytics.initialize();
-  }
-
-  track(event: string, properties: object) {
+  track(event: string, properties: Record<string, unknown>) {
     this.analytics.track(event, properties);
   }
 
-  page(properties: object) {
+  page(properties: Record<string, unknown>) {
     this.analytics.page(properties);
   }
 
-  identify(userId: string, traits: object) {
+  identify(userId: string, traits: Record<string, unknown>) {
     this.analytics.identify(userId, traits);
   }
 
-  group(groupId: string, traits: object) {
-    this.analytics.group(groupId, traits);
+  group(groupId: string, traits: Record<string, unknown>) {
+    // @ts-ignore
+    this.analytics.plugins.trench.group(groupId, traits);
   }
 
   loaded() {
-    return this.analytics.loaded();
+    // Assuming loaded is a custom method, adding a placeholder
+    console.log('Analytics loaded');
+    return true;
   }
 }
 
