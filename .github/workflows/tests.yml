@@ -22,4 +22,4 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - uses: pnpm/action-setup@v2
       - run: pnpm install
-      - run: pnpm test
+      - run: cd packages && pnpm test
