@@ -36,7 +36,6 @@
     "jest-config": "^29.3.1",
     "jest-environment-jsdom": "^29.4.1",
     "ts-jest": "^29.1.0",
-    "@types/node-fetch": "^2.6.11",
     "jest": "^29.5.0",
     "prettier": "^2.8.8",
     "tslint": "6.1.3",
