@@ -5,6 +5,16 @@ description: Get set up with Trench in less than 5 minutes
 ---
 
 <Steps>
+  <Step title="Deploy Trench">
+  The only prerequisite for Trench is a system that has Docker and Docker Compose installed [see installation guide](https://docs.docker.com/compose/install/). We recommend having at least 4GB of RAM and 4 CPU cores for optimal performance if you're running a production environment.
+
+After installing Docker, you can start the local development server by running the following commands:
+
+```bash
+git clone https://github.com/frigadehq/trench && cd trench/apps/trench && pnpm install && pnpm dev
+```
+
+  </Step>
   <Step title="Send a sample event">
     Once you've obtained your [public and private API key](/api-reference/overview), you can send a sample event to Trench as such:
 
