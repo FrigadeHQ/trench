@@ -5,7 +5,16 @@ description: Open source infrastructure for tracking events
 
 <img src="/images/trench-cover.png" className="rounded pointer-events-none" />
 
-[Trench](https://trench.dev) is fully managed, open source infrastructure for real-time tracking and querying events. It's powered by Clickhouse and Kafka to be both cost effective and performant at scale.
+Trench is an event tracking system built on top of Apache Kafka and Clickhouse. It can handle large event volumes and provides real-time analytics. Our team built Trench to scale up the real-time event tracking pipeline at <a href="https://frigade.com?utm_source=github-trench-readme" target="_blank">Frigade</a>.
+
+## Features
+
+- 🤝 Compliant with the Segment API (Track, Group, Idenfity)
+- 🐳 Deploy quickly with a single production-ready Docker image
+- 💻 Process thousands of events per second on a single node
+- ⚡ Query data in real-time
+- 🔗 Connect data to other destinations with webhooks
+- 👥 Open-source and MIT Licensed
 
 ## Getting Started
 
@@ -13,6 +22,8 @@ description: Open source infrastructure for tracking events
 
 <CardGroup cols={2}>
   <Card title="Quickstart Guide →" href="/quickstart" horizontal={true}></Card>
+  <Card title="API Reference →" href="/api-reference/overview" horizontal={true}></Card>
+  <Card title="Self-host →" href="/self-host" horizontal={true}></Card>
   <Card
     title="Contact Us →"
     href="mailto:support@trench.dev"
