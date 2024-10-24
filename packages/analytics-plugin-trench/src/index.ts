@@ -1,14 +1,14 @@
 import { BaseEvent } from 'shared-models';
 import fetch from 'node-fetch';
 
-type Config = {
+export type TrenchConfig = {
   publicApiKey: string;
   enabled: boolean;
   serverUrl: string;
 };
 
 let isTrenchLoaded = false;
-export default function trench(config: Config) {
+export function trench(config: TrenchConfig) {
   return {
     name: 'trench',
 

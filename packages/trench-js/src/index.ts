@@ -1,11 +1,5 @@
-import Analytics from '@analytics/core';
-import trench from 'analytics-plugin-trench';
-
-type TrenchConfig = {
-  publicApiKey: string;
-  enabled: boolean;
-  serverUrl: string;
-};
+import Analytics from 'analytics';
+import { trench, TrenchConfig } from 'analytics-plugin-trench';
 
 class Trench {
   private analytics: any;
