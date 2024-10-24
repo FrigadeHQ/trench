@@ -221,7 +221,7 @@ importers:
         specifier: ^0.8.14
         version: 0.8.14(@types/dlv@1.1.4)
       analytics-plugin-trench:
-        specifier: 0.0.1
+        specifier: 0.0.2
         version: link:../analytics-plugin-trench
     devDependencies:
       '@types/jest':
