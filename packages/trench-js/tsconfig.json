@@ -5,7 +5,8 @@
     "declaration": true,
     "outDir": "./lib",
     "rootDir": "./src",
-    "strict": true
+    "strict": true,
+    "types": ["jest"]
   },
   "include": ["src"],
   "exclude": ["node_modules"]

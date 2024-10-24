@@ -12,7 +12,7 @@ class Trench {
   }
 
   track(event: string, properties: Record<string, unknown>) {
-    this.analytics.track(event, properties);
+    console.log('response', this.analytics.track(event, properties));
   }
 
   page(properties: Record<string, unknown>) {
@@ -29,8 +29,6 @@ class Trench {
   }
 
   loaded() {
-    // Assuming loaded is a custom method, adding a placeholder
-    console.log('Analytics loaded');
     return true;
   }
 }

@@ -41,5 +41,20 @@
   "dependencies": {
     "analytics": "^0.8.14",
     "analytics-plugin-trench": "0.0.2"
+  },
+  "jest": {
+    "rootDir": ".",
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts",
+      "tsx"
+    ],
+    "transform": {
+      "^.+\\.(t|j)sx*$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ]
   }
 }
