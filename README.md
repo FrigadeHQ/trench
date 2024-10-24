@@ -39,7 +39,6 @@ Trench is an event tracking system built on top of Apache Kafka and Clickhouse. 
 - 🔗 Connect data to other destinations with webhooks
 - 👥 Open-source and MIT Licensed
 
-
 ## 🚀 Quickstart
 
 Trench has two methods of deployment:
@@ -55,65 +54,104 @@ If you have questions or need assistance, you can join our [Slack group](https:/
 
 #### Quickstart
 
-First, install and start the server by running the following command:
+1. **Deploy Trench**:
+   The only prerequisite for Trench is a system that has Docker and Docker Compose installed [see installation guide](https://docs.docker.com/compose/install/). We recommend having at least 4GB of RAM and 4 CPU cores for optimal performance if you're running a production environment.
 
-```bash
-git clone git@github.com:FrigadeHQ/trench.git && cd trench/apps/trench && cp .env.example .env && docker-compose up --build --force-recreate --renew-anon-volumes -d
-```
+   After installing Docker, you can start the local development server by running the following commands:
 
-This will start the server on port 4000. You can now send your first event:
+   ```sh
+   git clone https://github.com/frigadehq/trench.git
+   cd trench/apps/trench
+   cp .env.example .env
+   pnpm install
+   pnpm dev
+   ```
 
-```bash
-curl -i -X POST \
-   -H "Authorization:Bearer my-public-api-key" \
-   -H "Content-Type:application/json" \
-   -d \
-'{
-  "events": [
-    {
-      "userId": "abc123",
-      "event": "ConnectedAccount",
-      "properties": {
-        "totalAccounts": 4,
-        "country": "Denmark"
-      },
-      "type": "track"
-    }]
-}' \
- 'http://localhost:4000/events'
-```
+   The above command will start the Trench server that includes a local Clickhouse and Kafka instance on `http://localhost:4000`. You can update the `.env` to change any of the configuration options.
 
-Now, you can query the data using SQL over HTTP (make sure to use your private API key):
+2. **Send a sample event**:
+   You can find and update the default public and private API key in the `.env` file. Using your public API key, you can send a sample event to Trench as such:
 
-```bash
-curl -i -X POST \
-   -H "Authorization:Bearer my-private-api-key" \
-   -H "Content-Type:application/json" \
-   -d \
-'{
-  "queries": [
-  	"SELECT COUNT(*) as totalRows FROM events"
-  ]
-}' \
- 'http://localhost:4000/queries'
-```
+   ```sh
+   curl -i -X POST \
+      -H "Authorization:Bearer public-d613be4e-di03-4b02-9058-70aa4j04ff28" \
+      -H "Content-Type:application/json" \
+      -d \
+   '{
+     "events": [
+       {
+         "userId": "550e8400-e29b-41d4-a716-446655440000",
+         "type": "track",
+         "event": "ConnectedAccount",
+         "properties": {
+           "totalAccounts": 4,
+           "country": "Denmark"
+         },
+       }]
+   }' \
+    'https://sandbox.trench.dev/events'
+   ```
 
-This example will return the total number of events in the system:
+3. **Querying events**:
+   You can query events using the `/events` endpoint (see [API reference](https://docs.trench.dev/api-reference/events-get) for more details).
 
-```json
-{
-  "results": [
-    {
-      "totalRows": 1
-    }
-  ]
-}
-```
+   You can also query events directly from your local Trench server. For example, to query events of type `ConnectedAccount`, you can use the following URL:
+
+   ```sh
+   curl -i -X GET \
+      -H "Authorization: Bearer private-d613be4e-di03-4b02-9058-70aa4j04ff28" \
+      'http://localhost:4000/events?event=ConnectedAccount'
+   ```
+
+   This will return a JSON response with the event that was just sent:
+
+   ```json
+   {
+     "results": [
+       {
+         "uuid": "25f7c712-dd86-4db0-89a8-d07d11b73e57",
+         "type": "track",
+         "event": "ConnectedAccount",
+         "userId": "550e8400-e29b-41d4-a716-446655440000",
+         "properties": {
+           "totalAccounts": 4,
+           "country": "Denmark"
+         },
+         "timestamp": "2024-10-22T19:34:56.000Z",
+         "parsedAt": "2024-10-22T19:34:59.530Z"
+       }
+     ],
+     "limit": 1000,
+     "offset": 0,
+     "total": 1
+   }
+   ```
+
+4. **Execute raw SQL queries**:
+   Use the queries endpoint to analyze your data. Example:
+
+   ```sh
+   curl -i -X POST \
+      -H "Authorization:Bearer public-d613be4e-di03-4b02-9058-70aa4j04ff28" \
+      -H "Content-Type:application/json" \
+      -d \
+   '{
+     "query": "SELECT COUNT(*) FROM events WHERE userId = '550e8400-e29b-41d4-a716-446655440000'"
+   }' \
+    'http://localhost:4000/queries'
+   ```
+
+   Sample query result:
+
+   ```json
+   {
+     "count": 5
+   }
+   ```
 
 ### 2. Trench Cloud
 
 Request access to Trench Cloud from our [website](https://trench.dev) to get started with the fully-managed version of Trench.
-
 
 ## 🔗 Links
 
@@ -125,8 +163,6 @@ Request access to Trench Cloud from our [website](https://trench.dev) to get sta
 
 Trench is a project built by [Frigade](https://frigade.com).
 
-
 ## 📄 License
 
 MIT License
-
