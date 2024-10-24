@@ -7,14 +7,6 @@ export type TrenchConfig = {
   serverUrl: string;
 };
 
-function generateAnonymousId(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    const r = (Math.random() * 16) | 0,
-      v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-}
-
 export function trench(config: TrenchConfig) {
   let isTrenchLoaded = false;
   let anonymousId: string | undefined;
@@ -27,6 +19,15 @@ export function trench(config: TrenchConfig) {
   function getCurrentUserId(): string | undefined {
     return currentUserId;
   }
+  /* tslint:disable */
+  function generateAnonymousId(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0,
+        v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  }
+  /* tslint:enable */
 
   function getAnonymousId(): string {
     if (typeof window !== 'undefined' && window.localStorage) {
