@@ -16,7 +16,6 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug 0.0.0.0:9229 --watch",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
     "test:e2e": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
