@@ -9,6 +9,12 @@ describe('Trench Analytics', () => {
     };
   }
 
+  test('should identify a user', async () => {
+    const trench = new Trench(getConfig());
+    await trench.identify('user123', { email: 'user@example.com' });
+    // Assuming there's a way to verify the user was identified
+  });
+
   test('should initialize analytics', () => {
     const trench = new Trench(getConfig());
     expect(trench.loaded()).toBe(true);
@@ -24,12 +30,6 @@ describe('Trench Analytics', () => {
     const trench = new Trench(getConfig());
     await trench.page({ title: 'Test Page' });
     // Assuming there's a way to verify the page view was tracked
-  });
-
-  test('should identify a user', async () => {
-    const trench = new Trench(getConfig());
-    await trench.identify('user123', { email: 'user@example.com' });
-    // Assuming there's a way to verify the user was identified
   });
 
   test('should group a user', async () => {

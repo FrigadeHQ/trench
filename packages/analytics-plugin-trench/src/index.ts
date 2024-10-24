@@ -7,8 +7,43 @@ export type TrenchConfig = {
   serverUrl: string;
 };
 
-let isTrenchLoaded = false;
+function generateAnonymousId(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0,
+      v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
 export function trench(config: TrenchConfig) {
+  let isTrenchLoaded = false;
+  let anonymousId: string | undefined;
+  let currentUserId: string | undefined;
+
+  function setCurrentUserId(userId: string): void {
+    currentUserId = userId;
+  }
+
+  function getCurrentUserId(): string | undefined {
+    return currentUserId;
+  }
+
+  function getAnonymousId(): string {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      let storedAnonymousId = localStorage.getItem('anonymousId');
+      if (!storedAnonymousId) {
+        storedAnonymousId = generateAnonymousId();
+        localStorage.setItem('anonymousId', storedAnonymousId);
+      }
+      return storedAnonymousId;
+    } else {
+      if (!anonymousId) {
+        anonymousId = generateAnonymousId();
+      }
+      return anonymousId;
+    }
+  }
+
   return {
     name: 'trench',
 
@@ -29,7 +64,8 @@ export function trench(config: TrenchConfig) {
         body: JSON.stringify({
           events: [
             {
-              userId: payload.userId,
+              anonymousId: payload.userId ? undefined : getAnonymousId(),
+              userId: payload.userId ?? getAnonymousId(),
               event: payload.event,
               properties: payload.properties,
               type: 'track',
@@ -49,7 +85,8 @@ export function trench(config: TrenchConfig) {
         body: JSON.stringify({
           events: [
             {
-              userId: payload.userId,
+              anonymousId: payload.userId ? undefined : getAnonymousId(),
+              userId: payload.userId ?? getAnonymousId(),
               event: '$pageview',
               properties: payload.properties,
               type: 'track',
@@ -72,6 +109,8 @@ export function trench(config: TrenchConfig) {
     }): Promise<void> => {
       const { userId } = payload;
 
+      setCurrentUserId(userId);
+
       const set = payload.traits.$set ?? payload.traits;
       const setOnce = payload.traits.$set_once ?? {};
 
@@ -85,7 +124,8 @@ export function trench(config: TrenchConfig) {
           body: JSON.stringify({
             events: [
               {
-                userId: payload.userId,
+                anonymousId: getAnonymousId(),
+                userId: payload.userId ?? getAnonymousId(),
                 event: 'identify',
                 properties: { $set: set, $set_once: setOnce },
                 type: 'identify',
@@ -122,6 +162,7 @@ export function trench(config: TrenchConfig) {
             body: JSON.stringify({
               events: [
                 {
+                  userId: getCurrentUserId() ?? getAnonymousId(),
                   groupId,
                   event: 'group',
                   properties: { $set: set, $set_once: setOnce },
