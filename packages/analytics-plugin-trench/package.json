@@ -2,13 +2,13 @@
   "name": "analytics-plugin-trench",
   "version": "0.0.2",
   "description": "Trench plugin for Analytics",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
-    "lib"
+    "dist"
   ],
   "scripts": {
-    "build": "tsc && dts-bundle-generator -o lib/index.d.ts src/index.ts",
+    "build": "tsc && dts-bundle-generator -o dist/index.d.ts src/index.ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "tslint -p tsconfig.json -c tslint.json --fix",
     "prepare": "npm run build",
