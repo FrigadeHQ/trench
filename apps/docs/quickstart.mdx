@@ -11,12 +11,14 @@ description: Get set up with Trench in less than 5 minutes
 After installing Docker, you can start the local development server by running the following commands:
 
 ```bash
-git clone https://github.com/frigadehq/trench && cd trench/apps/trench && pnpm install && pnpm dev
+git clone https://github.com/frigadehq/trench && cd trench/apps/trench && cp .env.example .env && pnpm install && pnpm dev
 ```
+
+The above command will start the Trench server that includes a local Clickhouse and Kafka instance on `http://localhost:4000`. You can update the `.env` to change any of the configuration options.
 
   </Step>
   <Step title="Send a sample event">
-    Once you've obtained your [public and private API key](/api-reference/overview), you can send a sample event to Trench as such:
+   You can find and update the default public and private API key in the `.env` file. Using your public API key, you can send a sample event to Trench as such:
 
     ```bash
     curl -i -X POST \
@@ -27,12 +29,12 @@ git clone https://github.com/frigadehq/trench && cd trench/apps/trench && pnpm i
       "events": [
         {
           "userId": "550e8400-e29b-41d4-a716-446655440000",
+          "type": "track",
           "event": "ConnectedAccount",
           "properties": {
             "totalAccounts": 4,
             "country": "Denmark"
           },
-          "type": "track"
         }]
     }' \
      'https://sandbox.trench.dev/events'
@@ -40,22 +42,40 @@ git clone https://github.com/frigadehq/trench && cd trench/apps/trench && pnpm i
 
   </Step>
 
-  <Step title="Create a throttled webhook">
-    Use the webhooks endpoint to create a throttled webhook that will trigger based on the conditions. It leverages a Kafka consumer underneath so it will be throttled and supports batching too. Example:
+  <Step title="Quering events">
+    You can query events using the `/events` endpoint (see [API reference](/api-reference/events-get) for more details).
 
-    ```bash
-    curl -i -X POST \
-       -H "Authorization:Bearer public-d613be4e-di03-4b02-9058-70aa4j04ff28" \
-       -H "Content-Type:application/json" \
-       -d \
-    '{
-      "url": "https://your-webhook-url.com",
-      "enableBatching": true,
-      "eventTypes": ["ConnectedAccount"],
-      "eventNames": ["*"]
-    }' \
-     'https://sandbox.trench.dev/webhooks'
-    ```
+You can also query events directly from your local Trench server. For example, to query events of type `ConnectedAccount`, you can use the following URL:
+
+```bash
+curl -i -X GET \
+   -H "Authorization: Bearer private-d613be4e-di03-4b02-9058-70aa4j04ff28" \
+   'http://localhost:4000/events?event=ConnectedAccount'
+```
+
+This will return a JSON response with the event that was just sent:
+
+```json
+{
+  "results": [
+    {
+      "uuid": "25f7c712-dd86-4db0-89a8-d07d11b73e57",
+      "type": "track",
+      "event": "ConnectedAccount",
+      "userId": "550e8400-e29b-41d4-a716-446655440000",
+      "properties": {
+        "totalAccounts": 4,
+        "country": "Denmark"
+      },
+      "timestamp": "2024-10-22T19:34:56.000Z",
+      "parsedAt": "2024-10-22T19:34:59.530Z"
+    }
+  ],
+  "limit": 1000,
+  "offset": 0,
+  "total": 1
+}
+```
 
   </Step>
 
@@ -70,7 +90,7 @@ git clone https://github.com/frigadehq/trench && cd trench/apps/trench && pnpm i
     '{
       "query": "SELECT COUNT(*) FROM events WHERE userId = '550e8400-e29b-41d4-a716-446655440000'"
     }' \
-     'https://sandbox.trench.dev/queries'
+     'http://localhost:4000/queries'
     ```
 
     Sample query result:
