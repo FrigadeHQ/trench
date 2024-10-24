@@ -1,6 +1,6 @@
 {
   "name": "trench-js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Trench JS client for browser and Node.js",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -40,6 +40,6 @@
   },
   "dependencies": {
     "analytics": "^0.8.14",
-    "analytics-plugin-trench": "0.0.1"
+    "analytics-plugin-trench": "0.0.2"
   }
 }
