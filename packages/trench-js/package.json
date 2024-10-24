@@ -1,6 +1,6 @@
 {
   "name": "trench-js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Trench JS client for browser and Node.js",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "analytics": "^0.8.14",
-    "analytics-plugin-trench": "0.0.2"
+    "analytics-plugin-trench": "0.0.3"
   },
   "jest": {
     "rootDir": ".",
