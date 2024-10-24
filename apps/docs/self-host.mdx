@@ -1,0 +1,59 @@
+---
+title: Self-host Trench
+sidebarTitle: Self-host
+description: Host Trench on your own infrastructure
+---
+
+## Self-Hosting Trench
+
+Trench can be self-hosted on your own infrastructure using a single Docker image. The image comes bundled with both Clickhouse and Kafka and requires no additional dependencies.
+
+### Prerequisites
+
+To run the Trench Docker image, we recommend a system with the following specifications:
+
+- At least 4 CPU cores
+- At least 8GB of RAM
+
+These specifications ensure optimal performance for your Trench instance.
+
+### Getting Started
+
+To start the server, first clone the Trench repository, navigate to the `apps/trench` directory.
+
+```bash
+git clone https://github.com/frigadehq/trench
+cd apps/trench
+```
+
+Next, create a `.env` file. You can use the example below as a template, but make sure to replace the placeholder values with your own:
+
+```bash
+NODE_ENV=production
+API_PORT=80
+API_HTTPS=false
+CLICKHOUSE_USER=user
+CLICKHOUSE_PASSWORD=password
+CLICKHOUSE_DATABASE=default
+CLICKHOUSE_HOST=clickhouse
+CLICKHOUSE_PORT=8123
+KAFKA_BROKERS=kafka:9092
+KAFKA_TOPIC=trench_events
+KAFKA_PARTITIONS=1
+PUBLIC_API_KEYS=my-public-api-key
+PRIVATE_API_KEYS=my-private-api-key
+```
+
+You can now start the server in production mode with the following command. It may take a few minutes to start up:
+
+```bash
+docker-compose up --build --force-recreate --renew-anon-volumes -d
+```
+
+Once the server is running, you can open up a browser and navigate to `http://localhost:80`. You should see the following message:
+
+```
+Trench server is running
+```
+
+You can now test out the system end to end by following the [Quickstart](/quickstart) guide.
