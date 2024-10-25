@@ -11,7 +11,13 @@ description: Get set up with Trench in less than 5 minutes
 After installing Docker, you can start the local development server by running the following commands:
 
 ```bash
-git clone https://github.com/frigadehq/trench && cd trench/apps/trench && cp .env.example .env && pnpm install && pnpm dev
+git clone https://github.com/frigadehq/trench.git
+cd trench
+pnpm install
+cd apps/trench
+cp .env.example .env
+pnpm install
+pnpm dev
 ```
 
 The above command will start the Trench server that includes a local Clickhouse and Kafka instance on `http://localhost:4000`. You can update the `.env` to change any of the configuration options.
