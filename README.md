@@ -161,7 +161,7 @@ If you have questions or need assistance, you can join our [Slack group](https:/
 
 ### 2. Trench Cloud ☁️
 
-Request access to Trench Cloud from [our website](https://trench.dev?utm_campaign=github-readme) to get started with the fully-managed version of Trench.
+If you don't want to selfhost, you can get started with Trench in a few minutes using our [Cloud Quickstart Guide](https://docs.trench.dev/cloud-quickstart).
 
 ## 🔗 Links
 
