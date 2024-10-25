@@ -157,6 +157,10 @@ In the Demo below, we show you how to build a mini version of Google Analytics u
 
 https://github.com/user-attachments/assets/e3f64590-6e7e-41b9-b425-7adb5a1e19b1
 
+## Trench Cloud
+
+Request access to Trench Cloud from [our website](https://trench.dev?utm_campaign=github-readme) to get started with the fully-managed version of Trench.
+
 ## 🔗 Links
 
 - [Website](https://trench.dev?utm_campaign=github-readme)
