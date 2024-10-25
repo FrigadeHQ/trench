@@ -23,7 +23,9 @@
 
 ## 🌊 What is Trench?
 
-Trench is an event tracking system built on top of Apache Kafka and Clickhouse. It can handle large event volumes and provides real-time analytics. Our team built Trench to scale up the real-time event tracking pipeline at <a href="https://frigade.com?utm_source=github-trench-readme" target="_blank">Frigade</a>.
+Trench is an event tracking system built on top of Apache Kafka and Clickhouse. It can handle large event volumes and provides real-time analytics. Trench is no-cookie, GDPR, and PECR compliant. Users have full control to access, rectify, or delete their data.
+
+Our team built Trench to scale up the real-time event tracking pipeline at <a href="https://frigade.com?utm_source=github-trench-readme" target="_blank">Frigade</a>.
 
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="/img/trench-cover.png">
