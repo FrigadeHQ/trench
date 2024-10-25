@@ -151,7 +151,15 @@ If you have questions or need assistance, you can join our [Slack group](https:/
    }
    ```
 
-### 2. Trench Cloud
+## Demo
+In the Demo below, we show you how to build a mini version of Google Analytics using Trench and Grafana
+
+https://github.com/user-attachments/assets/e3f64590-6e7e-41b9-b425-7adb5a1e19b1
+
+
+
+
+## Cloud
 
 Request access to Trench Cloud from our [website](https://trench.dev) to get started with the fully-managed version of Trench.
 
