@@ -41,7 +41,6 @@
     "dts-bundle-generator": "^9.5.1"
   },
   "dependencies": {
-    "node-fetch": "^2.6.6",
-    "shared-models": "workspace:*"
+    "node-fetch": "^2.6.6"
   }
 }

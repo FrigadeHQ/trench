@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { PaginatedResponse } from '../common/models'
-import { BaseEvent } from 'shared-models'
 
-export class EventDTO implements BaseEvent {
+export class EventDTO {
   @ApiProperty({
     type: String,
     description:

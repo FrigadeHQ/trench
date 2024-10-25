@@ -61,7 +61,9 @@ If you have questions or need assistance, you can join our [Slack group](https:/
 
    ```sh
    git clone https://github.com/frigadehq/trench.git
-   cd trench/apps/trench
+   cd trench
+   pnpm install
+   cd apps/trench
    cp .env.example .env
    pnpm install
    pnpm dev
