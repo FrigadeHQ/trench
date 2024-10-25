@@ -39,6 +39,12 @@ Trench is an event tracking system built on top of Apache Kafka and Clickhouse. 
 - 🔗 Connect data to other destinations with webhooks
 - 👥 Open-source and MIT Licensed
 
+## Demo
+
+Watch the following demo to see how you can build a basic version of Google Analytics using Trench and Grafana.
+
+https://github.com/user-attachments/assets/e3f64590-6e7e-41b9-b425-7adb5a1e19b1
+
 ## 🚀 Quickstart
 
 Trench has two methods of deployment:
@@ -151,13 +157,7 @@ If you have questions or need assistance, you can join our [Slack group](https:/
    }
    ```
 
-## Demo
-
-In the Demo below, we show you how to build a mini version of Google Analytics using Trench and Grafana
-
-https://github.com/user-attachments/assets/e3f64590-6e7e-41b9-b425-7adb5a1e19b1
-
-## Trench Cloud
+### Trench Cloud
 
 Request access to Trench Cloud from [our website](https://trench.dev?utm_campaign=github-readme) to get started with the fully-managed version of Trench.
 
