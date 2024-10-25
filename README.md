@@ -39,7 +39,7 @@ Trench is an event tracking system built on top of Apache Kafka and Clickhouse. 
 - 🔗 Connect data to other destinations with webhooks
 - 👥 Open-source and MIT Licensed
 
-## Demo
+## 🖥️ Demo
 
 Watch the following demo to see how you can build a basic version of Google Analytics using Trench and Grafana.
 
@@ -52,7 +52,7 @@ Trench has two methods of deployment:
 1. **Trench Self-Hosted**: An open-source version to deploy and manage Trench on your own infrastructure.
 2. **Trench Cloud**: A fully-managed serverless solution with zero ops, autoscaling, 99.99% SLAs.
 
-### 1. Trench Self-Hosted
+### 1. 💻 Trench Self-Hosted
 
 Follow our self-hosting instructions below and in our [quickstart guide](https://docs.trench.dev/quickstart) to begin using Trench Self-Hosted.
 
@@ -157,7 +157,7 @@ If you have questions or need assistance, you can join our [Slack group](https:/
    }
    ```
 
-### Trench Cloud
+### 2. ☁️ Trench Cloud
 
 Request access to Trench Cloud from [our website](https://trench.dev?utm_campaign=github-readme) to get started with the fully-managed version of Trench.
 
