@@ -1,5 +1,5 @@
 ---
-title: Overview
+title: API Overview
 description: Overview of the Trench API
 ---
 
@@ -25,6 +25,11 @@ The Trench API also supports webhooks, which allow you to receive real-time noti
 
 ### Authentication
 
-The Trench API uses bearer token authentication to secure access to its endpoints. You will be issued a public api key and a private api key to use when making requests. The public key is used only in the [Events](./events-create) endpoint to send data to Trench. It is safe to expose this key to the public internet.
+The Trench API uses bearer token authentication to secure access to its endpoints. You will be issued a **public api key** and a **private api key** to use when making requests. The public key is used only in the [Events](./events-create) endpoint to send data to Trench. It is safe to expose this key to the public internet.
 
 The private key is used on all other endpoints and should be kept secret.
+
+<Info>
+  **Note:** Do not use your private API key on public endpoints. Always use your public API key to
+  avoid unauthorized access and misuse.
+</Info>

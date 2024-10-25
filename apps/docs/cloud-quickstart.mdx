@@ -1,0 +1,89 @@
+---
+title: Cloud Quickstart
+sidebarTitle: Cloud Quickstart
+description: Send your first event to Trench Cloud
+---
+
+In this guide, we'll walk you through the process of sending your first event and reading it back using the Trench Cloud API.
+The example uses the [Trench JavaScript client](https://github.com/trench-dev/trench-js), but the same can be achieved by calling the [Events API](https://docs.trench.dev/api-reference/events-create) directly.
+
+<Steps>
+  <Step title="Request Access to Trench Cloud">
+    To get started with Trench Cloud, you need to request access from our [website](https://trench.dev?utm_campaign=cloud-quickstart). Once you have access, you will receive your API keys and other necessary credentials.
+  </Step>
+
+  <Step title="Install Trench JavaScript Client">
+    First, you need to install the Trench JavaScript client using your favorite package manager:
+
+    ```bash
+    npm install trench-js
+    ```
+
+    Alternatively, you can use the CDN version:
+
+    ```html
+    <script src="https://cdn.jsdelivr.net/npm/trench-js@latest/dist/trench.min.js"></script>
+    ```
+
+  </Step>
+
+  <Step title="Initialize the Client">
+    After installing the client, you need to initialize it with your API key. Replace `YOUR_API_KEY` and `YOUR_SERVER_URL` with the actual API key and server URL you received:
+
+    ```javascript
+    const Trench = require('trench-js');
+
+    const trench = new Trench({
+      publicApiKey: 'YOUR_PUBLIC_API_KEY',
+      serverUrl: 'YOUR_SERVER_URL'
+    });
+    ```
+
+  </Step>
+
+  <Step title="Send a Sample Event">
+    Now you can send a sample event to Trench Cloud. Here is an example of how to send an event:
+
+    ```javascript
+    trench.track({
+      userId: '550e8400-e29b-41d4-a716-446655440000',
+      event: 'ConnectedAccount',
+      properties: {
+        totalAccounts: 4,
+        country: 'Denmark'
+      }
+    }).then(response => {
+      console.log('Event sent successfully:', response);
+    }).catch(error => {
+      console.error('Error sending event:', error);
+    });
+    ```
+
+  </Step>
+
+  <Step title="Verify the Event">
+    You can verify that the event was received by querying the events endpoint. Use your private API key for this:
+
+    ```bash
+    curl -i -X GET \
+       -H "Authorization: Bearer private-YOUR_PRIVATE_API_KEY" \
+       'YOUR_SERVER_URL/events?event=ConnectedAccount'
+    ```
+
+    This will return a JSON response with the event that was just sent.
+
+  </Step>
+</Steps>
+
+## Going Further
+
+Now that you've sent your first event, you can learn more about the many things you can do with Trench.
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Get Events API →" href="/api-reference/events-get" horizontal={true}></Card>
+  <Card title="Create Events API →" href="/api-reference/events-create" horizontal={true}></Card>
+  <Card title="Webhooks API →" href="/api-reference/webhooks-create" horizontal={true}></Card>
+  <Card title="Query API →" href="/api-reference/queries-execute" horizontal={true}></Card>
+</CardGroup>

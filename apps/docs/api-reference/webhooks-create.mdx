@@ -4,6 +4,8 @@ description: Create a new webhook.
 openapi: post /webhooks
 ---
 
+<Info>This endpoint requires your [private API key](/api-reference/overview#authentication).</Info>
+
 Once a webhook is created, events will be sent to it based on the criteria specified in the webhook.
 The data sent follows the [Event schema](/api-reference/events-get) and is sent as a JSON array in the POST request in the `data` field. Below is an example request body:
 

@@ -45,19 +45,29 @@
   "navigation": [
     {
       "group": "Getting Started",
-      "pages": ["introduction", "quickstart", "client", "self-host"]
+      "pages": [
+        "introduction",
+        "quickstart",
+        "cloud-quickstart",
+        "client",
+        "api-reference/overview"
+      ]
     },
     {
-      "group": "API",
+      "group": "Events API",
+      "pages": ["api-reference/events-create", "api-reference/events-get"]
+    },
+    {
+      "group": "Webhooks API",
       "pages": [
-        "api-reference/overview",
-        "api-reference/events-create",
-        "api-reference/events-get",
         "api-reference/webhooks-get",
         "api-reference/webhooks-create",
-        "api-reference/webhooks-delete",
-        "api-reference/queries-execute"
+        "api-reference/webhooks-delete"
       ]
+    },
+    {
+      "group": "Query API",
+      "pages": ["api-reference/queries-execute"]
     }
   ],
   "footerSocials": {
