@@ -52,7 +52,7 @@ Trench has two methods of deployment:
 1. **Trench Self-Hosted**: An open-source version to deploy and manage Trench on your own infrastructure.
 2. **Trench Cloud**: A fully-managed serverless solution with zero ops, autoscaling, 99.99% SLAs.
 
-### 1. 💻 Trench Self-Hosted
+### 1. Trench Self-Hosted 💻
 
 Follow our self-hosting instructions below and in our [quickstart guide](https://docs.trench.dev/quickstart) to begin using Trench Self-Hosted.
 
@@ -157,7 +157,7 @@ If you have questions or need assistance, you can join our [Slack group](https:/
    }
    ```
 
-### 2. ☁️ Trench Cloud
+### 2. Trench Cloud ☁️
 
 Request access to Trench Cloud from [our website](https://trench.dev?utm_campaign=github-readme) to get started with the fully-managed version of Trench.
 
