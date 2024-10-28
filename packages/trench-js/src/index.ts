@@ -12,7 +12,7 @@ class Trench {
   }
 
   track(event: string, properties: Record<string, unknown>) {
-    console.log('response', this.analytics.track(event, properties));
+    this.analytics.track(event, properties);
   }
 
   page(properties: Record<string, unknown>) {
