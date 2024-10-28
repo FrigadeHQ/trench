@@ -1,6 +1,6 @@
 {
   "name": "trench-js",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Trench JS client for browser and Node.js",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
