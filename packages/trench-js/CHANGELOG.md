@@ -1,5 +1,11 @@
 # trench-js
 
+## 0.0.5
+
+### Patch Changes
+
+- e772aaa: Updated README
+
 ## 0.0.4
 
 ### Patch Changes
