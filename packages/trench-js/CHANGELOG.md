@@ -1,5 +1,11 @@
 # trench-js
 
+## 0.0.4
+
+### Patch Changes
+
+- 4c31f10: Removes redundant logging and adds minified version
+
 ## 0.0.3
 
 ### Patch Changes
