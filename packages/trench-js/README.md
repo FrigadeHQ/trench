@@ -1,26 +1,48 @@
 # trench-js
 
-A JavaScript library for tracking events and page views to Trench.
+`trench-js` is a client library for both web and Node.js environments that allows you to send events to any Trench instance. This library is designed to be easy to use and integrate into your existing projects.
 
 ## Installation
+
+Install `trench-js` using your preferred package manager:
 
 ```bash
 npm install trench-js
 ```
 
-## Usage
+You can now initialize the client with your Trench instance URL and public API key:
 
-```javascript
+```ts
 import Trench from 'trench-js';
 
 const trench = new Trench({
-  publicApiKey: 'YOUR_PUBLIC_API_KEY',
-  server: 'your-trench-server.com',
+  serverUrl: 'https://trench.example.com',
+  publicApiKey: 'your-public-api-key',
 });
 ```
 
-```javascript
-trench.track('page_view', {
-  url: 'https://example.com',
+The client is built on top of [Analytics](https://github.com/DavidWells/analytics) and supports all of its [methods](https://github.com/DavidWells/analytics#usage).
+
+For example, you can identify a user like this:
+
+```ts
+trench.identify('user-id', {
+  email: 'test@example.com',
 });
 ```
+
+And track an event like this:
+
+```ts
+trench.track('test-event', {
+  test: 'test-value',
+});
+```
+
+Or to record a page view:
+
+```ts
+trench.page();
+```
+
+You can find the full documentation [here](https://docs.trench.dev/client).
