@@ -62,7 +62,7 @@ If you have questions or need assistance, you can join our [Slack group](https:/
 
 #### Quickstart
 
-1. **Deploy Trench**:
+1. **Deploy Trench Dev Server**:
    The only prerequisite for Trench is a system that has Docker and Docker Compose installed [see installation guide](https://docs.docker.com/compose/install/). We recommend having at least 4GB of RAM and 4 CPU cores for optimal performance if you're running a production environment.
 
    After installing Docker, you can start the local development server by running the following commands:
@@ -73,8 +73,7 @@ If you have questions or need assistance, you can join our [Slack group](https:/
    pnpm install
    cd apps/trench
    cp .env.example .env
-   pnpm install
-   pnpm dev
+   docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build --force-recreate --renew-anon-volumes
    ```
 
    The above command will start the Trench server that includes a local Clickhouse and Kafka instance on `http://localhost:4000`. You can update the `.env` to change any of the configuration options.
@@ -99,7 +98,7 @@ If you have questions or need assistance, you can join our [Slack group](https:/
          },
        }]
    }' \
-    'https://sandbox.trench.dev/events'
+    'http://localhost:4000/events'
    ```
 
 3. **Querying events**:
