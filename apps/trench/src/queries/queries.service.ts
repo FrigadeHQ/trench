@@ -26,6 +26,6 @@ export class QueriesService {
       this.clickhouseService.query(convertToKebabCase(query))
     )
     const results = await Promise.all(queryPromises)
-    return results.flat().map((result) => parseJsonFields(convertJsonKeysToCamelCase(result)))
+    return results.map((result) => parseJsonFields(convertJsonKeysToCamelCase(result)))
   }
 }
