@@ -69,9 +69,7 @@ If you have questions or need assistance, you can join our [Slack group](https:/
 
    ```sh
    git clone https://github.com/frigadehq/trench.git
-   cd trench
-   pnpm install
-   cd apps/trench
+   cd trench/apps/trench
    cp .env.example .env
    docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build --force-recreate --renew-anon-volumes
    ```
