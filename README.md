@@ -76,7 +76,7 @@ If you have questions or need assistance, you can join our [Slack group](https:/
    docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build --force-recreate --renew-anon-volumes
    ```
 
-   The above command will start the Trench server that includes a local Clickhouse and Kafka instance on `http://localhost:4000`. You can update the `.env` to change any of the configuration options.
+   The above command will start the Trench server that includes a local Clickhouse and Kafka instance on `http://localhost:4000`. You can open this URL in your browser and you should see the message `Trench server is running`. You shouldupdate the `.env` file to change any of the configuration options.
 
 2. **Send a sample event**:
    You can find and update the default public and private API key in the `.env` file. Using your public API key, you can send a sample event to Trench as such:

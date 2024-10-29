@@ -6,18 +6,17 @@ description: Get set up with Trench in less than 5 minutes
 
 <Steps>
   <Step title="Deploy Trench">
-  The only prerequisite for Trench is a system that has Docker and Docker Compose installed [see installation guide](https://docs.docker.com/compose/install/). We recommend having at least 4GB of RAM and 4 CPU cores for optimal performance if you're running a production environment.
+   The only prerequisite for Trench is a system that has Docker and Docker Compose installed [see installation guide](https://docs.docker.com/compose/install/). We recommend having at least 4GB of RAM and 4 CPU cores for optimal performance if you're running a production environment.
 
 After installing Docker, you can start the local development server by running the following commands:
 
-```bash
+```sh
 git clone https://github.com/frigadehq/trench.git
 cd trench
 pnpm install
 cd apps/trench
 cp .env.example .env
-pnpm install
-pnpm dev
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build --force-recreate --renew-anon-volumes
 ```
 
 The above command will start the Trench server that includes a local Clickhouse and Kafka instance on `http://localhost:4000`. You can update the `.env` to change any of the configuration options.
