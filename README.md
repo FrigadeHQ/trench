@@ -34,7 +34,7 @@ Our team built Trench to scale up the real-time event tracking pipeline at <a hr
 
 ## ⭐ Features
 
-- 🤝 Compliant with the Segment API (Track, Group, Idenfity)
+- 🤝 Compliant with the Segment API (Track, Group, Identify)
 - 🐳 Deploy quickly with a single production-ready Docker image
 - 💻 Process thousands of events per second on a single node
 - ⚡ Query data in real-time
