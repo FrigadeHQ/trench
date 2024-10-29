@@ -22,6 +22,6 @@ export type PaginatedResponse<T> = {
   total: number | null;
 };
 
-export type PaginatedQueryResponse = PaginatedResponse<string>;
+export type PaginatedQueryResponse = PaginatedResponse<any>;
 
 export type PaginatedEventResponse = PaginatedResponse<BaseEvent>;
