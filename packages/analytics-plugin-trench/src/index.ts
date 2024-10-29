@@ -1,8 +1,17 @@
 import fetch from 'node-fetch';
 
 export type TrenchConfig = {
+  /**
+   * The public API key.
+   */
   publicApiKey: string;
-  enabled: boolean;
+  /**
+   * Whether to enable the plugin.
+   */
+  enabled?: boolean;
+  /**
+   * The Trench server URL.
+   */
   serverUrl: string;
 };
 
@@ -141,14 +150,17 @@ export function trench(config: TrenchConfig) {
     name: 'trench',
 
     initialize: (): void => {
-      if (config.enabled) {
-        // Assuming trench.init is a placeholder for any initialization logic
+      if (config.enabled !== false) {
         isTrenchLoaded = true;
       }
     },
 
     track: async ({ payload }: { payload: BaseEvent }): Promise<void> => {
-      await fetch(`${config.serverUrl}/events`, {
+      if (config.enabled === false) {
+        return;
+      }
+
+      await fetch(`${removeTrailingSlash(config.serverUrl)}/events`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -169,7 +181,11 @@ export function trench(config: TrenchConfig) {
     },
 
     page: async ({ payload }: { payload: BaseEvent }): Promise<void> => {
-      await fetch(`${config.serverUrl}/events`, {
+      if (config.enabled === false) {
+        return;
+      }
+
+      await fetch(`${removeTrailingSlash(config.serverUrl)}/events`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -200,6 +216,10 @@ export function trench(config: TrenchConfig) {
         } & Record<string, any>;
       };
     }): Promise<void> => {
+      if (config.enabled === false) {
+        return;
+      }
+
       const { userId } = payload;
 
       setCurrentUserId(userId);
@@ -208,7 +228,7 @@ export function trench(config: TrenchConfig) {
       const setOnce = payload.traits.$set_once ?? {};
 
       if (userId) {
-        await fetch(`${config.serverUrl}/events`, {
+        await fetch(`${removeTrailingSlash(config.serverUrl)}/events`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -242,11 +262,15 @@ export function trench(config: TrenchConfig) {
           $set_once?: object;
         } & Record<string, any>
       ): Promise<void> => {
+        if (config.enabled === false) {
+          return;
+        }
+
         const set = traits.$set ?? traits;
         const setOnce = traits.$set_once ?? {};
 
         if (groupId) {
-          await fetch(`${config.serverUrl}/events`, {
+          await fetch(`${removeTrailingSlash(config.serverUrl)}/events`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -268,4 +292,8 @@ export function trench(config: TrenchConfig) {
       },
     },
   };
+}
+
+function removeTrailingSlash(url: string): string {
+  return url.endsWith('/') ? url.slice(0, -1) : url;
 }
