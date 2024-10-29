@@ -17,7 +17,7 @@ cp .env.example .env
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build --force-recreate --renew-anon-volumes
 ```
 
-The above command will start the Trench server that includes a local Clickhouse and Kafka instance on `http://localhost:4000`. You can update the `.env` to change any of the configuration options.
+The above command will start the Trench server that includes a local ClickHouse and Kafka instance on `http://localhost:4000`. You can update the `.env` to change any of the configuration options.
 
   </Step>
   <Step title="Send a sample event">
