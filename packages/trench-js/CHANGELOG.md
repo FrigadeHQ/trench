@@ -1,5 +1,13 @@
 # trench-js
 
+## 0.0.6
+
+### Patch Changes
+
+- ccde48d: Adds the ability to auto capture events (implicit tracking), adds support for private API calls (queries, events)
+- Updated dependencies [ccde48d]
+  - analytics-plugin-trench@0.0.4
+
 ## 0.0.5
 
 ### Patch Changes
