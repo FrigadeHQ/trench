@@ -1,5 +1,11 @@
 # trench-js
 
+## 0.0.7
+
+### Patch Changes
+
+- 4da2b7b: Disables automatic tracking of clicks due to high event volume
+
 ## 0.0.6
 
 ### Patch Changes
