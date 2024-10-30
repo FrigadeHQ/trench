@@ -16,7 +16,7 @@
     <br />
     <a href="https://docs.trench.dev" rel="dofollow"><strong>Documentation</strong></a> · 
    <a href="https://trench.dev" rel="dofollow"><strong>Website</strong></a> · 
-   <a href="https://join.slack.com/t/trench-community/shared_invite/zt-2sjet5kh2-v31As3yC_zRIadk_AGn~3A"><strong>Join Our Slack</strong></a> · 
+   <a href="https://join.slack.com/t/trench-community/shared_invite/zt-2sjet5kh2-v31As3yC_zRIadk_AGn~3A"><strong>Slack Community</strong></a> · 
     <a href="https://demo.trench.dev"><strong>Demo</strong></a>
     <br/>
     <br/>
