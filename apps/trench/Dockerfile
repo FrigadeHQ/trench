@@ -14,7 +14,6 @@ WORKDIR /app
 RUN mkdir -p /app/certs
 
 # Generate a self-signed certificate for HTTPS. You can replace this with a real certificate in production
-RUN mkdir -p /app/certs
 RUN openssl genrsa -des3 -passout pass:x -out /app/certs/server.pass.key 2048 && \
     openssl rsa -passin pass:x -in /app/certs/server.pass.key -out /app/certs/server.key && \
     rm /app/certs/server.pass.key && \
