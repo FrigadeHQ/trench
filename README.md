@@ -43,7 +43,8 @@ Our team built Trench to scale up the real-time event tracking pipeline at <a hr
 
 ## 🖥️ Demo
 
-**Live demo:** [https://demo.trench.dev](https://demo.trench.dev)
+**Live demo:**
+[https://demo.trench.dev](https://demo.trench.dev)
 
 **Video demo:**
 
