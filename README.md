@@ -43,6 +43,10 @@ Our team built Trench to scale up the real-time event tracking pipeline at <a hr
 
 ## 🖥️ Demo
 
+**Live demo:** [https://demo.trench.dev](https://demo.trench.dev)
+
+**Video demo:**
+
 Watch the following demo to see how you can build a basic version of Google Analytics using Trench and Grafana.
 
 https://github.com/user-attachments/assets/e3f64590-6e7e-41b9-b425-7adb5a1e19b1
