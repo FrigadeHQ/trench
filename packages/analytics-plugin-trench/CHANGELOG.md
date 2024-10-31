@@ -1,5 +1,11 @@
 # analytics-plugin-trench
 
+## 0.0.5
+
+### Patch Changes
+
+- bc72637: Adds automatic deduplication of events
+
 ## 0.0.4
 
 ### Patch Changes

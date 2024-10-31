@@ -1,5 +1,13 @@
 # trench-js
 
+## 0.0.9
+
+### Patch Changes
+
+- bc72637: Adds automatic deduplication of events
+- Updated dependencies [bc72637]
+  - analytics-plugin-trench@0.0.5
+
 ## 0.0.8
 
 ### Patch Changes
