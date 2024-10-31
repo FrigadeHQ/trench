@@ -24,7 +24,7 @@
 
 ## 🌊 What is Trench?
 
-Trench is an event tracking system built on top of Apache Kafka and Clickhouse. It can handle large event volumes and provides real-time analytics. Trench is no-cookie, GDPR, and PECR compliant. Users have full control to access, rectify, or delete their data.
+Trench is an event tracking system built on top of Apache Kafka and ClickHouse. It can handle large event volumes and provides real-time analytics. Trench is no-cookie, GDPR, and PECR compliant. Users have full control to access, rectify, or delete their data.
 
 Our team built Trench to scale up the real-time event tracking pipeline at <a href="https://frigade.com?utm_source=github-trench-readme" target="_blank">Frigade</a>.
 
@@ -80,7 +80,7 @@ If you have questions or need assistance, you can join our [Slack group](https:/
    docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build --force-recreate --renew-anon-volumes
    ```
 
-   The above command will start the Trench server that includes a local Clickhouse and Kafka instance on `http://localhost:4000`. You can open this URL in your browser and you should see the message `Trench server is running`. You shouldupdate the `.env` file to change any of the configuration options.
+   The above command will start the Trench server that includes a local ClickHouse and Kafka instance on `http://localhost:4000`. You can open this URL in your browser and you should see the message `Trench server is running`. You shouldupdate the `.env` file to change any of the configuration options.
 
 2. **Send a sample event**:
    You can find and update the default public and private API key in the `.env` file. Using your public API key, you can send a sample event to Trench as such:
