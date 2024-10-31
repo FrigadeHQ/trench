@@ -174,6 +174,13 @@ export function trench(config: TrenchConfig) {
       return;
     }
 
+    const lastEvents = getGlobalValue<BaseEvent[]>('lastEvents');
+
+    if (lastEvents && JSON.stringify(events) === JSON.stringify(lastEvents)) {
+      return;
+    }
+    setGlobalValue('lastEvents', events);
+
     await fetch(`${removeTrailingSlash(config.serverUrl)}/events`, {
       method: 'POST',
       headers: {
