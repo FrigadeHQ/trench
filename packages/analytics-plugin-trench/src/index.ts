@@ -10,7 +10,7 @@ export type TrenchConfig = {
    */
   enabled?: boolean;
   /**
-   * The Trench server URL.
+   * The Trench API URL. E.g. https://api.trench.dev
    */
   serverUrl: string;
 };
@@ -109,9 +109,32 @@ export interface BaseEvent {
 }
 
 export function trench(config: TrenchConfig) {
+  const globalPrefix = '__trench__';
   let isTrenchLoaded = false;
   let anonymousId: string | undefined;
   let currentUserId: string | undefined;
+  function setGlobalValue(key: string, value: any): void {
+    const prefixedKey = `${globalPrefix}${key}`;
+    if (typeof globalThis !== 'undefined') {
+      (globalThis as any)[prefixedKey] = value;
+    } else if (typeof window !== 'undefined') {
+      (window as any)[prefixedKey] = value;
+    } else if (typeof global !== 'undefined') {
+      (global as any)[prefixedKey] = value;
+    }
+  }
+
+  function getGlobalValue<T>(key: string): T | undefined {
+    const prefixedKey = `${globalPrefix}${key}`;
+    if (typeof globalThis !== 'undefined') {
+      return (globalThis as any)[prefixedKey] as T;
+    } else if (typeof window !== 'undefined') {
+      return (window as any)[prefixedKey] as T;
+    } else if (typeof global !== 'undefined') {
+      return (global as any)[prefixedKey] as T;
+    }
+    return undefined;
+  }
 
   function setCurrentUserId(userId: string): void {
     currentUserId = userId;
@@ -146,6 +169,21 @@ export function trench(config: TrenchConfig) {
     }
   }
 
+  async function sendEvents(events: BaseEvent[]): Promise<void> {
+    if (config.enabled === false) {
+      return;
+    }
+
+    await fetch(`${removeTrailingSlash(config.serverUrl)}/events`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${config.publicApiKey}`,
+      },
+      body: JSON.stringify({ events }),
+    });
+  }
+
   return {
     name: 'trench',
 
@@ -160,24 +198,15 @@ export function trench(config: TrenchConfig) {
         return;
       }
 
-      await fetch(`${removeTrailingSlash(config.serverUrl)}/events`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${config.publicApiKey}`,
+      await sendEvents([
+        {
+          anonymousId: payload.userId ? undefined : getAnonymousId(),
+          userId: payload.userId ?? getAnonymousId(),
+          event: payload.event,
+          properties: payload.properties,
+          type: 'track',
         },
-        body: JSON.stringify({
-          events: [
-            {
-              anonymousId: payload.userId ? undefined : getAnonymousId(),
-              userId: payload.userId ?? getAnonymousId(),
-              event: payload.event,
-              properties: payload.properties,
-              type: 'track',
-            },
-          ],
-        }),
-      });
+      ]);
     },
 
     page: async ({ payload }: { payload: BaseEvent }): Promise<void> => {
@@ -185,24 +214,15 @@ export function trench(config: TrenchConfig) {
         return;
       }
 
-      await fetch(`${removeTrailingSlash(config.serverUrl)}/events`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${config.publicApiKey}`,
+      await sendEvents([
+        {
+          anonymousId: payload.userId ? undefined : getAnonymousId(),
+          userId: payload.userId ?? getAnonymousId(),
+          event: '$pageview',
+          properties: payload.properties,
+          type: 'track',
         },
-        body: JSON.stringify({
-          events: [
-            {
-              anonymousId: payload.userId ? undefined : getAnonymousId(),
-              userId: payload.userId ?? getAnonymousId(),
-              event: '$pageview',
-              properties: payload.properties,
-              type: 'track',
-            },
-          ],
-        }),
-      });
+      ]);
     },
 
     identify: async ({
@@ -228,24 +248,15 @@ export function trench(config: TrenchConfig) {
       const setOnce = payload.traits.$set_once ?? {};
 
       if (userId) {
-        await fetch(`${removeTrailingSlash(config.serverUrl)}/events`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${config.publicApiKey}`,
+        await sendEvents([
+          {
+            anonymousId: getAnonymousId(),
+            userId: payload.userId ?? getAnonymousId(),
+            event: 'identify',
+            properties: { $set: set, $set_once: setOnce },
+            type: 'identify',
           },
-          body: JSON.stringify({
-            events: [
-              {
-                anonymousId: getAnonymousId(),
-                userId: payload.userId ?? getAnonymousId(),
-                event: 'identify',
-                properties: { $set: set, $set_once: setOnce },
-                type: 'identify',
-              },
-            ],
-          }),
-        });
+        ]);
       }
     },
 
@@ -270,24 +281,15 @@ export function trench(config: TrenchConfig) {
         const setOnce = traits.$set_once ?? {};
 
         if (groupId) {
-          await fetch(`${removeTrailingSlash(config.serverUrl)}/events`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${config.publicApiKey}`,
+          await sendEvents([
+            {
+              userId: getCurrentUserId() ?? getAnonymousId(),
+              groupId,
+              event: 'group',
+              properties: { $set: set, $set_once: setOnce },
+              type: 'group',
             },
-            body: JSON.stringify({
-              events: [
-                {
-                  userId: getCurrentUserId() ?? getAnonymousId(),
-                  groupId,
-                  event: 'group',
-                  properties: { $set: set, $set_once: setOnce },
-                  type: 'group',
-                },
-              ],
-            }),
-          });
+          ]);
         }
       },
     },
