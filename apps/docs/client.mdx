@@ -7,7 +7,7 @@ import TrenchScript from '/snippets/trench-script.mdx';
 
 ## Overview
 
-`trench-js` is a client library for both web and Node.js environments that allows you to send events to any Trench instance. This library is designed to be easy to use and integrate into your existing projects. Alternatively, you can use the CDN version.
+`trench-js` is a client library for both web and Node.js environments that allows you to send events to any Trench instance. This library is designed to be easy to use and integrate into your existing projects. The library is built on top of [Analytics](https://github.com/DavidWells/analytics) and supports all of its [methods](https://github.com/DavidWells/analytics#usage). It can be installed via a package manager or via a CDN script tag.
 
 ## Installation via package manager
 
@@ -27,8 +27,6 @@ const trench = new Trench({
   publicApiKey: 'your-public-api-key',
 })
 ```
-
-The client is built on top of [Analytics](https://github.com/DavidWells/analytics) and supports all of its [methods](https://github.com/DavidWells/analytics#usage).
 
 For example, you can identify a user like this:
 
@@ -52,7 +50,7 @@ Or to record a trigger page view:
 trench.page()
 ```
 
-## Installation via CDN
+## Installation via CDN script tag
 
 Alternatively, you can use the CDN version:
 

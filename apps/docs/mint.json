@@ -44,14 +44,12 @@
   ],
   "navigation": [
     {
-      "group": "Getting Started",
-      "pages": [
-        "introduction",
-        "quickstart",
-        "cloud-quickstart",
-        "client",
-        "api-reference/overview"
-      ]
+      "group": "Overview",
+      "pages": ["introduction", "quickstart", "cloud-quickstart", "contributing"]
+    },
+    {
+      "group": "SDK and API",
+      "pages": ["client", "api-reference/overview"]
     },
     {
       "group": "Events API",
@@ -82,5 +80,9 @@
       "method": "bearer"
     }
   },
-  "integrations": {}
+  "integrations": {},
+  "feedback": {
+    "thumbsRating": true,
+    "suggestEdit": true
+  }
 }

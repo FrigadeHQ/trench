@@ -1,0 +1,79 @@
+---
+title: Contributing to Trench
+sidebarTitle: Contributing
+description: Trench is an open source project and we welcome contributions from the community.
+---
+
+
+
+## Developing and deploying the backend locally
+
+We welcome contributions to improve the backend. Before starting, we recommend opening an issue for discussion to ensure your idea aligns with the project's goals.
+
+### Backend Setup Guide
+
+1. Fork the repository and clone it to your local machine.
+2. Navigate to the `apps/trench` directory and copy the `.env.example` file to `.env`:
+
+```bash
+cp .env.example .env
+```
+
+3. Make sure you have the following prerequisites installed:
+   - [Docker](https://www.docker.com/products/docker-desktop/)
+   - [Docker Compose](https://docs.docker.com/compose/install/)
+   - [Node.js](https://nodejs.org/en/download/)
+   - [pnpm](https://pnpm.io/installation)
+
+4. Start the local development environment:
+
+```bash
+pnpm install && pnpm dev
+```
+
+5. The backend should now be running locally on `http://localhost:4000`.
+6. Create a new branch for your changes.
+7. Develop your feature or fix and write tests for it.
+8. Commit your changes and push them to your forked repository.
+9. Submit a pull request to the main repository.
+
+## Improving the Documentation
+
+Good documentation is crucial and requires significant time and effort to create and maintain. All our documentation is written in Markdown to make it easy for contributors.
+
+### Documentation Setup Guide
+
+1. Fork the repository and clone it to your local machine.
+2. Go to the `apps/docs` directory.
+3. Make your edits in the relevant `.mdx` files. Optionally, install and start [Mintlify](https://mintlify.com/) to build the documentation site locally.
+4. Commit your changes and push them to your forked repository.
+5. Submit a pull request to the main repository.
+
+
+## Reporting Issues
+
+You can open an issue to report bugs or suggest new features.
+
+### Reporting Bugs
+
+Clearly describe the bug, including steps to reproduce it, what happened, and what you expected to happen. Also, include the browser version, OS, and other relevant software versions (npm, Node.js, etc.) when applicable.
+
+### Suggesting Features
+
+Describe the proposed feature, its functionality, why it is useful, and how users should use it. Provide as much information as possible to facilitate discussion, assessment, and implementation. If you are unsure about any aspect of the feature, feel free to leave it open for discussion.
+
+## Submitting Pull Requests
+
+Pull requests are highly appreciated. If you plan to propose significant changes, please open an issue for discussion first to ensure your PR will be accepted before you invest time in coding it.
+
+### Forking the Repository
+
+1. Fork the repository and clone it to your local machine.
+2. Create a branch for your proposed bug fix or new feature. Avoid working directly on the main branch.
+
+### Making Changes
+
+1. Implement your bug fix or feature, write tests for it, and ensure all tests pass.
+2. Commit your changes and push your bug fix/feature branch to your forked repository.
+3. Submit a pull request to the main branch of the upstream repository (the repository you originally forked).
+
