@@ -25,8 +25,8 @@ The above command will start the Trench server that includes a local ClickHouse 
 
     ```bash
     curl -i -X POST \
-       -H "Authorization:Bearer public-d613be4e-di03-4b02-9058-70aa4j04ff28" \
-       -H "Content-Type:application/json" \
+       -H "Authorization: Bearer public-d613be4e-di03-4b02-9058-70aa4j04ff28" \
+       -H "Content-Type: application/json" \
        -d \
     '{
       "events": [
@@ -87,8 +87,8 @@ This will return a JSON response with the event that was just sent:
 
     ```bash
     curl -i -X POST \
-       -H "Authorization:Bearer public-d613be4e-di03-4b02-9058-70aa4j04ff28" \
-       -H "Content-Type:application/json" \
+       -H "Authorization: Bearer private-d613be4e-di03-4b02-9058-70aa4j04ff28" \
+       -H "Content-Type: application/json" \
        -d \
     '{
       "queries": [
