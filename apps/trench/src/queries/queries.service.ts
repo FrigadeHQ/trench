@@ -13,6 +13,9 @@ export class QueriesService {
   constructor(private readonly clickhouseService: ClickhouseService) {}
 
   async sendQueries(queries: QueriesDTO): Promise<any[]> {
+    if (!queries.queries) {
+      throw new Error('Request must contain a `queries` array')
+    }
     // Validate that all queries are read-only
     for (const query of queries.queries) {
       if (!isReadOnlyQuery(query)) {
