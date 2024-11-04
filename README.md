@@ -149,7 +149,9 @@ If you have questions or need assistance, you can join our [Slack group](https:/
       -H "Content-Type:application/json" \
       -d \
    '{
-     "query": "SELECT COUNT(*) FROM events WHERE userId = '550e8400-e29b-41d4-a716-446655440000'"
+     "queries": [
+       "SELECT COUNT(*) FROM events WHERE userId = '550e8400-e29b-41d4-a716-446655440000'"
+     ]
    }' \
     'http://localhost:4000/queries'
    ```
@@ -158,7 +160,14 @@ If you have questions or need assistance, you can join our [Slack group](https:/
 
    ```json
    {
-     "count": 5
+     "results": [
+       {
+         "count": 5
+       }
+     ],
+     "limit": 0,
+     "offset": 0,
+     "total": 1
    }
    ```
 
