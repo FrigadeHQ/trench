@@ -3,22 +3,18 @@ title: JavaScript Client
 description: Documentation for the Trench JavaScript client
 ---
 
+import TrenchScript from '/snippets/trench-script.mdx';
+
 ## Overview
 
-`trench-js` is a client library for both web and Node.js environments that allows you to send events to any Trench instance. This library is designed to be easy to use and integrate into your existing projects.
+`trench-js` is a client library for both web and Node.js environments that allows you to send events to any Trench instance. This library is designed to be easy to use and integrate into your existing projects. Alternatively, you can use the CDN version.
 
-## Installation
+## Installation via package manager
 
 Install `trench-js` using your preferred package manager:
 
 ```bash
 npm install trench-js
-```
-
-Alternatively, you can use the CDN version:
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/trench-js@latest/dist/trench.min.js" sync></script>
 ```
 
 You can now initialize the client with your Trench instance URL and public API key:
@@ -50,8 +46,16 @@ trench.track('test-event', {
 })
 ```
 
-Or to record a page view:
+Or to record a trigger page view:
 
 ```ts
 trench.page()
 ```
+
+## Installation via CDN
+
+Alternatively, you can use the CDN version:
+
+<TrenchScript />
+
+This will automatically add the `trench` object to the global scope and you can start tracking events automatically as `autoCaptureEvents` is set to `true` by default.

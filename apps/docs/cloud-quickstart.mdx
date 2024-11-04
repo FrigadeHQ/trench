@@ -4,6 +4,8 @@ sidebarTitle: Cloud Quickstart
 description: Send your first event to Trench Cloud
 ---
 
+import TrenchScript from '/snippets/trench-script.mdx';
+
 In this guide, we'll walk you through the process of sending your first event and reading it back using the Trench Cloud API.
 The example uses the [Trench JavaScript client](https://github.com/trench-dev/trench-js), but the same can be achieved by calling the [Events API](https://docs.trench.dev/api-reference/events-create) directly.
 
@@ -19,11 +21,9 @@ The example uses the [Trench JavaScript client](https://github.com/trench-dev/tr
     npm install trench-js
     ```
 
-    Alternatively, you can use the CDN version:
+    Alternatively, you can use the CDN version and skip the **Initialize the Client** step:
 
-    ```html
-    <script src="https://cdn.jsdelivr.net/npm/trench-js@latest/dist/trench.min.js"></script>
-    ```
+    <TrenchScript />
 
   </Step>
 

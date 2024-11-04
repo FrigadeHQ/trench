@@ -1,0 +1,13 @@
+```html
+<script>
+  (function(d,w){if(!w.Trench){w.Trench=function(c){var i={_config:c,_q:[]},m=["track","page","identify","group","getEvents","executeQueries"];m.forEach(function(f){i[f]=function(){i._q.push([f,arguments])}});return i;}; 
+  window.trench=new Trench({
+    serverUrl: 'YOUR SERVER URL', 
+    publicApiKey: 'YOUR PUBLIC API KEY',
+    autoCaptureEvents: true
+  });
+  var s=d.createElement("script");s.type="text/javascript";s.async=!0;s.src="https://cdn.jsdelivr.net/npm/trench-js@latest/dist/trench.min.js";
+  s.onload=function(){var r=new Trench(trench._config);trench._q.forEach(function(q){r[q[0]].apply(r,q[1])});w.trench=r;};
+  d.getElementsByTagName("head")[0].appendChild(s);}})(document,window);
+</script>
+```
