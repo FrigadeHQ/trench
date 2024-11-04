@@ -190,3 +190,5 @@ class Trench {
 }
 
 export default Trench;
+
+globalThis.Trench = Trench;
