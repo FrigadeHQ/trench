@@ -15,13 +15,19 @@ Install `trench-js` using your preferred package manager:
 npm install trench-js
 ```
 
+Alternatively, you can use the CDN version:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/trench-js@latest/dist/trench.min.js" sync></script>
+```
+
 You can now initialize the client with your Trench instance URL and public API key:
 
 ```ts
 import Trench from 'trench-js'
 
 const trench = new Trench({
-  serverUrl: 'https://trench.example.com',
+  serverUrl: 'your-server-url',
   publicApiKey: 'your-public-api-key',
 })
 ```
