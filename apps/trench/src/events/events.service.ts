@@ -10,7 +10,7 @@ import { Event } from './events.interface'
 export class EventsService {
   constructor(private eventsDao: EventsDao) {}
 
-  async createEvents(eventDTOs: EventDTO[]): Promise<Event[]> {
+  async createEvents(workspaceId: string, eventDTOs: EventDTO[]): Promise<Event[]> {
     // validate event types
     const validEventTypes = ['track', 'identify', 'group']
     eventDTOs.forEach((eventDTO) => {
@@ -21,14 +21,14 @@ export class EventsService {
       }
     })
 
-    return this.eventsDao.createEvents(eventDTOs)
+    return this.eventsDao.createEvents(workspaceId, eventDTOs)
   }
 
   async getEventsByUUIDs(uuids: string[]): Promise<Event[]> {
     return this.eventsDao.getEventsByUUIDs(uuids)
   }
 
-  async getEventsByQuery(query: EventsQuery): Promise<PaginatedEventResponse> {
-    return this.eventsDao.getEventsByQuery(query)
+  async getEventsByQuery(workspaceId: string, query: EventsQuery): Promise<PaginatedEventResponse> {
+    return this.eventsDao.getEventsByQuery(workspaceId, query)
   }
 }

@@ -2,6 +2,7 @@ import { Event } from './events.interface'
 
 export function mapRowToEvent(row: any): Event {
   return {
+    workspaceId: row.workspace_id,
     uuid: row.uuid,
     type: row.type,
     event: row.event,

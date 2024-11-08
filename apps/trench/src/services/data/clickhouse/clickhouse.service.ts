@@ -127,7 +127,6 @@ export class ClickhouseService {
 
     const defaultWorkspaceId = defaultWorkspace[0].workspace_id
 
-    // Check if workspace has API keys from .env
     const publicApiKeys = process.env.PUBLIC_API_KEYS?.split(',') || []
     const privateApiKeys = process.env.PRIVATE_API_KEYS?.split(',') || []
 
@@ -142,8 +141,6 @@ export class ClickhouseService {
             workspace_id: defaultWorkspaceId,
             key: publicKey,
             type: 'public',
-            api_key_id: undefined, // Let ClickHouse generate this with DEFAULT
-            created_at: undefined, // Let ClickHouse set this with DEFAULT
           },
         ])
       }
@@ -156,8 +153,6 @@ export class ClickhouseService {
             workspace_id: defaultWorkspaceId, // Use the ID directly instead of a subquery
             key: privateKey,
             type: 'private',
-            api_key_id: undefined,
-            created_at: undefined,
           },
         ])
       }

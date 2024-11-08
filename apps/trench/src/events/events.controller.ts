@@ -5,6 +5,7 @@ import { EventsService } from './events.service'
 import { EventsDTO, EventsQuery, PaginatedEventResponse } from './events.interface'
 import { PublicApiGuard } from '../middlewares/public-api.guard'
 import { PrivateApiGuard } from '../middlewares/private-api.guard'
+import { getWorkspaceId } from '../common/request'
 
 @ApiBearerAuth()
 @ApiTags('events')
@@ -23,7 +24,8 @@ export class EventsController {
     @Request() request: Request,
     @Body() eventDTOs: EventsDTO
   ): Promise<PaginatedEventResponse> {
-    const events = await this.eventsService.createEvents(eventDTOs.events)
+    const workspaceId = getWorkspaceId(request)
+    const events = await this.eventsService.createEvents(workspaceId, eventDTOs.events)
     return {
       results: events,
       limit: eventDTOs.events.length,
@@ -46,6 +48,7 @@ export class EventsController {
     @Request() request: Request,
     @Query() query: EventsQuery
   ): Promise<PaginatedEventResponse> {
-    return this.eventsService.getEventsByQuery(query)
+    const workspaceId = getWorkspaceId(request)
+    return this.eventsService.getEventsByQuery(workspaceId, query)
   }
 }

@@ -19,11 +19,14 @@ export class PrivateApiGuard implements CanActivate {
     }
 
     const apiKey = req.headers.authorization.replace('Bearer ', '')
-    const isValid = await this.apiKeysService.validateApiKey(apiKey, 'private')
+    const workspaceId = await this.apiKeysService.getWorkspaceIdFromApiKey(apiKey, 'private')
 
-    if (!isValid) {
+    if (!workspaceId) {
       throw new UnauthorizedException('Invalid private API key')
     }
+
+    // Add workspace ID to request context
+    req.workspaceId = workspaceId
 
     return true
   }

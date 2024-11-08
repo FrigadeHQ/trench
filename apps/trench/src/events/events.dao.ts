@@ -21,7 +21,7 @@ export class EventsDao {
     return result.map((row: any) => mapRowToEvent(row))
   }
 
-  async getEventsByQuery(query: EventsQuery): Promise<PaginatedEventResponse> {
+  async getEventsByQuery(workspaceId: string, query: EventsQuery): Promise<PaginatedEventResponse> {
     const {
       uuid,
       event,
@@ -40,7 +40,7 @@ export class EventsDao {
 
     const maxRecords = Math.min(limit ?? 1000, 1000)
 
-    let conditions = []
+    let conditions = [`workspace_id = '${escapeString(workspaceId)}'`]
 
     if (event) {
       conditions.push(`event = '${escapeString(event)}'`)
@@ -98,11 +98,11 @@ export class EventsDao {
     }
   }
 
-  async createEvents(eventDTOs: EventDTO[]): Promise<Event[]> {
+  async createEvents(workspaceId: string, eventDTOs: EventDTO[]): Promise<Event[]> {
     const records: KafkaEventWithUUID[] = eventDTOs.map((eventDTO) => {
       const uuid = uuidv4()
       const row = {
-        workspace_id: '',
+        workspace_id: workspaceId,
         instance_id: eventDTO.instanceId,
         uuid,
         event: eventDTO.event,
