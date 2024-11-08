@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS workspaces (
     workspace_id UUID DEFAULT generateUUIDv4(),
     name String,
+    is_default Boolean DEFAULT false,
     created_at DateTime DEFAULT now()
 ) ENGINE = MergeTree()
 ORDER BY workspace_id;

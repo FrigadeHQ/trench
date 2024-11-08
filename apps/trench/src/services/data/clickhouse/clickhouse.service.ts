@@ -8,6 +8,7 @@ import {
   DEFAULT_KAFKA_BROKERS,
   DEFAULT_KAFKA_PARTITIONS,
   DEFAULT_KAFKA_TOPIC,
+  DEFAULT_WORKSPACE_ID,
   DEFAULT_WORKSPACE_NAME,
 } from '../../../common/constants'
 
@@ -118,7 +119,13 @@ export class ClickhouseService {
       `SELECT * FROM workspaces WHERE name = '${DEFAULT_WORKSPACE_NAME}'`
     )
     if (defaultWorkspace.length === 0) {
-      await this.insert('workspaces', [{ name: DEFAULT_WORKSPACE_NAME }])
+      await this.insert('workspaces', [
+        {
+          workspace_id: DEFAULT_WORKSPACE_ID,
+          name: DEFAULT_WORKSPACE_NAME,
+          is_default: true,
+        },
+      ])
     }
 
     defaultWorkspace = await this.query(

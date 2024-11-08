@@ -1,18 +1,23 @@
 import { Injectable } from '@nestjs/common'
 import { ClickhouseService } from '../services/data/clickhouse/clickhouse.service'
 import {
+  appendWorkspaceId,
   convertJsonKeysToCamelCase,
   convertToKebabCase,
   isReadOnlyQuery,
   parseJsonFields,
 } from './queries.util'
 import { QueriesDTO } from './queries.interface'
+import { WorkspacesService } from '../workspaces/workspaces.service'
 
 @Injectable()
 export class QueriesService {
-  constructor(private readonly clickhouseService: ClickhouseService) {}
+  constructor(
+    private readonly clickhouseService: ClickhouseService,
+    private readonly workspacesService: WorkspacesService
+  ) {}
 
-  async sendQueries(queries: QueriesDTO): Promise<any[]> {
+  async sendQueries(workspaceId: string, queries: QueriesDTO): Promise<any[]> {
     if (!queries.queries) {
       throw new Error('Request must contain a `queries` array')
     }
@@ -26,7 +31,7 @@ export class QueriesService {
     }
 
     const queryPromises = queries.queries.map((query) =>
-      this.clickhouseService.query(convertToKebabCase(query))
+      this.clickhouseService.query(appendWorkspaceId(workspaceId, convertToKebabCase(query)))
     )
     const results = await Promise.all(queryPromises)
     return results.map((result) => parseJsonFields(convertJsonKeysToCamelCase(result)))

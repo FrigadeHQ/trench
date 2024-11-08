@@ -12,7 +12,7 @@ describe('events/', () => {
     const startTime = Date.now()
 
     while (true) {
-      const res = await authenticatedGet(`/events?${query}`)
+      const res = await authenticatedGet(`/events?${query}`, true)
       if (res.body.results && res.body.results.length > 0) {
         return res.body.results
       }
@@ -32,7 +32,7 @@ describe('events/', () => {
     }
 
     // Create a new event
-    const createRes = await authenticatedPost('/events').send({ events: [newEvent] })
+    const createRes = await authenticatedPost('/events', false).send({ events: [newEvent] })
     expect(createRes.statusCode).toEqual(201)
     expect(createRes.body.results).toHaveLength(1)
     expect(createRes.body.results[0].uuid).toBeDefined()
@@ -55,7 +55,7 @@ describe('events/', () => {
     }
 
     // Create a new event
-    const createRes = await authenticatedPost('/events').send({ events: [newEvent] })
+    const createRes = await authenticatedPost('/events', false).send({ events: [newEvent] })
     expect(createRes.statusCode).toEqual(201)
     expect(createRes.body.results).toHaveLength(1)
     expect(createRes.body.results[0].uuid).toBeDefined()
@@ -85,7 +85,7 @@ describe('events/', () => {
     }
 
     // Create a new event
-    const createRes = await authenticatedPost('/events').send({ events: [newEvent] })
+    const createRes = await authenticatedPost('/events', false).send({ events: [newEvent] })
     expect(createRes.statusCode).toEqual(201)
     expect(createRes.body.results).toHaveLength(1)
     expect(createRes.body.results[0].uuid).toBeDefined()
