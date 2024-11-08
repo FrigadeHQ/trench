@@ -1,30 +1,4 @@
-create table if not exists kafka_events_data_{kafka_instance_id} (
-    json String
-) engine = Kafka settings
-    kafka_broker_list = '{kafka_brokers}',
-    kafka_topic_list = '{kafka_topic}',
-    kafka_group_name = 'trench-clickhouse',
-    kafka_format = 'JSONAsString',
-    kafka_num_consumers = {kafka_partitions}
-;
-
-create table if not exists events (
-    workspace_id UUID,
-    instance_id String,
-    uuid UUID,
-    type String,
-    event String,
-    user_id String,
-    group_id String,
-    anonymous_id String,
-    properties VARCHAR CODEC(ZSTD(3)),
-    traits VARCHAR CODEC(ZSTD(3)),
-    context VARCHAR CODEC(ZSTD(3)),
-    timestamp DateTime64(6, 'UTC'),
-    parsed_at DateTime64(6, 'UTC')
-) engine = MergeTree()
-PARTITION BY workspace_id
-ORDER BY (workspace_id, instance_id, user_id, -toUnixTimestamp(timestamp));
+DROP VIEW IF EXISTS kafka_events_consumer_{kafka_instance_id};
 
 CREATE MATERIALIZED VIEW kafka_events_consumer_{kafka_instance_id} TO events AS
 SELECT
@@ -42,3 +16,23 @@ SELECT
     parseDateTimeBestEffort(JSONExtractString(json, 'timestamp')) AS timestamp, 
     now64() AS parsed_at
 FROM kafka_events_data_{kafka_instance_id};
+
+CREATE TABLE IF NOT EXISTS workspaces (
+    workspace_id UUID DEFAULT generateUUIDv4(),
+    name String,
+    created_at DateTime DEFAULT now()
+) ENGINE = MergeTree()
+ORDER BY workspace_id;
+
+CREATE TABLE IF NOT EXISTS api_keys (
+    api_key_id UUID DEFAULT generateUUIDv4(),
+    workspace_id UUID,
+    key String,
+    type String,
+    created_at DateTime DEFAULT now()
+) ENGINE = MergeTree()
+ORDER BY (workspace_id, api_key_id);
+
+-- Ensures backwards compatibility with the events table if the workspace_id column is not present
+ALTER TABLE events ADD COLUMN workspace_id UUID AFTER instance_id;
+

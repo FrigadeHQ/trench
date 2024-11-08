@@ -102,6 +102,8 @@ export class EventsDao {
     const records: KafkaEventWithUUID[] = eventDTOs.map((eventDTO) => {
       const uuid = uuidv4()
       const row = {
+        workspace_id: '',
+        instance_id: eventDTO.instanceId,
         uuid,
         event: eventDTO.event,
         type: eventDTO.type,
@@ -112,7 +114,6 @@ export class EventsDao {
         traits: eventDTO.traits,
         context: eventDTO.context,
         timestamp: eventDTO.timestamp ? new Date(eventDTO.timestamp) : new Date(),
-        instance_id: eventDTO.instanceId,
       }
       return {
         uuid,

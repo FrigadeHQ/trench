@@ -8,8 +8,8 @@ import {
   DEFAULT_KAFKA_BROKERS,
   DEFAULT_KAFKA_PARTITIONS,
   DEFAULT_KAFKA_TOPIC,
+  DEFAULT_WORKSPACE_NAME,
 } from '../../../common/constants'
-import { escapeString } from './clickhouse.util'
 
 @Injectable()
 export class ClickhouseService {
@@ -95,7 +95,7 @@ export class ClickhouseService {
             query,
           })
         } catch (error) {
-          // if the error is a duplicate table error, we can ignore it
+          // if the error is a duplicate table or column error, we can ignore it
           if (String(error).includes('already exists')) {
             continue
           }
@@ -111,6 +111,56 @@ export class ClickhouseService {
       ])
 
       console.log(`Migration ${file} executed successfully`)
+    }
+
+    // Check if default workspace exists
+    let defaultWorkspace = await this.query(
+      `SELECT * FROM workspaces WHERE name = '${DEFAULT_WORKSPACE_NAME}'`
+    )
+    if (defaultWorkspace.length === 0) {
+      await this.insert('workspaces', [{ name: DEFAULT_WORKSPACE_NAME }])
+    }
+
+    defaultWorkspace = await this.query(
+      `SELECT * FROM workspaces WHERE name = '${DEFAULT_WORKSPACE_NAME}'`
+    )
+
+    const defaultWorkspaceId = defaultWorkspace[0].workspace_id
+
+    // Check if workspace has API keys from .env
+    const publicApiKeys = process.env.PUBLIC_API_KEYS?.split(',') || []
+    const privateApiKeys = process.env.PRIVATE_API_KEYS?.split(',') || []
+
+    const existingApiKeys = await this.query(
+      `SELECT * FROM api_keys WHERE workspace_id = '${defaultWorkspaceId}'`
+    )
+
+    for (const publicKey of publicApiKeys) {
+      if (!existingApiKeys.find((key) => key.key === publicKey)) {
+        await this.insert('api_keys', [
+          {
+            workspace_id: defaultWorkspaceId,
+            key: publicKey,
+            type: 'public',
+            api_key_id: undefined, // Let ClickHouse generate this with DEFAULT
+            created_at: undefined, // Let ClickHouse set this with DEFAULT
+          },
+        ])
+      }
+    }
+
+    for (const privateKey of privateApiKeys) {
+      if (!existingApiKeys.find((key) => key.key === privateKey)) {
+        await this.insert('api_keys', [
+          {
+            workspace_id: defaultWorkspaceId, // Use the ID directly instead of a subquery
+            key: privateKey,
+            type: 'private',
+            api_key_id: undefined,
+            created_at: undefined,
+          },
+        ])
+      }
     }
   }
 
