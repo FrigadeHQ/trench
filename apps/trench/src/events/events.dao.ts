@@ -93,7 +93,7 @@ export class EventsDao {
     return {
       results: results,
       limit: maxRecords,
-      offset: offset ?? 0,
+      offset: +offset || 0,
       total: null,
     }
   }
