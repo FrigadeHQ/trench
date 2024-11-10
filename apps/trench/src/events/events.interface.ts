@@ -103,11 +103,11 @@ export class EventDTO {
   timestamp?: string
   @ApiProperty({
     type: String,
-    description: 'The type of the event. Possible values: `track`, `identify`, `group`.',
+    description: 'The type of the event. Possible values: `page`, `track`, `identify`, `group`.',
     example: 'track',
     required: false,
   })
-  type: 'track' | 'identify' | 'group'
+  type: 'page' | 'track' | 'identify' | 'group'
   @ApiProperty({
     type: String,
     description: 'The ID of the user.',

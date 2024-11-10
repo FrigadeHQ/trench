@@ -12,7 +12,7 @@ export class EventsService {
 
   async createEvents(eventDTOs: EventDTO[]): Promise<Event[]> {
     // validate event types
-    const validEventTypes = ['track', 'identify', 'group']
+    const validEventTypes = ['page', 'track', 'identify', 'group']
     eventDTOs.forEach((eventDTO) => {
       if (!validEventTypes.includes(eventDTO.type)) {
         throw new Error(

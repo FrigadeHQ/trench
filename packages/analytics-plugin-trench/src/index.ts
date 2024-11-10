@@ -96,7 +96,7 @@ export interface BaseEvent {
   receivedAt?: string;
   sentAt?: string;
   timestamp?: string;
-  type: 'track' | 'identify' | 'group';
+  type: 'page' | 'track' | 'identify' | 'group';
   userId?: string;
   groupId?: string;
   properties?: {
@@ -227,7 +227,7 @@ export function trench(config: TrenchConfig) {
           userId: payload.userId ?? getAnonymousId(),
           event: '$pageview',
           properties: payload.properties,
-          type: 'track',
+          type: 'page',
         },
       ]);
     },
