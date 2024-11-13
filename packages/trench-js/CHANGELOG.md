@@ -1,5 +1,13 @@
 # trench-js
 
+## 0.0.11
+
+### Patch Changes
+
+- ed1cbe5: Adds support for the `page` event type
+- Updated dependencies [ed1cbe5]
+  - analytics-plugin-trench@0.0.6
+
 ## 0.0.10
 
 ### Patch Changes
