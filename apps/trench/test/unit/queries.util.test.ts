@@ -2,8 +2,6 @@ import {
   isReadOnlyQuery,
   convertToKebabCase,
   convertJsonKeysToCamelCase,
-  parseJsonFields,
-  appendWorkspaceId,
 } from '../../src/queries/queries.util'
 
 describe('queries.util', () => {
@@ -68,56 +66,6 @@ describe('queries.util', () => {
         },
       }
       expect(convertJsonKeysToCamelCase(input)).toEqual(expected)
-    })
-  })
-
-  describe('appendWorkspaceId', () => {
-    test('should append workspace_id to query without WHERE clause', () => {
-      const query = 'SELECT * FROM events'
-      const expected = "SELECT * FROM events WHERE workspace_id = 'ws123'"
-      expect(appendWorkspaceId('ws123', query)).toBe(expected)
-    })
-
-    test('should append workspace_id to query with existing WHERE clause', () => {
-      const query = 'SELECT * FROM events WHERE age > 18'
-      const expected = "SELECT * FROM events WHERE workspace_id = 'ws123' AND age > 18"
-      expect(appendWorkspaceId('ws123', query)).toBe(expected)
-    })
-
-    test('should handle query with ORDER BY clause', () => {
-      const query = 'SELECT * FROM events ORDER BY name'
-      const expected = "SELECT * FROM events WHERE workspace_id = 'ws123' ORDER BY name"
-      expect(appendWorkspaceId('ws123', query)).toBe(expected)
-    })
-
-    test('should handle query with GROUP BY clause', () => {
-      const query = 'SELECT count(*) FROM events GROUP BY instance_id'
-      const expected =
-        "SELECT count(*) FROM events WHERE workspace_id = 'ws123' GROUP BY instance_id"
-      expect(appendWorkspaceId('ws123', query)).toBe(expected)
-    })
-
-    test('should handle nested queries', () => {
-      const query = 'SELECT * FROM (SELECT * FROM events) AS e'
-      const expected = "SELECT * FROM (SELECT * FROM events WHERE workspace_id = 'ws123') AS e"
-      expect(appendWorkspaceId('ws123', query)).toBe(expected)
-    })
-
-    test('should handle multiple nested queries', () => {
-      const query = 'SELECT * FROM (SELECT * FROM events) AS e1, (SELECT * FROM events) AS e2'
-      const expected =
-        "SELECT * FROM (SELECT * FROM events WHERE workspace_id = 'ws123') AS e1, (SELECT * FROM events WHERE workspace_id = 'ws123') AS e2"
-      expect(appendWorkspaceId('ws123', query)).toBe(expected)
-    })
-
-    test('should handle queries with single-line comments', () => {
-      const query = `
-        -- This is a comment
-        SELECT * FROM events
-        -- Another comment
-        ORDER BY timestamp`
-      const expected = `SELECT * FROM events WHERE workspace_id = 'ws123' ORDER BY timestamp`
-      expect(appendWorkspaceId('ws123', query)).toBe(expected)
     })
   })
 })

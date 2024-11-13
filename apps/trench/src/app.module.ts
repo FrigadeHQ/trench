@@ -10,6 +10,7 @@ import { QueriesModule } from './queries/queries.module'
 import { WebhooksModule } from './webhooks/webhooks.module'
 import { CacheModule } from '@nestjs/cache-manager'
 import { WorkspacesModule } from './workspaces/workspaces.module'
+import { BootstrapModule } from './services/data/bootstrap/bootstrap.module'
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module'
     WebhooksModule,
     WorkspacesModule,
     ApiKeysModule,
+    BootstrapModule,
   ],
   controllers: [AppController],
   providers: [AppService],

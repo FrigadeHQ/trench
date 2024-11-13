@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { ClickhouseService } from '../services/data/clickhouse/clickhouse.service'
 import {
-  appendWorkspaceId,
   convertJsonKeysToCamelCase,
   convertToKebabCase,
   isReadOnlyQuery,
@@ -31,7 +30,7 @@ export class QueriesService {
     }
 
     const queryPromises = queries.queries.map((query) =>
-      this.clickhouseService.query(appendWorkspaceId(workspaceId, convertToKebabCase(query)))
+      this.clickhouseService.query(convertToKebabCase(query))
     )
     const results = await Promise.all(queryPromises)
     return results.map((result) => parseJsonFields(convertJsonKeysToCamelCase(result)))

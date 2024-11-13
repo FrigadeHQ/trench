@@ -112,6 +112,13 @@ export class WorkspacesService {
     return this.parseWorkspace(result[0])
   }
 
+  async getWorkspaces(): Promise<Workspace[]> {
+    const result = await this.clickhouseService.query(`
+      SELECT * FROM workspaces
+    `)
+    return result.map(this.parseWorkspace)
+  }
+
   private parseWorkspace(result: any): Workspace {
     return {
       workspaceId: result.workspace_id,

@@ -14,28 +14,31 @@ import {
 
 @Injectable()
 export class ClickhouseService {
-  private writerClient: ClickHouseClient
-  private readerClient: ClickHouseClient
-  constructor() {
-    this.initClients()
+  private clientMap: Map<string, ClickHouseClient> = new Map()
+
+  getClient(databaseName?: string): ClickHouseClient {
+    if (!databaseName) {
+      databaseName = process.env.CLICKHOUSE_DATABASE
+    }
+
+    if (!this.clientMap.has(databaseName)) {
+      this.clientMap.set(
+        databaseName,
+        createClient({
+          host: `${
+            process.env.CLICKHOUSE_PROTOCOL ?? 'http'
+          }://${process.env.CLICKHOUSE_USER}:${process.env.CLICKHOUSE_PASSWORD}@${process.env.CLICKHOUSE_HOST}:${process.env.CLICKHOUSE_PORT}`,
+          database: databaseName,
+        })
+      )
+    }
+
+    return this.clientMap.get(databaseName)
   }
 
-  private initClients() {
-    this.writerClient = createClient({
-      host: `${
-        process.env.CLICKHOUSE_PROTOCOL ?? 'http'
-      }://${process.env.CLICKHOUSE_USER}:${process.env.CLICKHOUSE_PASSWORD}@${process.env.CLICKHOUSE_HOST}:${process.env.CLICKHOUSE_PORT}`,
-    })
-    this.readerClient = createClient({
-      host: `${
-        process.env.CLICKHOUSE_PROTOCOL ?? 'http'
-      }://${process.env.CLICKHOUSE_READONLY_USER ?? process.env.CLICKHOUSE_USER}:${process.env.CLICKHOUSE_READONLY_PASSWORD ?? process.env.CLICKHOUSE_PASSWORD}@${process.env.CLICKHOUSE_HOST}:${process.env.CLICKHOUSE_PORT}`,
-    })
-  }
-
-  private applySubstitutions(sql: string) {
+  private applySubstitutions(sql: string, kafkaTopicName?: string) {
     const kafkaBrokerList = process.env.KAFKA_BROKERS ?? DEFAULT_KAFKA_BROKERS
-    const kafkaTopicList = process.env.KAFKA_TOPIC ?? DEFAULT_KAFKA_TOPIC
+    const kafkaTopicList = kafkaTopicName ?? process.env.KAFKA_TOPIC ?? DEFAULT_KAFKA_TOPIC
     const kafkaInstanceId = md5(kafkaBrokerList + kafkaTopicList).slice(0, 6)
     const kafkaPartitions = process.env.KAFKA_PARTITIONS ?? DEFAULT_KAFKA_PARTITIONS
 
@@ -46,7 +49,11 @@ export class ClickhouseService {
       .replaceAll('{kafka_partitions}', kafkaPartitions.toString())
   }
 
-  async runMigrations() {
+  async runMigrations(databaseName?: string, kafkaTopicName?: string) {
+    if (!databaseName) {
+      databaseName = process.env.CLICKHOUSE_DATABASE
+    }
+
     const migrationsDir = path.join(__dirname, '../../../resources/migrations')
     const files = fs
       .readdirSync(migrationsDir)
@@ -54,7 +61,7 @@ export class ClickhouseService {
       .sort()
 
     // Create the _migrations table if it doesn't exist
-    await this.writerClient.query({
+    await this.getClient(databaseName).query({
       query: `
       CREATE TABLE IF NOT EXISTS _migrations (
         name String,
@@ -66,7 +73,7 @@ export class ClickhouseService {
     })
 
     // Get the list of already executed migrations
-    const executedMigrations = (await this.writerClient
+    const executedMigrations = (await this.getClient(databaseName)
       .query({
         query: `
         SELECT * FROM _migrations
@@ -85,14 +92,14 @@ export class ClickhouseService {
       console.log(`Executing migration ${file}`)
 
       const filePath = path.join(migrationsDir, file)
-      const query = this.applySubstitutions(fs.readFileSync(filePath, 'utf8'))
+      const query = this.applySubstitutions(fs.readFileSync(filePath, 'utf8'), kafkaTopicName)
       const queries = query.split(';')
       for (const query of queries) {
         if (query.trim() === '') {
           continue
         }
         try {
-          await this.writerClient.query({
+          await this.getClient(databaseName).query({
             query,
           })
         } catch (error) {
@@ -113,75 +120,23 @@ export class ClickhouseService {
 
       console.log(`Migration ${file} executed successfully`)
     }
-
-    // Check if default workspace exists
-    let defaultWorkspace = await this.query(
-      `SELECT * FROM workspaces WHERE name = '${DEFAULT_WORKSPACE_NAME}'`
-    )
-    if (defaultWorkspace.length === 0) {
-      await this.insert('workspaces', [
-        {
-          workspace_id: DEFAULT_WORKSPACE_ID,
-          name: DEFAULT_WORKSPACE_NAME,
-          is_default: true,
-          database_name: process.env.CLICKHOUSE_DATABASE,
-        },
-      ])
-    }
-
-    defaultWorkspace = await this.query(
-      `SELECT * FROM workspaces WHERE name = '${DEFAULT_WORKSPACE_NAME}'`
-    )
-
-    const defaultWorkspaceId = defaultWorkspace[0].workspace_id
-
-    const publicApiKeys = process.env.PUBLIC_API_KEYS?.split(',') || []
-    const privateApiKeys = process.env.PRIVATE_API_KEYS?.split(',') || []
-
-    const existingApiKeys = await this.query(
-      `SELECT * FROM api_keys WHERE workspace_id = '${defaultWorkspaceId}'`
-    )
-
-    for (const publicKey of publicApiKeys) {
-      if (!existingApiKeys.find((key) => key.key === publicKey)) {
-        await this.insert('api_keys', [
-          {
-            workspace_id: defaultWorkspaceId,
-            key: publicKey,
-            type: 'public',
-          },
-        ])
-      }
-    }
-
-    for (const privateKey of privateApiKeys) {
-      if (!existingApiKeys.find((key) => key.key === privateKey)) {
-        await this.insert('api_keys', [
-          {
-            workspace_id: defaultWorkspaceId, // Use the ID directly instead of a subquery
-            key: privateKey,
-            type: 'private',
-          },
-        ])
-      }
-    }
   }
 
   async query(query: string): Promise<any> {
-    const result = await this.readerClient.query({ query })
+    const result = await this.getClient().query({ query })
     return result.json().then((json) => json.data)
   }
 
   async execute(query: string): Promise<any> {
-    await this.writerClient.query({ query })
+    await this.getClient().query({ query })
   }
 
   async command(query: string): Promise<void> {
-    await this.writerClient.command({ query })
+    await this.getClient().command({ query })
   }
 
   async insert(table: string, values: Record<string, any>[]): Promise<void> {
-    await this.writerClient.insert({
+    await this.getClient().insert({
       table,
       values,
       format: 'JSONEachRow',
