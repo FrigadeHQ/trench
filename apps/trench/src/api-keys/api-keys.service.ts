@@ -3,7 +3,8 @@ import { ClickhouseService } from '../services/data/clickhouse/clickhouse.servic
 import { escapeString } from '../services/data/clickhouse/clickhouse.util'
 import { Cache } from '@nestjs/cache-manager'
 import { Inject } from '@nestjs/common'
-
+import { v4 as uuidv4 } from 'uuid'
+import { ApiKeyType } from './api-keys.interface'
 @Injectable()
 export class ApiKeysService {
   constructor(
@@ -11,7 +12,7 @@ export class ApiKeysService {
     @Inject(Cache) private cacheManager: Cache
   ) {}
 
-  async validateApiKey(apiKey: string, type: 'public' | 'private'): Promise<boolean> {
+  async validateApiKey(apiKey: string, type: ApiKeyType): Promise<boolean> {
     const cacheKey = `validate_api_key:${apiKey}:${type}`
     const cached = await this.cacheManager.get<boolean>(cacheKey)
 
@@ -30,10 +31,21 @@ export class ApiKeysService {
     return isValid === 'is-valid'
   }
 
-  async getWorkspaceIdFromApiKey(
-    apiKey: string,
-    type: 'public' | 'private'
-  ): Promise<string | null> {
+  async createApiKey(workspaceId: string, type: ApiKeyType): Promise<string> {
+    const apiKey = `${type}-${uuidv4()}`
+
+    await this.clickhouseService.insert('api_keys', [
+      {
+        workspace_id: workspaceId,
+        key: apiKey,
+        type,
+      },
+    ])
+
+    return apiKey
+  }
+
+  async getWorkspaceIdFromApiKey(apiKey: string, type: ApiKeyType): Promise<string | null> {
     const cacheKey = `workspace_id:${apiKey}:${type}`
     const cached = await this.cacheManager.get<string | null>(cacheKey)
 

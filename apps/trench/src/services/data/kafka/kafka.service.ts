@@ -7,15 +7,18 @@ import { DEFAULT_KAFKA_CLIENT_ID, DEFAULT_KAFKA_PARTITIONS } from '../../../comm
 export class KafkaService {
   private hasConnectedToProducer = false
 
-  async createTopicsIfNotExists() {
+  async createTopicsIfNotExist() {
     try {
-      await this.createTopic(
+      const topicPromise = this.createTopic(
         process.env.KAFKA_TOPIC,
         process.env.KAFKA_PARTITIONS
           ? Number(process.env.KAFKA_PARTITIONS)
           : DEFAULT_KAFKA_PARTITIONS
-      )
-      console.log(`Created topic ${process.env.KAFKA_TOPIC}`)
+      ).then(() => console.log(`Created topic ${process.env.KAFKA_TOPIC}`))
+
+      if (process.env.NODE_ENV !== 'development') {
+        await topicPromise
+      }
     } catch (e) {
       console.log(`Skipping topic creation, topic ${process.env.KAFKA_TOPIC} already exists.`)
     }

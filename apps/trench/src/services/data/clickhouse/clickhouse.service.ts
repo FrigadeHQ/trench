@@ -124,6 +124,7 @@ export class ClickhouseService {
           workspace_id: DEFAULT_WORKSPACE_ID,
           name: DEFAULT_WORKSPACE_NAME,
           is_default: true,
+          database_name: process.env.CLICKHOUSE_DATABASE,
         },
       ])
     }
@@ -173,6 +174,10 @@ export class ClickhouseService {
 
   async execute(query: string): Promise<any> {
     await this.writerClient.query({ query })
+  }
+
+  async command(query: string): Promise<void> {
+    await this.writerClient.command({ query })
   }
 
   async insert(table: string, values: Record<string, any>[]): Promise<void> {

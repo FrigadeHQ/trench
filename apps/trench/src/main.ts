@@ -54,7 +54,7 @@ async function bootstrap(nodeNumber: number) {
 
   if (nodeNumber === 1) {
     const kafkaService = app.get(KafkaService)
-    await kafkaService.createTopicsIfNotExists()
+    await kafkaService.createTopicsIfNotExist()
 
     const clickhouseService = app.get(ClickhouseService)
     await clickhouseService.runMigrations()

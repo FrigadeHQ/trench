@@ -9,6 +9,7 @@ import { ApiKeysService } from './api-keys/api-keys.service'
 import { QueriesModule } from './queries/queries.module'
 import { WebhooksModule } from './webhooks/webhooks.module'
 import { CacheModule } from '@nestjs/cache-manager'
+import { WorkspacesModule } from './workspaces/workspaces.module'
 
 @Module({
   imports: [
@@ -21,6 +22,8 @@ import { CacheModule } from '@nestjs/cache-manager'
     ClickhouseModule,
     QueriesModule,
     WebhooksModule,
+    WorkspacesModule,
+    ApiKeysModule,
   ],
   controllers: [AppController],
   providers: [AppService],
