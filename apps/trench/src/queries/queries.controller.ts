@@ -1,9 +1,10 @@
-import { Controller, Post, Body, HttpException, HttpStatus, UseGuards } from '@nestjs/common'
+import { Controller, Post, Body, HttpException, HttpStatus, UseGuards, Req } from '@nestjs/common'
 import { QueriesService } from './queries.service'
 import { PaginatedQueryResponse, QueriesDTO } from './queries.interface'
 import { PrivateApiGuard } from '../middlewares/private-api.guard'
 import { PaginatedResponse } from '../common/models'
 import { ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { getWorkspace } from '../common/request'
 
 @Controller('queries')
 @UseGuards(PrivateApiGuard)
@@ -17,9 +18,13 @@ export class QueriesController {
     type: PaginatedQueryResponse,
   })
   @Post()
-  async executeQueries(@Body() queriesDto: QueriesDTO): Promise<PaginatedResponse<any>> {
+  async executeQueries(
+    @Body() queriesDto: QueriesDTO,
+    @Req() req: Request
+  ): Promise<PaginatedResponse<any>> {
     try {
-      const results = await this.queriesService.sendQueries(queriesDto)
+      const workspace = getWorkspace(req)
+      const results = await this.queriesService.sendQueries(workspace, queriesDto)
       return {
         results,
         limit: 0,

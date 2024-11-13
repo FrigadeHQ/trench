@@ -1,4 +1,5 @@
 export class KafkaEvent {
+  instance_id: string
   uuid: string
   event?: string
   type: string

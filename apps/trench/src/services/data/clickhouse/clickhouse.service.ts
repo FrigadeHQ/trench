@@ -8,33 +8,37 @@ import {
   DEFAULT_KAFKA_BROKERS,
   DEFAULT_KAFKA_PARTITIONS,
   DEFAULT_KAFKA_TOPIC,
+  DEFAULT_WORKSPACE_ID,
+  DEFAULT_WORKSPACE_NAME,
 } from '../../../common/constants'
-import { escapeString } from './clickhouse.util'
 
 @Injectable()
 export class ClickhouseService {
-  private writerClient: ClickHouseClient
-  private readerClient: ClickHouseClient
-  constructor() {
-    this.initClients()
+  private clientMap: Map<string, ClickHouseClient> = new Map()
+
+  getClient(databaseName?: string): ClickHouseClient {
+    if (!databaseName) {
+      databaseName = process.env.CLICKHOUSE_DATABASE
+    }
+
+    if (!this.clientMap.has(databaseName)) {
+      this.clientMap.set(
+        databaseName,
+        createClient({
+          host: `${
+            process.env.CLICKHOUSE_PROTOCOL ?? 'http'
+          }://${process.env.CLICKHOUSE_USER}:${process.env.CLICKHOUSE_PASSWORD}@${process.env.CLICKHOUSE_HOST}:${process.env.CLICKHOUSE_PORT}`,
+          database: databaseName,
+        })
+      )
+    }
+
+    return this.clientMap.get(databaseName)
   }
 
-  private initClients() {
-    this.writerClient = createClient({
-      host: `${
-        process.env.CLICKHOUSE_PROTOCOL ?? 'http'
-      }://${process.env.CLICKHOUSE_USER}:${process.env.CLICKHOUSE_PASSWORD}@${process.env.CLICKHOUSE_HOST}:${process.env.CLICKHOUSE_PORT}`,
-    })
-    this.readerClient = createClient({
-      host: `${
-        process.env.CLICKHOUSE_PROTOCOL ?? 'http'
-      }://${process.env.CLICKHOUSE_READONLY_USER ?? process.env.CLICKHOUSE_USER}:${process.env.CLICKHOUSE_READONLY_PASSWORD ?? process.env.CLICKHOUSE_PASSWORD}@${process.env.CLICKHOUSE_HOST}:${process.env.CLICKHOUSE_PORT}`,
-    })
-  }
-
-  private applySubstitutions(sql: string) {
+  private applySubstitutions(sql: string, kafkaTopicName?: string) {
     const kafkaBrokerList = process.env.KAFKA_BROKERS ?? DEFAULT_KAFKA_BROKERS
-    const kafkaTopicList = process.env.KAFKA_TOPIC ?? DEFAULT_KAFKA_TOPIC
+    const kafkaTopicList = kafkaTopicName ?? process.env.KAFKA_TOPIC ?? DEFAULT_KAFKA_TOPIC
     const kafkaInstanceId = md5(kafkaBrokerList + kafkaTopicList).slice(0, 6)
     const kafkaPartitions = process.env.KAFKA_PARTITIONS ?? DEFAULT_KAFKA_PARTITIONS
 
@@ -45,7 +49,11 @@ export class ClickhouseService {
       .replaceAll('{kafka_partitions}', kafkaPartitions.toString())
   }
 
-  async runMigrations() {
+  async runMigrations(databaseName?: string, kafkaTopicName?: string) {
+    if (!databaseName) {
+      databaseName = process.env.CLICKHOUSE_DATABASE
+    }
+
     const migrationsDir = path.join(__dirname, '../../../resources/migrations')
     const files = fs
       .readdirSync(migrationsDir)
@@ -53,7 +61,7 @@ export class ClickhouseService {
       .sort()
 
     // Create the _migrations table if it doesn't exist
-    await this.writerClient.query({
+    await this.getClient(databaseName).query({
       query: `
       CREATE TABLE IF NOT EXISTS _migrations (
         name String,
@@ -65,7 +73,7 @@ export class ClickhouseService {
     })
 
     // Get the list of already executed migrations
-    const executedMigrations = (await this.writerClient
+    const executedMigrations = (await this.getClient(databaseName)
       .query({
         query: `
         SELECT * FROM _migrations
@@ -84,18 +92,18 @@ export class ClickhouseService {
       console.log(`Executing migration ${file}`)
 
       const filePath = path.join(migrationsDir, file)
-      const query = this.applySubstitutions(fs.readFileSync(filePath, 'utf8'))
+      const query = this.applySubstitutions(fs.readFileSync(filePath, 'utf8'), kafkaTopicName)
       const queries = query.split(';')
       for (const query of queries) {
         if (query.trim() === '') {
           continue
         }
         try {
-          await this.writerClient.query({
+          await this.getClient(databaseName).query({
             query,
           })
         } catch (error) {
-          // if the error is a duplicate table error, we can ignore it
+          // if the error is a duplicate table or column error, we can ignore it
           if (String(error).includes('already exists')) {
             continue
           }
@@ -114,17 +122,21 @@ export class ClickhouseService {
     }
   }
 
-  async query(query: string): Promise<any> {
-    const result = await this.readerClient.query({ query })
+  async queryResults(query: string, databaseName?: string): Promise<any> {
+    const result = await this.getClient(databaseName).query({ query })
     return result.json().then((json) => json.data)
   }
 
-  async execute(query: string): Promise<any> {
-    await this.writerClient.query({ query })
+  async query(query: string, databaseName?: string): Promise<any> {
+    await this.getClient(databaseName).query({ query })
   }
 
-  async insert(table: string, values: Record<string, any>[]): Promise<void> {
-    await this.writerClient.insert({
+  async command(query: string, databaseName?: string): Promise<void> {
+    await this.getClient(databaseName).command({ query })
+  }
+
+  async insert(table: string, values: Record<string, any>[], databaseName?: string): Promise<void> {
+    await this.getClient(databaseName).insert({
       table,
       values,
       format: 'JSONEachRow',

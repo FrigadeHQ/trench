@@ -7,12 +7,14 @@ import {
   parseJsonFields,
 } from './queries.util'
 import { QueriesDTO } from './queries.interface'
+import { WorkspacesService } from '../workspaces/workspaces.service'
+import { Workspace } from '../workspaces/workspaces.interface'
 
 @Injectable()
 export class QueriesService {
   constructor(private readonly clickhouseService: ClickhouseService) {}
 
-  async sendQueries(queries: QueriesDTO): Promise<any[]> {
+  async sendQueries(workspace: Workspace, queries: QueriesDTO): Promise<any[]> {
     if (!queries.queries) {
       throw new Error('Request must contain a `queries` array')
     }
@@ -26,7 +28,7 @@ export class QueriesService {
     }
 
     const queryPromises = queries.queries.map((query) =>
-      this.clickhouseService.query(convertToKebabCase(query))
+      this.clickhouseService.queryResults(convertToKebabCase(query), workspace.databaseName)
     )
     const results = await Promise.all(queryPromises)
     return results.map((result) => parseJsonFields(convertJsonKeysToCamelCase(result)))

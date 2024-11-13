@@ -1,16 +1,14 @@
 import { Injectable } from '@nestjs/common'
 import { EventDTO, EventsQuery, PaginatedEventResponse } from './events.interface'
-import { KafkaService } from '../services/data/kafka/kafka.service'
-import { v4 as uuidv4 } from 'uuid'
-import { KafkaEventWithUUID } from '../services/data/kafka/kafka.interface'
 import { EventsDao } from './events.dao'
 import { Event } from './events.interface'
+import { Workspace } from '../workspaces/workspaces.interface'
 
 @Injectable()
 export class EventsService {
   constructor(private eventsDao: EventsDao) {}
 
-  async createEvents(eventDTOs: EventDTO[]): Promise<Event[]> {
+  async createEvents(workspace: Workspace, eventDTOs: EventDTO[]): Promise<Event[]> {
     // validate event types
     const validEventTypes = ['page', 'track', 'identify', 'group']
     eventDTOs.forEach((eventDTO) => {
@@ -21,14 +19,17 @@ export class EventsService {
       }
     })
 
-    return this.eventsDao.createEvents(eventDTOs)
+    return this.eventsDao.createEvents(workspace, eventDTOs)
   }
 
   async getEventsByUUIDs(uuids: string[]): Promise<Event[]> {
     return this.eventsDao.getEventsByUUIDs(uuids)
   }
 
-  async getEventsByQuery(query: EventsQuery): Promise<PaginatedEventResponse> {
-    return this.eventsDao.getEventsByQuery(query)
+  async getEventsByQuery(
+    workspace: Workspace,
+    query: EventsQuery
+  ): Promise<PaginatedEventResponse> {
+    return this.eventsDao.getEventsByQuery(workspace, query)
   }
 }

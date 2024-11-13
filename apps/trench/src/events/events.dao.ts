@@ -6,6 +6,8 @@ import { KafkaService } from '../services/data/kafka/kafka.service'
 import { KafkaEventWithUUID } from '../services/data/kafka/kafka.interface'
 import { v4 as uuidv4 } from 'uuid'
 import { mapRowToEvent } from './events.util'
+import { Workspace } from '../workspaces/workspaces.interface'
+import { getKafkaTopicFromWorkspace } from '../services/data/kafka/kafka.util'
 
 @Injectable()
 export class EventsDao {
@@ -17,11 +19,14 @@ export class EventsDao {
   async getEventsByUUIDs(uuids: string[]): Promise<Event[]> {
     const escapedUUIDs = uuids.map((uuid) => `'${escapeString(uuid)}'`).join(', ')
     const query = `SELECT * FROM events WHERE uuid IN (${escapedUUIDs})`
-    const result = await this.clickhouse.query(query)
+    const result = await this.clickhouse.queryResults(query)
     return result.map((row: any) => mapRowToEvent(row))
   }
 
-  async getEventsByQuery(query: EventsQuery): Promise<PaginatedEventResponse> {
+  async getEventsByQuery(
+    workspace: Workspace,
+    query: EventsQuery
+  ): Promise<PaginatedEventResponse> {
     const {
       uuid,
       event,
@@ -87,7 +92,7 @@ export class EventsDao {
     const offsetClause = offset ? `OFFSET ${offset}` : ''
 
     const clickhouseQuery = `SELECT * FROM events ${whereClause} ${limitClause} ${offsetClause}`
-    const result = await this.clickhouse.query(clickhouseQuery)
+    const result = await this.clickhouse.queryResults(clickhouseQuery, workspace.databaseName)
     const results = result.map((row: any) => mapRowToEvent(row))
 
     return {
@@ -98,10 +103,11 @@ export class EventsDao {
     }
   }
 
-  async createEvents(eventDTOs: EventDTO[]): Promise<Event[]> {
+  async createEvents(workspace: Workspace, eventDTOs: EventDTO[]): Promise<Event[]> {
     const records: KafkaEventWithUUID[] = eventDTOs.map((eventDTO) => {
       const uuid = uuidv4()
       const row = {
+        instance_id: eventDTO.instanceId,
         uuid,
         event: eventDTO.event,
         type: eventDTO.type,
@@ -112,7 +118,6 @@ export class EventsDao {
         traits: eventDTO.traits,
         context: eventDTO.context,
         timestamp: eventDTO.timestamp ? new Date(eventDTO.timestamp) : new Date(),
-        instance_id: eventDTO.instanceId,
       }
       return {
         uuid,
@@ -120,7 +125,7 @@ export class EventsDao {
       }
     })
 
-    this.kafkaService.produceEvents(process.env.KAFKA_TOPIC, records)
+    this.kafkaService.produceEvents(getKafkaTopicFromWorkspace(workspace), records)
 
     return records.map((record) => mapRowToEvent(record.value))
   }

@@ -7,6 +7,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { AppClusterService } from './appCluster.service'
 import { KafkaService } from './services/data/kafka/kafka.service'
 import { ClickhouseService } from './services/data/clickhouse/clickhouse.service'
+import { BootstrapService } from './services/data/bootstrap/bootstrap.service'
 
 const CORS_OPTIONS = {
   origin: '*',
@@ -53,11 +54,8 @@ async function bootstrap(nodeNumber: number) {
   const port = process.env.API_PORT ?? 4000
 
   if (nodeNumber === 1) {
-    const kafkaService = app.get(KafkaService)
-    await kafkaService.createTopicsIfNotExists()
-
-    const clickhouseService = app.get(ClickhouseService)
-    await clickhouseService.runMigrations()
+    const bootstrapService = app.get(BootstrapService)
+    await bootstrapService.bootstrap()
   }
 
   console.log('Listening on port', port)

@@ -6,20 +6,6 @@ import { DEFAULT_KAFKA_CLIENT_ID, DEFAULT_KAFKA_PARTITIONS } from '../../../comm
 @Injectable()
 export class KafkaService {
   private hasConnectedToProducer = false
-
-  async createTopicsIfNotExists() {
-    try {
-      await this.createTopic(
-        process.env.KAFKA_TOPIC,
-        process.env.KAFKA_PARTITIONS
-          ? Number(process.env.KAFKA_PARTITIONS)
-          : DEFAULT_KAFKA_PARTITIONS
-      )
-      console.log(`Created topic ${process.env.KAFKA_TOPIC}`)
-    } catch (e) {
-      console.log(`Skipping topic creation, topic ${process.env.KAFKA_TOPIC} already exists.`)
-    }
-  }
   private kafka: Kafka
   private producer: Producer
 
@@ -30,6 +16,28 @@ export class KafkaService {
     })
     this.producer = this.kafka.producer()
     this.connectToProducer()
+  }
+
+  async createTopicIfNotExists(topic?: string) {
+    if (!topic) {
+      topic = process.env.KAFKA_TOPIC
+    }
+    try {
+      const topicPromise = this.createTopic(
+        topic,
+        process.env.KAFKA_PARTITIONS
+          ? Number(process.env.KAFKA_PARTITIONS)
+          : DEFAULT_KAFKA_PARTITIONS
+      ).then(() => console.log(`Created topic ${topic}`))
+
+      if (process.env.NODE_ENV !== 'development') {
+        await topicPromise
+      }
+    } catch (e) {
+      console.log(`Skipping topic creation, topic ${process.env.KAFKA_TOPIC} already exists.`)
+    }
+
+    return topic
   }
 
   private async connectToProducer() {
