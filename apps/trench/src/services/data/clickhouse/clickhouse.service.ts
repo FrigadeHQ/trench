@@ -122,21 +122,21 @@ export class ClickhouseService {
     }
   }
 
-  async query(query: string): Promise<any> {
-    const result = await this.getClient().query({ query })
+  async queryResults(query: string, databaseName?: string): Promise<any> {
+    const result = await this.getClient(databaseName).query({ query })
     return result.json().then((json) => json.data)
   }
 
-  async execute(query: string): Promise<any> {
-    await this.getClient().query({ query })
+  async query(query: string, databaseName?: string): Promise<any> {
+    await this.getClient(databaseName).query({ query })
   }
 
-  async command(query: string): Promise<void> {
-    await this.getClient().command({ query })
+  async command(query: string, databaseName?: string): Promise<void> {
+    await this.getClient(databaseName).command({ query })
   }
 
-  async insert(table: string, values: Record<string, any>[]): Promise<void> {
-    await this.getClient().insert({
+  async insert(table: string, values: Record<string, any>[], databaseName?: string): Promise<void> {
+    await this.getClient(databaseName).insert({
       table,
       values,
       format: 'JSONEachRow',

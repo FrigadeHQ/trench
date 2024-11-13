@@ -4,11 +4,14 @@ import { CreateWorkspaceDto, Workspace, WorkspaceCreationResult } from './worksp
 import { escapeString } from '../services/data/clickhouse/clickhouse.util'
 import { v4 as uuidv4 } from 'uuid'
 import { ApiKeysService } from '../api-keys/api-keys.service'
+import { mapRowToWorkspace } from './workspaces.util'
+import { BootstrapService } from '../services/data/bootstrap/bootstrap.service'
 @Injectable()
 export class WorkspacesService {
   constructor(
     private readonly clickhouseService: ClickhouseService,
-    private readonly apiKeysService: ApiKeysService
+    private readonly apiKeysService: ApiKeysService,
+    private readonly bootstrapService: BootstrapService
   ) {}
 
   async createNewWorkspace(
@@ -26,7 +29,7 @@ export class WorkspacesService {
 
     if (!databaseName) {
       databaseName = `trench_workspace_${name
-        .replace(/[^a-zA-Z-_]/g, '')
+        .replace(/[^a-zA-Z0-9-_]/g, '')
         .toLowerCase()
         .replace(/[\s-]+/g, '_')}`
     }
@@ -60,15 +63,19 @@ export class WorkspacesService {
     const privateApiKey = await this.apiKeysService.createApiKey(uuid, 'private')
     const publicApiKey = await this.apiKeysService.createApiKey(uuid, 'public')
 
+    const workspace = await this.getWorkspaceById(uuid)
+
+    await this.bootstrapService.bootstrapWorkspace(workspace)
+
     return {
-      ...(await this.getWorkspaceById(uuid)),
+      ...workspace,
       privateApiKey,
       publicApiKey,
     }
   }
 
   async getWorkspaceById(workspaceId: string): Promise<Workspace | null> {
-    const result = await this.clickhouseService.query(`
+    const result = await this.clickhouseService.queryResults(`
       SELECT *
       FROM workspaces
       WHERE workspace_id = '${escapeString(workspaceId)}'
@@ -78,11 +85,11 @@ export class WorkspacesService {
       return null
     }
 
-    return this.parseWorkspace(result[0])
+    return mapRowToWorkspace(result[0])
   }
 
   async getWorkspaceByName(name: string): Promise<Workspace | null> {
-    const result = await this.clickhouseService.query(`
+    const result = await this.clickhouseService.queryResults(`
       SELECT *
       FROM workspaces
       WHERE name = '${escapeString(name)}'
@@ -92,7 +99,7 @@ export class WorkspacesService {
       return null
     }
 
-    return this.parseWorkspace(result[0])
+    return mapRowToWorkspace(result[0])
   }
 
   async getDefaultWorkspace(): Promise<Workspace> {
@@ -103,29 +110,12 @@ export class WorkspacesService {
       ORDER BY created_at ASC 
       LIMIT 1
     `
-    const result = await this.clickhouseService.query(query)
+    const result = await this.clickhouseService.queryResults(query)
 
     if (!result || result.length === 0) {
       throw new Error('No workspace found')
     }
 
-    return this.parseWorkspace(result[0])
-  }
-
-  async getWorkspaces(): Promise<Workspace[]> {
-    const result = await this.clickhouseService.query(`
-      SELECT * FROM workspaces
-    `)
-    return result.map(this.parseWorkspace)
-  }
-
-  private parseWorkspace(result: any): Workspace {
-    return {
-      workspaceId: result.workspace_id,
-      name: result.name,
-      isDefault: result.is_default,
-      databaseName: result.database_name,
-      createdAt: result.created_at,
-    }
+    return mapRowToWorkspace(result[0])
   }
 }

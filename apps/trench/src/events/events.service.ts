@@ -2,12 +2,13 @@ import { Injectable } from '@nestjs/common'
 import { EventDTO, EventsQuery, PaginatedEventResponse } from './events.interface'
 import { EventsDao } from './events.dao'
 import { Event } from './events.interface'
+import { Workspace } from '../workspaces/workspaces.interface'
 
 @Injectable()
 export class EventsService {
   constructor(private eventsDao: EventsDao) {}
 
-  async createEvents(workspaceId: string, eventDTOs: EventDTO[]): Promise<Event[]> {
+  async createEvents(workspace: Workspace, eventDTOs: EventDTO[]): Promise<Event[]> {
     // validate event types
     const validEventTypes = ['track', 'identify', 'group']
     eventDTOs.forEach((eventDTO) => {
@@ -18,14 +19,17 @@ export class EventsService {
       }
     })
 
-    return this.eventsDao.createEvents(workspaceId, eventDTOs)
+    return this.eventsDao.createEvents(workspace, eventDTOs)
   }
 
   async getEventsByUUIDs(uuids: string[]): Promise<Event[]> {
     return this.eventsDao.getEventsByUUIDs(uuids)
   }
 
-  async getEventsByQuery(workspaceId: string, query: EventsQuery): Promise<PaginatedEventResponse> {
-    return this.eventsDao.getEventsByQuery(workspaceId, query)
+  async getEventsByQuery(
+    workspace: Workspace,
+    query: EventsQuery
+  ): Promise<PaginatedEventResponse> {
+    return this.eventsDao.getEventsByQuery(workspace, query)
   }
 }

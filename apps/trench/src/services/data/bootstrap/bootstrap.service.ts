@@ -3,14 +3,15 @@ import { ClickhouseService } from '../clickhouse/clickhouse.service'
 import { KafkaService } from '../kafka/kafka.service'
 import { DEFAULT_WORKSPACE_ID } from '../../../common/constants'
 import { DEFAULT_WORKSPACE_NAME } from '../../../common/constants'
-import { WorkspacesService } from '../../../workspaces/workspaces.service'
+import { getKafkaTopicFromWorkspace } from '../kafka/kafka.util'
+import { mapRowToWorkspace } from '../../../workspaces/workspaces.util'
+import { Workspace } from '../../../workspaces/workspaces.interface'
 
 @Injectable()
 export class BootstrapService {
   constructor(
     private readonly clickhouseService: ClickhouseService,
-    private readonly kafkaService: KafkaService,
-    private readonly workspacesService: WorkspacesService
+    private readonly kafkaService: KafkaService
   ) {}
 
   async bootstrap() {
@@ -19,23 +20,33 @@ export class BootstrapService {
     await this.clickhouseService.runMigrations()
     await this.createDefaultRecordsIfNotExist()
     // This creates creates any maintains any additional workspaces kafka topics and tables
-    const additionalWorkspaces = await this.workspacesService.getWorkspaces()
+    const additionalWorkspacesResult = await this.clickhouseService.queryResults(`
+      SELECT * FROM workspaces
+    `)
+    const additionalWorkspaces = additionalWorkspacesResult.map(mapRowToWorkspace)
+
     for (const workspace of additionalWorkspaces) {
       if (workspace.isDefault) {
         continue
       }
-      console.log(`Creating topics and running migrations for workspace ${workspace.name}`)
-      const kafkaTopicName = await this.kafkaService.createTopicIfNotExists(workspace.databaseName)
-      await this.clickhouseService.runMigrations(workspace.databaseName, kafkaTopicName)
-      console.log(
-        `Successfully finished creating topics and running migrations for workspace ${workspace.name}`
-      )
+      await this.bootstrapWorkspace(workspace)
     }
+  }
+
+  async bootstrapWorkspace(workspace: Workspace) {
+    console.log(`Creating topics and running migrations for workspace ${workspace.name}`)
+    const kafkaTopicName = await this.kafkaService.createTopicIfNotExists(
+      getKafkaTopicFromWorkspace(workspace)
+    )
+    await this.clickhouseService.runMigrations(workspace.databaseName, kafkaTopicName)
+    console.log(
+      `Successfully finished creating topics and running migrations for workspace ${workspace.name}`
+    )
   }
 
   private async createDefaultRecordsIfNotExist() {
     // Check if default workspace exists
-    let defaultWorkspace = await this.clickhouseService.query(
+    let defaultWorkspace = await this.clickhouseService.queryResults(
       `SELECT * FROM workspaces WHERE name = '${DEFAULT_WORKSPACE_NAME}'`
     )
     if (defaultWorkspace.length === 0) {
@@ -49,7 +60,7 @@ export class BootstrapService {
       ])
     }
 
-    defaultWorkspace = await this.clickhouseService.query(
+    defaultWorkspace = await this.clickhouseService.queryResults(
       `SELECT * FROM workspaces WHERE name = '${DEFAULT_WORKSPACE_NAME}'`
     )
 
@@ -58,7 +69,7 @@ export class BootstrapService {
     const publicApiKeys = process.env.PUBLIC_API_KEYS?.split(',') || []
     const privateApiKeys = process.env.PRIVATE_API_KEYS?.split(',') || []
 
-    const existingApiKeys = await this.clickhouseService.query(
+    const existingApiKeys = await this.clickhouseService.queryResults(
       `SELECT * FROM api_keys WHERE workspace_id = '${defaultWorkspaceId}'`
     )
 

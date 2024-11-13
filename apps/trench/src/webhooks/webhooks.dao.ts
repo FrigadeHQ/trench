@@ -18,7 +18,7 @@ export class WebhooksDao {
       return cachedWebhooks
     }
     const query = 'SELECT * FROM webhooks'
-    const result = await this.clickhouse.query(query)
+    const result = await this.clickhouse.queryResults(query)
     const resultData = result.map((row: any) => ({
       uuid: row.uuid,
       url: row.url,
@@ -57,7 +57,7 @@ export class WebhooksDao {
   }
 
   async deleteWebhook(uuid: string): Promise<void> {
-    await this.clickhouse.execute(`ALTER TABLE webhooks DELETE WHERE uuid = '${uuid}'`)
+    await this.clickhouse.query(`ALTER TABLE webhooks DELETE WHERE uuid = '${uuid}'`)
     await this.cacheManager.del(CACHE_KEY)
   }
 }

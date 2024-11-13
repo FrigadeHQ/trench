@@ -164,8 +164,6 @@ export class EventsDTO {
   events: EventDTO[]
 }
 export class Event {
-  workspaceId: string
-
   @ApiProperty({
     type: String,
     description:

@@ -5,7 +5,7 @@ import { ClickhouseModule } from '../clickhouse/clickhouse.module'
 import { WorkspacesModule } from '../../../workspaces/workspaces.module'
 
 @Module({
-  imports: [ClickhouseModule, KafkaModule, WorkspacesModule],
+  imports: [ClickhouseModule, KafkaModule],
   providers: [BootstrapService],
   exports: [BootstrapService],
 })

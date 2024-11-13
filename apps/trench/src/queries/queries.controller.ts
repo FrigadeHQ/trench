@@ -4,7 +4,7 @@ import { PaginatedQueryResponse, QueriesDTO } from './queries.interface'
 import { PrivateApiGuard } from '../middlewares/private-api.guard'
 import { PaginatedResponse } from '../common/models'
 import { ApiOperation, ApiResponse } from '@nestjs/swagger'
-import { getWorkspaceId } from '../common/request'
+import { getWorkspace } from '../common/request'
 
 @Controller('queries')
 @UseGuards(PrivateApiGuard)
@@ -23,8 +23,8 @@ export class QueriesController {
     @Req() req: Request
   ): Promise<PaginatedResponse<any>> {
     try {
-      const workspaceId = getWorkspaceId(req)
-      const results = await this.queriesService.sendQueries(workspaceId, queriesDto)
+      const workspace = getWorkspace(req)
+      const results = await this.queriesService.sendQueries(workspace, queriesDto)
       return {
         results,
         limit: 0,

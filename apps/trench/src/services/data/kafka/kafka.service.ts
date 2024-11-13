@@ -18,8 +18,10 @@ export class KafkaService {
     this.connectToProducer()
   }
 
-  async createTopicIfNotExists(prefix: string = '') {
-    const topic = `${prefix}${process.env.KAFKA_TOPIC}`
+  async createTopicIfNotExists(topic?: string) {
+    if (!topic) {
+      topic = process.env.KAFKA_TOPIC
+    }
     try {
       const topicPromise = this.createTopic(
         topic,

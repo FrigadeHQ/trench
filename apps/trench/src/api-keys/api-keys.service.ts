@@ -5,6 +5,8 @@ import { Cache } from '@nestjs/cache-manager'
 import { Inject } from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
 import { ApiKeyType } from './api-keys.interface'
+import { Workspace } from '../workspaces/workspaces.interface'
+import { mapRowToWorkspace } from '../workspaces/workspaces.util'
 @Injectable()
 export class ApiKeysService {
   constructor(
@@ -20,7 +22,7 @@ export class ApiKeysService {
       return cached
     }
 
-    const result = await this.clickhouseService.query(`
+    const result = await this.clickhouseService.queryResults(`
       SELECT COUNT(*) as count 
       FROM api_keys 
       WHERE key = '${escapeString(apiKey)}' AND type = '${escapeString(type)}'
@@ -45,23 +47,30 @@ export class ApiKeysService {
     return apiKey
   }
 
-  async getWorkspaceIdFromApiKey(apiKey: string, type: ApiKeyType): Promise<string | null> {
+  async getWorkspaceFromApiKey(apiKey: string, type: ApiKeyType): Promise<Workspace | null> {
     const cacheKey = `workspace_id:${apiKey}:${type}`
-    const cached = await this.cacheManager.get<string | null>(cacheKey)
+    const cached = await this.cacheManager.get<Workspace | null>(cacheKey)
 
     if (cached !== undefined) {
       return cached
     }
 
-    const result = await this.clickhouseService.query(`
+    const result = await this.clickhouseService.queryResults(`
       SELECT workspace_id
       FROM api_keys
       WHERE key = '${escapeString(apiKey)}' AND type = '${escapeString(type)}'
       LIMIT 1
     `)
     const workspaceId = result.length > 0 ? result[0].workspace_id : null
+    if (!workspaceId) {
+      return null
+    }
+    const workspaceResult = await this.clickhouseService.queryResults(`
+      SELECT * FROM workspaces WHERE workspace_id = '${workspaceId}'
+    `)
+    const workspace = mapRowToWorkspace(workspaceResult[0])
 
-    await this.cacheManager.set(cacheKey, workspaceId, 120000) // Cache for 2 minutes
-    return workspaceId
+    await this.cacheManager.set(cacheKey, workspace, 120000) // Cache for 2 minutes
+    return workspace
   }
 }

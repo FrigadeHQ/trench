@@ -1,9 +1,10 @@
 import { Request } from '@nestjs/common'
+import { Workspace } from '../workspaces/workspaces.interface'
 
-export function getWorkspaceId(req: Request): string {
-  const workspaceId = (req as any).workspaceId
-  if (!workspaceId) {
-    throw new Error('WorkspaceId not found in request. Ensure request is authenticated.')
+export function getWorkspace(req: Request): Workspace {
+  const workspace = (req as any).workspace
+  if (!workspace) {
+    throw new Error('Workspace not found in request. Ensure request is authenticated.')
   }
-  return workspaceId
+  return workspace
 }

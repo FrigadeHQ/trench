@@ -1,5 +1,4 @@
 export class KafkaEvent {
-  workspace_id: string
   instance_id: string
   uuid: string
   event?: string

@@ -19,14 +19,14 @@ export class PublicApiGuard implements CanActivate {
     }
 
     const apiKey = req.headers.authorization.replace('Bearer ', '')
-    const workspaceId = await this.apiKeysService.getWorkspaceIdFromApiKey(apiKey, 'public')
+    const workspace = await this.apiKeysService.getWorkspaceFromApiKey(apiKey, 'public')
 
-    if (!workspaceId) {
+    if (!workspace) {
       throw new UnauthorizedException('Invalid public API key')
     }
 
     // Add workspace ID to request context
-    req.workspaceId = workspaceId
+    req.workspace = workspace
 
     return true
   }
