@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { ClickhouseService } from '../services/data/clickhouse/clickhouse.service'
-import { escapeString } from '../services/data/clickhouse/clickhouse.util'
+import { escapeString, formatToClickhouseDate } from '../services/data/clickhouse/clickhouse.util'
 import { Event, EventDTO, EventsQuery, PaginatedEventResponse } from './events.interface'
 import { KafkaService } from '../services/data/kafka/kafka.service'
 import { KafkaEventWithUUID } from '../services/data/kafka/kafka.interface'
@@ -78,10 +78,10 @@ export class EventsDao {
       }
     }
     if (startDate) {
-      conditions.push(`timestamp >= '${escapeString(new Date(startDate).toISOString())}'`)
+      conditions.push(`timestamp >= '${formatToClickhouseDate(new Date(startDate))}'`)
     }
     if (endDate) {
-      conditions.push(`timestamp <= '${escapeString(new Date(endDate).toISOString())}'`)
+      conditions.push(`timestamp <= '${formatToClickhouseDate(new Date(endDate))}'`)
     }
     if (uuid) {
       conditions.push(`uuid = '${escapeString(uuid)}'`)
@@ -98,7 +98,7 @@ export class EventsDao {
     return {
       results: results,
       limit: maxRecords,
-      offset: offset ?? 0,
+      offset: +offset || 0,
       total: null,
     }
   }

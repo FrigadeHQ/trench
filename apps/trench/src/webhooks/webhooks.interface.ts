@@ -28,7 +28,7 @@ export class Webhook {
 
   @ApiProperty({
     description: 'The event types that the webhook will send. Use `*` to match all event types.',
-    example: ['track', 'identify'],
+    example: ['page', 'track', 'identify', 'group'],
   })
   eventTypes: string[]
 
@@ -56,7 +56,7 @@ export class WebhookDTO {
   @ApiProperty({
     description:
       'The event types that the webhook will send. Defaults to `["*"] (all event types)`.',
-    example: ['track', 'identify'],
+    example: ['page', 'track', 'identify', 'group'],
     required: false,
   })
   eventTypes?: string[]
