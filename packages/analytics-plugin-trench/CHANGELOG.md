@@ -1,5 +1,11 @@
 # analytics-plugin-trench
 
+## 0.0.6
+
+### Patch Changes
+
+- ed1cbe5: Adds support for the `page` event type
+
 ## 0.0.5
 
 ### Patch Changes
