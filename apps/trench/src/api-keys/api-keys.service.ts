@@ -7,6 +7,8 @@ import { v4 as uuidv4 } from 'uuid'
 import { ApiKeyType } from './api-keys.interface'
 import { Workspace } from '../workspaces/workspaces.interface'
 import { mapRowToWorkspace } from '../workspaces/workspaces.util'
+const IS_VALID_API_KEY_STRING = 'is-valid'
+const IS_INVALID_API_KEY_STRING = 'is-invalid'
 @Injectable()
 export class ApiKeysService {
   constructor(
@@ -27,10 +29,10 @@ export class ApiKeysService {
       FROM api_keys 
       WHERE key = '${escapeString(apiKey)}' AND type = '${escapeString(type)}'
     `)
-    const isValid = result[0].count > 0 ? 'is-valid' : 'is-invalid'
+    const isValid = result[0].count > 0 ? IS_VALID_API_KEY_STRING : IS_INVALID_API_KEY_STRING
 
     await this.cacheManager.set(cacheKey, isValid, 120000) // Cache for 2 minutes
-    return isValid === 'is-valid'
+    return isValid === IS_VALID_API_KEY_STRING
   }
 
   async createApiKey(workspaceId: string, type: ApiKeyType): Promise<string> {

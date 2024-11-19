@@ -91,6 +91,11 @@ export class BootstrapService {
           {
             workspace_id: defaultWorkspaceId, // Use the ID directly instead of a subquery
             key: privateKey,
+            type: 'admin',
+          },
+          {
+            workspace_id: defaultWorkspaceId,
+            key: privateKey,
             type: 'private',
           },
         ])

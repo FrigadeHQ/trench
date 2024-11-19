@@ -1,25 +1,26 @@
-import { authenticatedPost, waitForQueryResults } from './utils'
+import { authenticatedPost, PUBLIC_API_KEY, waitForQueryResults } from './utils'
 
 describe('events/', () => {
   test('should create a new event and fetch it', async () => {
     const newEvent = {
-      uuid: '123e4567-e89b-12d3-a456-426614174000',
       type: 'track',
       event: 'User SignedUp',
       timestamp: new Date().toISOString(),
     }
 
     // Create a new event
-    const createRes = await authenticatedPost('/events', false).send({ events: [newEvent] })
+    const createRes = await authenticatedPost('/events', PUBLIC_API_KEY).send({
+      events: [newEvent],
+    })
     expect(createRes.statusCode).toEqual(201)
     expect(createRes.body.results).toHaveLength(1)
     expect(createRes.body.results[0].uuid).toBeDefined()
-    const eventUuid = createRes.body.results[0].uuid
+    const uuid = createRes.body.results[0].uuid
 
     // Fetch the created event using the newly created util function
-    const results = await waitForQueryResults(`uuid=${eventUuid}`)
+    const results = await waitForQueryResults(`uuid=${uuid}`)
     expect(results).toHaveLength(1)
-    expect(results[0].uuid).toEqual(eventUuid)
+    expect(results[0].uuid).toEqual(uuid)
   })
 
   test('should create a new event with instanceId, event name with spaces, and userId, then fetch it', async () => {
@@ -33,7 +34,9 @@ describe('events/', () => {
     }
 
     // Create a new event
-    const createRes = await authenticatedPost('/events', false).send({ events: [newEvent] })
+    const createRes = await authenticatedPost('/events', PUBLIC_API_KEY).send({
+      events: [newEvent],
+    })
     expect(createRes.statusCode).toEqual(201)
     expect(createRes.body.results).toHaveLength(1)
     expect(createRes.body.results[0].uuid).toBeDefined()
@@ -63,7 +66,9 @@ describe('events/', () => {
     }
 
     // Create a new event
-    const createRes = await authenticatedPost('/events', false).send({ events: [newEvent] })
+    const createRes = await authenticatedPost('/events', PUBLIC_API_KEY).send({
+      events: [newEvent],
+    })
     expect(createRes.statusCode).toEqual(201)
     expect(createRes.body.results).toHaveLength(1)
     expect(createRes.body.results[0].uuid).toBeDefined()

@@ -1,12 +1,22 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common'
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Delete,
+  Param,
+  Put,
+  NotFoundException,
+  Get,
+} from '@nestjs/common'
 
-import { PrivateApiGuard } from '../middlewares/private-api.guard'
+import { AdminApiGuard } from '../middlewares/admin-api.guard'
 import { WorkspacesService } from './workspaces.service'
 import { CreateWorkspaceDto, Workspace } from './workspaces.interface'
 import { ApiOperation, ApiResponse } from '@nestjs/swagger'
 
 @Controller('workspaces')
-@UseGuards(PrivateApiGuard)
+@UseGuards(AdminApiGuard)
 export class WorkspacesController {
   constructor(private readonly workspacesService: WorkspacesService) {}
   @Post()
@@ -21,5 +31,48 @@ export class WorkspacesController {
     const newWorkspace = await this.workspacesService.createNewWorkspace(createWorkspaceDto)
 
     return newWorkspace
+  }
+
+  @Delete(':workspaceId')
+  async delete(@Param('workspaceId') workspaceId: string) {
+    await this.workspacesService.deleteWorkspace(workspaceId)
+  }
+
+  @Put(':workspaceId')
+  @ApiOperation({ summary: 'Update a workspace' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'The workspace has been successfully updated. Requires private API key in Bearer token.',
+    type: Workspace,
+  })
+  async update(
+    @Param('workspaceId') workspaceId: string,
+    @Body() updateWorkspaceDto: CreateWorkspaceDto
+  ) {
+    // Assuming the method name should be 'updateWorkspace' based on the error
+    const updatedWorkspace = await this.workspacesService.updateWorkspace(
+      workspaceId,
+      updateWorkspaceDto
+    )
+
+    return updatedWorkspace
+  }
+
+  @Get(':workspaceId')
+  @ApiOperation({ summary: 'Get a workspace by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'The workspace has been successfully retrieved.',
+    type: Workspace,
+  })
+  async getById(@Param('workspaceId') workspaceId: string) {
+    const workspace = await this.workspacesService.getWorkspaceById(workspaceId)
+
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found')
+    }
+
+    return workspace
   }
 }

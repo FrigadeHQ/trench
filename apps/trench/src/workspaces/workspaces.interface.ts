@@ -30,6 +30,12 @@ export class Workspace {
     example: '2023-01-01T00:00:00.000Z',
   })
   createdAt: Date
+
+  @ApiPropertyOptional({
+    description: 'The properties of the workspace.',
+    example: '{}',
+  })
+  properties: Record<string, any>
 }
 
 export class CreateWorkspaceDto {
@@ -50,6 +56,26 @@ export class CreateWorkspaceDto {
     example: false,
   })
   isDefault?: boolean
+
+  @ApiPropertyOptional({
+    description: 'The properties of the workspace.',
+    example: '{}',
+  })
+  properties?: Record<string, any>
+}
+
+export class UpdateWorkspaceDto {
+  @ApiPropertyOptional({
+    description: 'The name of the workspace to be updated.',
+    example: 'Updated Workspace',
+  })
+  name?: string
+
+  @ApiPropertyOptional({
+    description: 'The properties of the workspace.',
+    example: '{}',
+  })
+  properties?: Record<string, any>
 }
 
 export class WorkspaceCreationResult extends Workspace {

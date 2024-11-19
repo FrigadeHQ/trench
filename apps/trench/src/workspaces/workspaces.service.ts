@@ -1,10 +1,15 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { ClickhouseService } from '../services/data/clickhouse/clickhouse.service'
-import { CreateWorkspaceDto, Workspace, WorkspaceCreationResult } from './workspaces.interface'
+import {
+  CreateWorkspaceDto,
+  UpdateWorkspaceDto,
+  Workspace,
+  WorkspaceCreationResult,
+} from './workspaces.interface'
 import { escapeString } from '../services/data/clickhouse/clickhouse.util'
 import { v4 as uuidv4 } from 'uuid'
 import { ApiKeysService } from '../api-keys/api-keys.service'
-import { mapRowToWorkspace } from './workspaces.util'
+import { mapRowToWorkspace, mapWorkspaceToRow } from './workspaces.util'
 import { BootstrapService } from '../services/data/bootstrap/bootstrap.service'
 @Injectable()
 export class WorkspacesService {
@@ -17,13 +22,10 @@ export class WorkspacesService {
   async createNewWorkspace(
     createWorkspaceDto: CreateWorkspaceDto
   ): Promise<WorkspaceCreationResult> {
-    let { name, databaseName, isDefault } = createWorkspaceDto
+    let { name, databaseName, isDefault, properties } = createWorkspaceDto
+    this.validateInputs(name, createWorkspaceDto.properties)
 
     name = (name ?? '').trim()
-
-    if (!name) {
-      throw new BadRequestException('Workspace name is required')
-    }
 
     const uuid = uuidv4()
 
@@ -57,6 +59,7 @@ export class WorkspacesService {
         name,
         database_name: databaseName,
         is_default: isDefault,
+        properties: JSON.stringify(properties),
       },
     ])
 
@@ -117,5 +120,48 @@ export class WorkspacesService {
     }
 
     return mapRowToWorkspace(result[0])
+  }
+
+  async deleteWorkspace(workspaceId: string): Promise<void> {
+    const query = `
+      DELETE FROM workspaces
+      WHERE workspace_id = '${escapeString(workspaceId)}'
+    `
+    await this.clickhouseService.command(query)
+  }
+
+  async updateWorkspace(
+    workspaceId: string,
+    updateWorkspaceDto: UpdateWorkspaceDto
+  ): Promise<Workspace> {
+    this.validateInputs(updateWorkspaceDto.name, updateWorkspaceDto.properties)
+
+    const existingWorkspace = await this.getWorkspaceById(workspaceId)
+    if (!existingWorkspace) {
+      throw new Error('Workspace not found')
+    }
+
+    const { name, properties } = updateWorkspaceDto
+    const updatedWorkspace = {
+      ...existingWorkspace,
+      name: name || existingWorkspace.name,
+      properties: properties || existingWorkspace.properties,
+    }
+
+    await this.deleteWorkspace(workspaceId)
+
+    await this.clickhouseService.insert('workspaces', [mapWorkspaceToRow(updatedWorkspace)])
+
+    return updatedWorkspace
+  }
+
+  private validateInputs(name?: string, properties?: Record<string, any>) {
+    if (!name || name.trim().length === 0) {
+      throw new BadRequestException('Workspace name is required')
+    }
+
+    if (properties && typeof properties !== 'object') {
+      throw new BadRequestException('Properties must be a valid JSON object')
+    }
   }
 }

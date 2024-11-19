@@ -3,8 +3,8 @@ import { ApiKeysService } from '../api-keys/api-keys.service'
 import { ApiGuard } from './api.guard'
 
 @Injectable()
-export class PublicApiGuard extends ApiGuard {
+export class AdminApiGuard extends ApiGuard {
   constructor(apiKeysService: ApiKeysService) {
-    super(apiKeysService, 'public')
+    super(apiKeysService, 'admin')
   }
 }
