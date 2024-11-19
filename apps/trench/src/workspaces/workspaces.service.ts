@@ -1,12 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { ClickhouseService } from '../services/data/clickhouse/clickhouse.service'
+import { ClickHouseService } from '../services/data/click-house/click-house.service'
 import {
   CreateWorkspaceDto,
   UpdateWorkspaceDto,
   Workspace,
   WorkspaceCreationResult,
 } from './workspaces.interface'
-import { escapeString } from '../services/data/clickhouse/clickhouse.util'
+import { escapeString } from '../services/data/click-house/click-house.util'
 import { v4 as uuidv4 } from 'uuid'
 import { ApiKeysService } from '../api-keys/api-keys.service'
 import { mapRowToWorkspace, mapWorkspaceToRow } from './workspaces.util'
@@ -14,7 +14,7 @@ import { BootstrapService } from '../services/data/bootstrap/bootstrap.service'
 @Injectable()
 export class WorkspacesService {
   constructor(
-    private readonly clickhouseService: ClickhouseService,
+    private readonly clickhouseService: ClickHouseService,
     private readonly apiKeysService: ApiKeysService,
     private readonly bootstrapService: BootstrapService
   ) {}

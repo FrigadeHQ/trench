@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { ClickhouseService } from '../services/data/clickhouse/clickhouse.service'
+import { ClickHouseService } from '../services/data/click-house/click-house.service'
 import {
   convertJsonKeysToCamelCase,
   convertToKebabCase,
@@ -12,7 +12,7 @@ import { Workspace } from '../workspaces/workspaces.interface'
 
 @Injectable()
 export class QueriesService {
-  constructor(private readonly clickhouseService: ClickhouseService) {}
+  constructor(private readonly clickhouseService: ClickHouseService) {}
 
   async sendQueries(workspace: Workspace, queries: QueriesDTO): Promise<any[]> {
     if (!queries.queries) {

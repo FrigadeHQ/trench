@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { ClickhouseService } from '../services/data/clickhouse/clickhouse.service'
-import { escapeString, formatToClickhouseDate } from '../services/data/clickhouse/clickhouse.util'
+import { ClickHouseService } from '../services/data/click-house/click-house.service'
+import { escapeString, formatToClickhouseDate } from '../services/data/click-house/click-house.util'
 import { Event, EventDTO, EventsQuery, PaginatedEventResponse } from './events.interface'
 import { KafkaService } from '../services/data/kafka/kafka.service'
 import { KafkaEventWithUUID } from '../services/data/kafka/kafka.interface'
@@ -12,7 +12,7 @@ import { getKafkaTopicFromWorkspace } from '../services/data/kafka/kafka.util'
 @Injectable()
 export class EventsDao {
   constructor(
-    private readonly clickhouse: ClickhouseService,
+    private readonly clickhouse: ClickHouseService,
     private kafkaService: KafkaService
   ) {}
 

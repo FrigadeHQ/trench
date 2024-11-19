@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { WebhooksService } from './webhooks.service'
-import { ClickhouseModule } from '../services/data/clickhouse/clickhouse.module'
+import { ClickHouseModule } from '../services/data/click-house/click-house.module'
 import { KafkaModule } from '../services/data/kafka/kafka.module'
 import { EventsModule } from '../events/events.module'
 import { WebhooksDao } from './webhooks.dao'
@@ -12,7 +12,7 @@ import { CacheModule } from '@nestjs/cache-manager'
 @Module({
   imports: [
     KafkaModule,
-    ClickhouseModule,
+    ClickHouseModule,
     EventsModule,
     WebhooksModule,
     ApiKeysModule,

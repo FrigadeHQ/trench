@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { ClickhouseService } from '../clickhouse/clickhouse.service'
+import { ClickHouseService } from '../click-house/click-house.service'
 import { KafkaService } from '../kafka/kafka.service'
 import { DEFAULT_WORKSPACE_ID } from '../../../common/constants'
 import { DEFAULT_WORKSPACE_NAME } from '../../../common/constants'
@@ -10,7 +10,7 @@ import { Workspace } from '../../../workspaces/workspaces.interface'
 @Injectable()
 export class BootstrapService {
   constructor(
-    private readonly clickhouseService: ClickhouseService,
+    private readonly clickhouseService: ClickHouseService,
     private readonly kafkaService: KafkaService
   ) {}
 

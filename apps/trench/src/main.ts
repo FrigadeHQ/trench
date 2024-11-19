@@ -6,7 +6,7 @@ import * as process from 'process'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { AppClusterService } from './appCluster.service'
 import { KafkaService } from './services/data/kafka/kafka.service'
-import { ClickhouseService } from './services/data/clickhouse/clickhouse.service'
+import { ClickHouseService } from './services/data/click-house/click-house.service'
 import { BootstrapService } from './services/data/bootstrap/bootstrap.service'
 
 const CORS_OPTIONS = {

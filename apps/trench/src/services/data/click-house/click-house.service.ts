@@ -1,19 +1,17 @@
 import { Injectable } from '@nestjs/common'
-import { createClient, ClickHouseClient, ClickHouseError } from '@clickhouse/client'
+import { createClient, ClickHouseClient } from '@clickhouse/client'
 import * as fs from 'fs'
 import * as path from 'path'
-import { Migration } from './clickhouse.interface'
+import { Migration } from './click-house.interface'
 import { md5 } from '../../../common/crypto'
 import {
   DEFAULT_KAFKA_BROKERS,
   DEFAULT_KAFKA_PARTITIONS,
   DEFAULT_KAFKA_TOPIC,
-  DEFAULT_WORKSPACE_ID,
-  DEFAULT_WORKSPACE_NAME,
 } from '../../../common/constants'
 
 @Injectable()
-export class ClickhouseService {
+export class ClickHouseService {
   private clientMap: Map<string, ClickHouseClient> = new Map()
 
   getClient(databaseName?: string): ClickHouseClient {

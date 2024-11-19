@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { ClickhouseService } from '../services/data/clickhouse/clickhouse.service'
-import { escapeString } from '../services/data/clickhouse/clickhouse.util'
+import { ClickHouseService } from '../services/data/click-house/click-house.service'
+import { escapeString } from '../services/data/click-house/click-house.util'
 import { Cache } from '@nestjs/cache-manager'
 import { Inject } from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
@@ -12,7 +12,7 @@ const IS_INVALID_API_KEY_STRING = 'is-invalid'
 @Injectable()
 export class ApiKeysService {
   constructor(
-    private readonly clickhouseService: ClickhouseService,
+    private readonly clickhouseService: ClickHouseService,
     @Inject(Cache) private cacheManager: Cache
   ) {}
 

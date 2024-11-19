@@ -4,10 +4,10 @@ import { EventsController } from './events.controller'
 import { KafkaModule } from '../services/data/kafka/kafka.module'
 import { ApiKeysModule } from '../api-keys/api-keys.module'
 import { EventsDao } from './events.dao'
-import { ClickhouseModule } from '../services/data/clickhouse/clickhouse.module'
+import { ClickHouseModule } from '../services/data/click-house/click-house.module'
 
 @Module({
-  imports: [KafkaModule, ApiKeysModule, ClickhouseModule],
+  imports: [KafkaModule, ApiKeysModule, ClickHouseModule],
   controllers: [EventsController],
   providers: [EventsService, EventsDao],
   exports: [EventsService],

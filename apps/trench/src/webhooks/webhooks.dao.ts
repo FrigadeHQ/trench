@@ -1,5 +1,5 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common'
-import { ClickhouseService } from '../services/data/clickhouse/clickhouse.service'
+import { ClickHouseService } from '../services/data/click-house/click-house.service'
 import { Webhook, WebhookDTO } from './webhooks.interface'
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Cache } from 'cache-manager'
@@ -8,7 +8,7 @@ const CACHE_KEY = 'webhooks'
 @Injectable()
 export class WebhooksDao {
   constructor(
-    private readonly clickhouse: ClickhouseService,
+    private readonly clickhouse: ClickHouseService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) {}
 

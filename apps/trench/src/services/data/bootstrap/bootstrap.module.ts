@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common'
 import { BootstrapService } from './bootstrap.service'
 import { KafkaModule } from '../kafka/kafka.module'
-import { ClickhouseModule } from '../clickhouse/clickhouse.module'
+import { ClickHouseModule } from '../click-house/click-house.module'
 import { WorkspacesModule } from '../../../workspaces/workspaces.module'
 
 @Module({
-  imports: [ClickhouseModule, KafkaModule],
+  imports: [ClickHouseModule, KafkaModule],
   providers: [BootstrapService],
   exports: [BootstrapService],
 })
