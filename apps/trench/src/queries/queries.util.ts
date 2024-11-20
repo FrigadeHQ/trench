@@ -1,7 +1,7 @@
 export function isReadOnlyQuery(query: string): boolean {
   // Regular expression to match non-readonly SQL commands
   const nonReadOnlyCommands =
-    /\b(INSERT|UPDATE|DELETE|CREATE|DROP|ALTER|TRUNCATE|REPLACE|MERGE|CALL|GRANT|REVOKE|LOCK|UNLOCK)\b/i
+    /\b(INSERT|UPDATE|DELETE|CREATE|DROP|ALTER|TRUNCATE|REPLACE|MERGE|CALL|GRANT|REVOKE|LOCK|UNLOCK|system.databases|system.tables|SHOW DATABASES|SHOW SCHEMAS)\b/i
 
   // Remove string literals from the query to avoid false positives
   const cleanedQuery = query.replace(/'[^']*'/g, '')

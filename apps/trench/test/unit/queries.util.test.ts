@@ -21,6 +21,12 @@ describe('queries.util', () => {
       expect(isReadOnlyQuery("SELECT * FROM users WHERE name = 'DELETE'")).toBe(true)
       expect(isReadOnlyQuery("SELECT * FROM users WHERE name = 'INSERT'")).toBe(true)
     })
+
+    test('should not allow listing databases', () => {
+      expect(isReadOnlyQuery('SHOW DATABASES')).toBe(false)
+      expect(isReadOnlyQuery('SHOW SCHEMAS')).toBe(false)
+      expect(isReadOnlyQuery('SELECT name FROM system.databases')).toBe(false)
+    })
   })
 
   describe('convertToKebabCase', () => {
