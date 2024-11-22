@@ -1,5 +1,5 @@
 import Analytics from 'analytics';
-import { trench, TrenchConfig } from 'analytics-plugin-trench';
+import { trench, BaseEvent } from 'analytics-plugin-trench';
 import { PaginatedEventResponse, PaginatedQueryResponse, TrenchJSConfig } from './types';
 
 class Trench {
@@ -192,3 +192,5 @@ class Trench {
 export default Trench;
 
 globalThis.Trench = Trench;
+
+export type { BaseEvent, PaginatedEventResponse, PaginatedQueryResponse, TrenchJSConfig };
