@@ -144,9 +144,12 @@ class Trench {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to query events');
+      if (response.status === 400) {
+        const errorResponse = await response.json();
+        throw new Error(errorResponse.message);
+      }
+      throw new Error('Failed to get events');
     }
-
     return response.json();
   }
 
@@ -168,6 +171,10 @@ class Trench {
     });
 
     if (!response.ok) {
+      if (response.status === 400) {
+        const errorResponse = await response.json();
+        throw new Error(errorResponse.message);
+      }
       throw new Error('Failed to execute query');
     }
 
