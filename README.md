@@ -99,7 +99,7 @@ If you have questions or need assistance, you can join our [Slack group](https:/
          "properties": {
            "totalAccounts": 4,
            "country": "Denmark"
-         },
+         }
        }]
    }' \
     'http://localhost:4000/events'
