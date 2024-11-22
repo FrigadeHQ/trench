@@ -1,5 +1,14 @@
 # trench-js
 
+## 0.0.12
+
+### Patch Changes
+
+- ba81a76: Adds missing `uuid` field to `BaseEvent` type
+- 2306864: Adds missing typescript types
+- Updated dependencies [ba81a76]
+  - analytics-plugin-trench@0.0.7
+
 ## 0.0.11
 
 ### Patch Changes

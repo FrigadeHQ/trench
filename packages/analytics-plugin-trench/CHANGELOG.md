@@ -1,5 +1,11 @@
 # analytics-plugin-trench
 
+## 0.0.7
+
+### Patch Changes
+
+- ba81a76: Adds missing `uuid` field to `BaseEvent` type
+
 ## 0.0.6
 
 ### Patch Changes
