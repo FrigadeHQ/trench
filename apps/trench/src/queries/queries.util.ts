@@ -51,5 +51,7 @@ export function parseJsonFields(json: Record<string, any>): Record<string, any> 
 }
 
 export function convertObjectToArray(object: Record<string, any>): any[] {
-  return Object.values(object)
+  const values = Object.values(object)
+
+  return values.filter((value) => value !== null && value !== undefined)
 }
