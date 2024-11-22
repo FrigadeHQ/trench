@@ -16,6 +16,7 @@ export type TrenchConfig = {
 };
 
 export interface BaseEvent {
+  uuid?: string;
   anonymousId?: string;
   context?: {
     active?: boolean;

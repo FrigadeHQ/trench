@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { ClickHouseService } from '../services/data/click-house/click-house.service'
 import { escapeString, formatToClickhouseDate } from '../services/data/click-house/click-house.util'
 import { Event, EventDTO, EventsQuery, PaginatedEventResponse } from './events.interface'
@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { mapRowToEvent } from './events.util'
 import { Workspace } from '../workspaces/workspaces.interface'
 import { getKafkaTopicFromWorkspace } from '../services/data/kafka/kafka.util'
+import { isReadOnlyQuery } from '../queries/queries.util'
 
 @Injectable()
 export class EventsDao {
@@ -41,6 +42,8 @@ export class EventsDao {
       endDate,
       limit,
       offset,
+      orderByField,
+      orderByDirection,
     } = query
 
     const maxRecords = Math.min(limit ?? 1000, 1000)
@@ -78,28 +81,41 @@ export class EventsDao {
       }
     }
     if (startDate) {
-      conditions.push(`timestamp >= '${formatToClickhouseDate(new Date(startDate))}'`)
+      conditions.push(`timestamp >= '${escapeString(formatToClickhouseDate(new Date(startDate)))}'`)
     }
     if (endDate) {
-      conditions.push(`timestamp <= '${formatToClickhouseDate(new Date(endDate))}'`)
+      conditions.push(`timestamp <= '${escapeString(formatToClickhouseDate(new Date(endDate)))}'`)
     }
     if (uuid) {
       conditions.push(`uuid = '${escapeString(uuid)}'`)
     }
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
+
+    const orderByClause =
+      orderByField && orderByDirection
+        ? `ORDER BY ${escapeString(orderByField)} ${escapeString(orderByDirection)}`
+        : 'ORDER BY timestamp DESC'
     const limitClause = `LIMIT ${maxRecords}`
     const offsetClause = offset ? `OFFSET ${offset}` : ''
 
-    const clickhouseQuery = `SELECT * FROM events ${whereClause} ${limitClause} ${offsetClause}`
-    const result = await this.clickhouse.queryResults(clickhouseQuery, workspace.databaseName)
-    const results = result.map((row: any) => mapRowToEvent(row))
+    const clickhouseQuery = `SELECT * FROM events ${whereClause} ${orderByClause} ${limitClause} ${offsetClause}`
+    if (!isReadOnlyQuery(clickhouseQuery)) {
+      throw new BadRequestException('The provided query is not read-only')
+    }
 
-    return {
-      results: results,
-      limit: maxRecords,
-      offset: +offset || 0,
-      total: null,
+    try {
+      const result = await this.clickhouse.queryResults(clickhouseQuery, workspace.databaseName)
+      const results = result.map((row: any) => mapRowToEvent(row))
+
+      return {
+        results: results,
+        limit: maxRecords,
+        offset: +offset || 0,
+        total: null,
+      }
+    } catch (error) {
+      throw new BadRequestException(`Error querying events: ${error.message}`)
     }
   }
 
