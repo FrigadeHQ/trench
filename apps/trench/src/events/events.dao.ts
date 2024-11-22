@@ -112,7 +112,7 @@ export class EventsDao {
         results: results,
         limit: maxRecords,
         offset: +offset || 0,
-        total: null,
+        total: results.length,
       }
     } catch (error) {
       throw new BadRequestException(`Error querying events: ${error.message}`)
