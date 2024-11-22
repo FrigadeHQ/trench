@@ -49,3 +49,7 @@ export function parseJsonFields(json: Record<string, any>): Record<string, any> 
 
   return result
 }
+
+export function convertObjectToArray(object: Record<string, any>): any[] {
+  return Object.values(object)
+}
