@@ -37,6 +37,13 @@ export class Webhook {
     example: ['UserSignedUp', 'UserLoggedIn'],
   })
   eventNames: string[]
+
+  @ApiProperty({
+    description:
+      "Whether to flatten the event data. This is useful for downstream systems that don't support nested data structures.",
+    example: true,
+  })
+  flatten: boolean
 }
 
 export class WebhookDTO {
@@ -68,6 +75,14 @@ export class WebhookDTO {
     required: false,
   })
   eventNames?: string[]
+
+  @ApiProperty({
+    description:
+      "Whether to flatten the event data. This is useful for downstream systems that don't support nested data structures. Defaults to `false`.",
+    example: true,
+    required: false,
+  })
+  flatten?: boolean
 }
 
 export class PaginatedWebhookResponse extends PaginatedResponse<Webhook> {
