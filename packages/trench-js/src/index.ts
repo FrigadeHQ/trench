@@ -82,11 +82,11 @@ class Trench {
     }
   }
 
-  track(event: string, properties: Record<string, unknown>) {
+  track(event: string, properties?: Record<string, unknown>) {
     this.analytics.track(event, properties);
   }
 
-  page(properties: Record<string, unknown>) {
+  page(properties?: Record<string, unknown>) {
     const mergedProperties = {
       referrer: typeof document !== 'undefined' ? document.referrer : undefined,
       userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
@@ -95,11 +95,11 @@ class Trench {
     this.analytics.page(mergedProperties);
   }
 
-  identify(userId: string, traits: Record<string, unknown>) {
+  identify(userId: string, traits?: Record<string, unknown>) {
     this.analytics.identify(userId, traits);
   }
 
-  group(groupId: string, traits: Record<string, unknown>) {
+  group(groupId: string, traits?: Record<string, unknown>) {
     // @ts-ignore
     this.analytics.plugins.trench.group(groupId, traits);
   }
