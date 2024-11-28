@@ -1,5 +1,11 @@
 # trench-js
 
+## 0.0.14
+
+### Patch Changes
+
+- 30910fe: Make all `properties` optional
+
 ## 0.0.13
 
 ### Patch Changes
