@@ -14,6 +14,7 @@ describe('events/', () => {
     })
     expect(createRes.statusCode).toEqual(201)
     expect(createRes.body.results).toHaveLength(1)
+    expect(createRes.body.total).toEqual(1)
     expect(createRes.body.results[0].uuid).toBeDefined()
     const uuid = createRes.body.results[0].uuid
 
@@ -39,6 +40,7 @@ describe('events/', () => {
     })
     expect(createRes.statusCode).toEqual(201)
     expect(createRes.body.results).toHaveLength(1)
+    expect(createRes.body.total).toEqual(1)
     expect(createRes.body.results[0].uuid).toBeDefined()
     const eventUuid = createRes.body.results[0].uuid
 
@@ -71,6 +73,7 @@ describe('events/', () => {
     })
     expect(createRes.statusCode).toEqual(201)
     expect(createRes.body.results).toHaveLength(1)
+    expect(createRes.body.total).toEqual(1)
     expect(createRes.body.results[0].uuid).toBeDefined()
     const eventUuid = createRes.body.results[0].uuid
 

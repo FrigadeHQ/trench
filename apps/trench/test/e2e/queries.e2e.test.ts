@@ -14,6 +14,7 @@ describe('queries/', () => {
     })
     expect(createRes.statusCode).toEqual(201)
     expect(createRes.body.results).toHaveLength(1)
+    expect(createRes.body.total).toEqual(1)
     const eventUuid = createRes.body.results[0].uuid
     // Wait for the event to be created
     const results = await waitForQueryResults(`uuid=${eventUuid}`)

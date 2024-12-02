@@ -111,7 +111,7 @@ export class EventsDao {
         this.clickhouse.queryResults(totalQuery, workspace.databaseName)
       ])
       const results = result.map((row: any) => mapRowToEvent(row))
-      const totalCount = +total?.[0]?.count || null
+      const totalCount = +total[0].count
 
       return {
         results: results,
