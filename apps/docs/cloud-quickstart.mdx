@@ -6,16 +6,22 @@ description: Send your first event to Trench Cloud
 
 import TrenchScript from '/snippets/trench-script.mdx';
 
+
 In this guide, we'll walk you through the process of sending your first event and reading it back using the Trench Cloud API.
 The example uses the [Trench JavaScript client](https://github.com/trench-dev/trench-js), but the same can be achieved by calling the [Events API](https://docs.trench.dev/api-reference/events-create) directly.
 
+## Getting Started
+
 <Steps>
-  <Step title="Request Access to Trench Cloud">
-    To get started with Trench Cloud, you need to request access from our [website](https://trench.dev?utm_campaign=cloud-quickstart). Once you have access, you will receive your API keys and other necessary credentials.
+  <Step title="Sign up for Trench Cloud">
+    To get started with Trench Cloud, you need to sign up at [app.trench.dev](https://app.trench.dev?utm_campaign=cloud-quickstart). Then, locate the necessary credentials in the `API Keys` tab.
+    <Frame caption="The Trench cloud dashboard">
+      <img src="/images/trench-dashboard-dark.png" className="pointer-events-none" />
+    </Frame>
   </Step>
 
   <Step title="Install Trench JavaScript Client">
-    First, you need to install the Trench JavaScript client using your favorite package manager:
+    Next, install the Trench JavaScript client using your favorite package manager:
 
     ```bash
     npm install trench-js
@@ -70,7 +76,7 @@ The example uses the [Trench JavaScript client](https://github.com/trench-dev/tr
        'YOUR_SERVER_URL/events?event=ConnectedAccount'
     ```
 
-    This will return a JSON response with the event that was just sent.
+    This will return a JSON response with the event that was just sent. Alternatively, you can verify the event was received in the `Events` tab of the Trench Cloud dashboard.
 
   </Step>
 </Steps>
@@ -79,11 +85,11 @@ The example uses the [Trench JavaScript client](https://github.com/trench-dev/tr
 
 Now that you've sent your first event, you can learn more about the many things you can do with Trench.
 
-## Related Resources
-
 <CardGroup cols={2}>
   <Card title="Get Events API →" href="/api-reference/events-get" horizontal={true}></Card>
   <Card title="Create Events API →" href="/api-reference/events-create" horizontal={true}></Card>
   <Card title="Webhooks API →" href="/api-reference/webhooks-create" horizontal={true}></Card>
   <Card title="Query API →" href="/api-reference/queries-execute" horizontal={true}></Card>
 </CardGroup>
+
+
