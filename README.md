@@ -177,10 +177,10 @@ If you don't want to selfhost, you can get started with Trench in a few minutes 
 * our [Cloud web interface](app.trench.dev/sign-up)
 * our [Cloud quickstart guide](https://docs.trench.dev/cloud-quickstart)
 
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="/img/trench-dashboard-dark.png">
-    <img src="/img/trench-dashboard.png" width="100%" alt="Trench Code Snippet" />
-  </picture>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="/img/trench-dashboard-dark.png">
+  <img src="/img/trench-dashboard.png" width="100%" alt="Trench Code Snippet" />
+</picture>
 
 ## 🔗 Links
 
