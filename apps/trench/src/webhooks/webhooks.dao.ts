@@ -3,7 +3,7 @@ import { ClickHouseService } from '../services/data/click-house/click-house.serv
 import { Webhook, WebhookDTO } from './webhooks.interface'
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Cache } from 'cache-manager'
-
+import { v4 as uuidv4 } from 'uuid'
 const CACHE_KEY = 'webhooks'
 @Injectable()
 export class WebhooksDao {
@@ -26,6 +26,7 @@ export class WebhooksDao {
       createdAt: new Date(row.created_at),
       eventTypes: row.event_types,
       eventNames: row.event_names,
+      flatten: row.flatten,
     }))
     await this.cacheManager.set(CACHE_KEY, resultData)
     return resultData
@@ -36,23 +37,27 @@ export class WebhooksDao {
       throw new BadRequestException('URL is required to create a webhook')
     }
 
+    const uuid = uuidv4()
     await this.clickhouse.insert('webhooks', [
       {
+        uuid,
         url: webhookDTO.url,
         enable_batching: webhookDTO.enableBatching ?? false,
         event_types: webhookDTO.eventTypes ?? ['*'],
         event_names: webhookDTO.eventNames ?? ['*'],
+        flatten: webhookDTO.flatten ?? false,
       },
     ])
     await this.cacheManager.del(CACHE_KEY)
 
     return {
-      uuid: 'new-webhook',
+      uuid,
       url: webhookDTO.url,
       enableBatching: webhookDTO.enableBatching ?? false,
       createdAt: new Date(),
       eventTypes: webhookDTO.eventTypes ?? ['*'],
       eventNames: webhookDTO.eventNames ?? ['*'],
+      flatten: webhookDTO.flatten ?? false,
     }
   }
 

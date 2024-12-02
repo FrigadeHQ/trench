@@ -2,11 +2,12 @@ import { Injectable, OnModuleInit } from '@nestjs/common'
 import { KafkaService } from '../services/data/kafka/kafka.service'
 import { WebhooksDao } from './webhooks.dao'
 import { DEFAULT_KAFKA_TOPIC } from '../common/constants'
-import { KafkaEvent, KafkaEventWithUUID } from '../services/data/kafka/kafka.interface'
+import { KafkaEvent } from '../services/data/kafka/kafka.interface'
 import { Webhook, WebhookDTO } from './webhooks.interface'
 
 import { EventsService } from '../events/events.service'
 import { Event } from '../events/events.interface'
+import { flatten } from '../common/utils'
 @Injectable()
 export class WebhooksService implements OnModuleInit {
   constructor(
@@ -82,15 +83,15 @@ export class WebhooksService implements OnModuleInit {
 
   async sendWebhook(webhook: Webhook, events: Event[]) {
     try {
+      const payload = {
+        data: events,
+      }
       await fetch(webhook.url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        // TODO: Add type here
-        body: JSON.stringify({
-          data: events,
-        }),
+        body: JSON.stringify(webhook.flatten ? flatten(payload) : payload),
       })
     } catch (error) {
       console.error('Error sending webhook:', error.message)

@@ -39,7 +39,7 @@ export class WorkspacesService {
     const existingWorkspace = await this.getWorkspaceByName(name)
 
     if (existingWorkspace) {
-      throw new BadRequestException('Workspace name already taken')
+      throw new BadRequestException(`Workspace name '${name}' already taken`)
     }
 
     // create the database
