@@ -106,10 +106,12 @@ export class EventsDao {
     const totalQuery = `SELECT COUNT(*) AS count FROM events ${whereClause}`
 
     try {
-      const result = await this.clickhouse.queryResults(clickhouseQuery, workspace.databaseName)
+      const [result, total] = await Promise.all([
+        this.clickhouse.queryResults(clickhouseQuery, workspace.databaseName),
+        this.clickhouse.queryResults(totalQuery, workspace.databaseName)
+      ])
       const results = result.map((row: any) => mapRowToEvent(row))
-      const total = await this.clickhouse.queryResults(totalQuery, workspace.databaseName)
-      const totalCount = total?.[0]?.count || null
+      const totalCount = +total?.[0]?.count || null
 
       return {
         results: results,
