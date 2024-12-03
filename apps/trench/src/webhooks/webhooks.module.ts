@@ -8,6 +8,7 @@ import { WebhooksController } from './webhooks.controller'
 import { ApiKeysService } from '../api-keys/api-keys.service'
 import { ApiKeysModule } from '../api-keys/api-keys.module'
 import { CacheModule } from '@nestjs/cache-manager'
+import { WorkspacesModule } from '../workspaces/workspaces.module'
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CacheModule } from '@nestjs/cache-manager'
     EventsModule,
     WebhooksModule,
     ApiKeysModule,
+    WorkspacesModule,
     CacheModule.register({
       ttl: 1000 * 60 * 10, // 10 minutes (in milliseconds)
       max: 100000, // maximum number of items in cache

@@ -8,42 +8,49 @@ import { Webhook, WebhookDTO } from './webhooks.interface'
 import { EventsService } from '../events/events.service'
 import { Event } from '../events/events.interface'
 import { flatten } from '../common/utils'
+import { Workspace } from '../workspaces/workspaces.interface'
+import { WorkspacesService } from '../workspaces/workspaces.service'
+import { getKafkaTopicFromWorkspace } from '../services/data/kafka/kafka.util'
 @Injectable()
 export class WebhooksService implements OnModuleInit {
   constructor(
     private readonly webhooksDao: WebhooksDao,
     private readonly kafkaService: KafkaService,
-    private readonly eventsService: EventsService
+    private readonly eventsService: EventsService,
+    private readonly workspacesService: WorkspacesService
   ) {}
 
   async onModuleInit() {
     console.log('Starting Kafka consumers... this might take a while...')
-    const webhooks = await this.webhooksDao.getWebhooks()
-    for (const webhook of webhooks) {
-      console.log('Initiating consumer for webhook', webhook.uuid)
-      // if (process.env.NODE_ENV === 'production') {
-      await this.initiateConsumer(webhook)
-      // }
+    const workspaces = await this.workspacesService.getWorkspaces()
+    for (const workspace of workspaces) {
+      const webhooks = await this.webhooksDao.getWebhooks(workspace)
+      for (const webhook of webhooks) {
+        console.log('Initiating consumer for webhook:', webhook.uuid, webhook.url)
+        // if (process.env.NODE_ENV === 'production') {
+        await this.initiateConsumer(webhook, workspace)
+        // }
+      }
     }
     // This call takes a while, so we don't block in development!
-    console.log('Kafka consumer successfully started!')
+    console.log('Kafka consumer(s) successfully started!')
   }
 
   private getGroupId(webhookUUID: string) {
     return `${webhookUUID.substring(0, 6)}-webhook-group`
   }
 
-  async initiateConsumer(webhook: Webhook) {
+  async initiateConsumer(webhook: Webhook, workspace: Workspace) {
     await this.kafkaService.initiateConsumer(
-      process.env.KAFKA_TOPIC ?? DEFAULT_KAFKA_TOPIC,
+      getKafkaTopicFromWorkspace(workspace),
       this.getGroupId(webhook.uuid),
-      (payloads) => this.processMessages(payloads, webhook.uuid),
+      (payloads) => this.processMessages(payloads, webhook.uuid, workspace),
       webhook.enableBatching
     )
   }
 
-  async processMessages(payloads: KafkaEvent[], webhookUUID: string) {
-    const webhooks = await this.webhooksDao.getWebhooks()
+  async processMessages(payloads: KafkaEvent[], webhookUUID: string, workspace: Workspace) {
+    const webhooks = await this.webhooksDao.getWebhooks(workspace)
     const thisWebhook = webhooks.find((webhook) => webhook.uuid === webhookUUID)
 
     if (!thisWebhook) {
@@ -61,6 +68,7 @@ export class WebhooksService implements OnModuleInit {
 
     while (eventsFound.length < numberOfEventsToFind && retries < maxRetries) {
       const events = await this.eventsService.getEventsByUUIDs(
+        workspace,
         payloads.map((payload) => payload.uuid)
       )
       if (events.length > 0) {
@@ -73,7 +81,9 @@ export class WebhooksService implements OnModuleInit {
     }
 
     if (eventsFound.length < numberOfEventsToFind) {
-      console.error(`Not all events found after ${maxRetries} retries for webhook ${webhookUUID}.`)
+      console.error(
+        `Error: Not all events found after ${maxRetries} retries for webhook ${webhookUUID}.`
+      )
     }
 
     if (eventsFound.length > 0) {
@@ -98,17 +108,17 @@ export class WebhooksService implements OnModuleInit {
     }
   }
 
-  async getWebhooks(): Promise<Webhook[]> {
-    return await this.webhooksDao.getWebhooks()
+  async getWebhooks(workspace: Workspace): Promise<Webhook[]> {
+    return await this.webhooksDao.getWebhooks(workspace)
   }
 
-  async createWebhook(webhookDTO: WebhookDTO) {
-    const newWebhook = await this.webhooksDao.createWebhook(webhookDTO)
-    await this.initiateConsumer(newWebhook)
+  async createWebhook(workspace: Workspace, webhookDTO: WebhookDTO) {
+    const newWebhook = await this.webhooksDao.createWebhook(workspace, webhookDTO)
+    await this.initiateConsumer(newWebhook, workspace)
     return
   }
 
-  async deleteWebhook(uuid: string) {
-    await this.webhooksDao.deleteWebhook(uuid)
+  async deleteWebhook(workspace: Workspace, uuid: string) {
+    await this.webhooksDao.deleteWebhook(workspace, uuid)
   }
 }
