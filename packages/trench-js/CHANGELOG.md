@@ -1,5 +1,13 @@
 # trench-js
 
+## 0.0.15
+
+### Patch Changes
+
+- 66e98aa: Fixes an issue where `identify` is not properly setting the traits
+- Updated dependencies [66e98aa]
+  - analytics-plugin-trench@0.0.8
+
 ## 0.0.14
 
 ### Patch Changes
