@@ -78,26 +78,22 @@ export class KafkaService {
     await consumer.connect()
     await consumer.subscribe({ topic, fromBeginning: false })
 
-    if (enableBatching) {
-      await consumer.run({
-        eachBatch: async ({ batch }) => {
-          await eachBatch(batch.messages.map((message) => JSON.parse(message.value.toString())))
-          await consumer.commitOffsets(
-            batch.messages.map((message) => ({
-              topic: batch.topic,
-              partition: batch.partition,
-              offset: message.offset,
-            }))
-          )
-        },
-      })
-    } else {
-      await consumer.run({
-        eachMessage: async ({ topic, partition, message }) => {
-          await eachBatch([JSON.parse(message.value.toString())])
-          await consumer.commitOffsets([{ topic, partition, offset: message.offset }])
-        },
-      })
+    try {
+      if (enableBatching) {
+        await consumer.run({
+          eachBatch: async ({ batch }) => {
+            await eachBatch(batch.messages.map((message) => JSON.parse(message.value.toString())))
+          },
+        })
+      } else {
+        await consumer.run({
+          eachMessage: async ({ topic, partition, message }) => {
+            await eachBatch([JSON.parse(message.value.toString())])
+          },
+        })
+      }
+    } catch (e) {
+      console.log(`Error initiating consumer for groupId ${groupId}.`, e)
     }
   }
 

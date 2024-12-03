@@ -27,13 +27,15 @@ export class WebhooksService implements OnModuleInit {
       const webhooks = await this.webhooksDao.getWebhooks(workspace)
       for (const webhook of webhooks) {
         console.log('Initiating consumer for webhook:', webhook.uuid, webhook.url)
-        // if (process.env.NODE_ENV === 'production') {
-        await this.initiateConsumer(webhook, workspace)
-        // }
+        this.initiateConsumer(webhook, workspace)
+          .then(() => {
+            console.log(`Consumer for webhook ${webhook.uuid} has been initiated.`)
+          })
+          .catch((e) => {
+            console.error(`Error initiating consumer for webhook ${webhook.uuid}.`, e)
+          })
       }
     }
-    // This call takes a while, so we don't block in development!
-    console.log('Kafka consumer(s) successfully started!')
   }
 
   private getGroupId(webhookUUID: string) {
@@ -59,7 +61,7 @@ export class WebhooksService implements OnModuleInit {
       return
     }
 
-    const maxRetries = 4
+    const maxRetries = 8
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
     const numberOfEventsToFind = payloads.length
     let retries = 0
