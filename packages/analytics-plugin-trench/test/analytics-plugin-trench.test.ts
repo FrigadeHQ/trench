@@ -5,7 +5,7 @@ jest.mock('node-fetch');
 
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>;
 
-describe('trench', () => {
+describe('analytics-plugin-trench', () => {
   const config = {
     publicApiKey: 'test-key',
     serverUrl: 'https://api.test.com',
@@ -85,6 +85,15 @@ describe('trench', () => {
       },
       body: expect.stringContaining('identify'),
     });
+
+    expect(mockFetch).toHaveBeenCalledWith('https://api.test.com/events', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer test-key',
+      },
+      body: expect.stringContaining('"traits":{"name":"Test User"}'),
+    });
   });
 
   it('should handle group assignments', async () => {
@@ -101,6 +110,15 @@ describe('trench', () => {
         Authorization: 'Bearer test-key',
       },
       body: expect.stringContaining('group'),
+    });
+
+    expect(mockFetch).toHaveBeenCalledWith('https://api.test.com/events', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer test-key',
+      },
+      body: expect.stringContaining('"traits":{"name":"Test Group"}'),
     });
   });
 
