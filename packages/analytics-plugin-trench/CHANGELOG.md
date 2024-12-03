@@ -1,5 +1,11 @@
 # analytics-plugin-trench
 
+## 0.0.8
+
+### Patch Changes
+
+- 66e98aa: Fixes an issue where `identify` is not properly setting the traits
+
 ## 0.0.7
 
 ### Patch Changes
