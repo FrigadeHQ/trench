@@ -109,6 +109,8 @@ export interface BaseEvent {
   instanceId?: string;
 }
 
+const KEY_ANONYMOUS_ID = 'anonymousId';
+const KEY_TRAITS = 'traits';
 export function trench(config: TrenchConfig) {
   const globalPrefix = '__trench__';
   let isTrenchLoaded = false;
@@ -144,6 +146,16 @@ export function trench(config: TrenchConfig) {
   function getCurrentUserId(): string | undefined {
     return currentUserId;
   }
+
+  function getContext(): Record<string, any> | undefined {
+    if (getGlobalValue(KEY_TRAITS)) {
+      return {
+        traits: getGlobalValue(KEY_TRAITS),
+      };
+    }
+    return undefined;
+  }
+
   /* tslint:disable */
   function generateAnonymousId(): string {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
@@ -156,10 +168,10 @@ export function trench(config: TrenchConfig) {
 
   function getAnonymousId(): string {
     if (typeof window !== 'undefined' && window.localStorage) {
-      let storedAnonymousId = localStorage.getItem('anonymousId');
+      let storedAnonymousId = localStorage.getItem(KEY_ANONYMOUS_ID);
       if (!storedAnonymousId) {
         storedAnonymousId = generateAnonymousId();
-        localStorage.setItem('anonymousId', storedAnonymousId);
+        localStorage.setItem(KEY_ANONYMOUS_ID, storedAnonymousId);
       }
       return storedAnonymousId;
     } else {
@@ -212,6 +224,7 @@ export function trench(config: TrenchConfig) {
           userId: payload.userId ?? getAnonymousId(),
           event: payload.event,
           properties: payload.properties,
+          context: getContext(),
           type: 'track',
         },
       ]);
@@ -228,6 +241,7 @@ export function trench(config: TrenchConfig) {
           userId: payload.userId ?? getAnonymousId(),
           event: '$pageview',
           properties: payload.properties,
+          context: getContext(),
           type: 'page',
         },
       ]);
@@ -238,10 +252,7 @@ export function trench(config: TrenchConfig) {
     }: {
       payload: {
         userId: string;
-        traits: {
-          $set?: object;
-          $set_once?: object;
-        } & Record<string, any>;
+        traits: Record<string, any>;
       };
     }): Promise<void> => {
       if (config.enabled === false) {
@@ -252,16 +263,17 @@ export function trench(config: TrenchConfig) {
 
       setCurrentUserId(userId);
 
-      const set = payload.traits.$set ?? payload.traits;
-      const setOnce = payload.traits.$set_once ?? {};
-
       if (userId) {
+        const traits = payload?.traits ?? {};
+
+        setGlobalValue(KEY_TRAITS, traits);
+
         await sendEvents([
           {
             anonymousId: getAnonymousId(),
             userId: payload.userId ?? getAnonymousId(),
             event: 'identify',
-            properties: { $set: set, $set_once: setOnce },
+            traits,
             type: 'identify',
           },
         ]);
