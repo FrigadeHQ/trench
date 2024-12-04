@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Body, Param, UseGuards, Request } from '@nestjs/common'
+import { Controller, Get, Post, Delete, Put, Body, Param, UseGuards, Request } from '@nestjs/common'
 import { WebhooksService } from './webhooks.service'
 import { PaginatedWebhookResponse, Webhook, WebhookDTO } from './webhooks.interface'
 import { PrivateApiGuard } from '../middlewares/private-api.guard'
@@ -42,6 +42,23 @@ export class WebhooksController {
   async createWebhook(@Request() request: Request, @Body() webhookDTO: WebhookDTO) {
     const workspace = getWorkspace(request)
     return this.webhooksService.createWebhook(workspace, webhookDTO)
+  }
+
+  @Put(':uuid')
+  @ApiOperation({ summary: 'Update a webhook' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'The webhook has been successfully updated. Requires private API key in Bearer token.',
+    type: Webhook,
+  })
+  async updateWebhook(
+    @Request() request: Request,
+    @Param('uuid') uuid: string,
+    @Body() webhookDTO: WebhookDTO
+  ) {
+    const workspace = getWorkspace(request)
+    return this.webhooksService.updateWebhook(workspace, uuid, webhookDTO)
   }
 
   @Delete(':uuid')

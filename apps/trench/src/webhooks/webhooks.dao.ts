@@ -34,16 +34,20 @@ export class WebhooksDao {
       eventNames: row.event_names,
       flatten: row.flatten,
     }))
-    await this.cacheManager.set(cacheKey, resultData)
+    await this.cacheManager.set(cacheKey, resultData, 60000) // Cache for 1 minute
     return resultData
   }
 
-  async createWebhook(workspace: Workspace, webhookDTO: WebhookDTO): Promise<Webhook> {
+  async createWebhook(
+    workspace: Workspace,
+    webhookDTO: WebhookDTO,
+    existingUuid?: string
+  ): Promise<Webhook> {
     if (!webhookDTO.url) {
       throw new BadRequestException('URL is required to create a webhook')
     }
 
-    const uuid = uuidv4()
+    const uuid = existingUuid ?? uuidv4()
     await this.clickhouse.insert(
       'webhooks',
       [

@@ -11,6 +11,8 @@ import { flatten } from '../common/utils'
 import { Workspace } from '../workspaces/workspaces.interface'
 import { WorkspacesService } from '../workspaces/workspaces.service'
 import { getKafkaTopicFromWorkspace } from '../services/data/kafka/kafka.util'
+import { shouldProcessEvent } from './webhooks.util'
+import { Consumer } from 'kafkajs'
 @Injectable()
 export class WebhooksService implements OnModuleInit {
   constructor(
@@ -46,18 +48,33 @@ export class WebhooksService implements OnModuleInit {
     await this.kafkaService.initiateConsumer(
       getKafkaTopicFromWorkspace(workspace),
       this.getGroupId(webhook.uuid),
-      (payloads) => this.processMessages(payloads, webhook.uuid, workspace),
+      (payloads, consumer) => this.processMessages(payloads, webhook.uuid, workspace, consumer),
       webhook.enableBatching
     )
   }
 
-  async processMessages(payloads: KafkaEvent[], webhookUUID: string, workspace: Workspace) {
+  async processMessages(
+    payloads: KafkaEvent[],
+    webhookUUID: string,
+    workspace: Workspace,
+    consumer: Consumer
+  ) {
     const webhooks = await this.webhooksDao.getWebhooks(workspace)
     const thisWebhook = webhooks.find((webhook) => webhook.uuid === webhookUUID)
 
     if (!thisWebhook) {
-      await this.kafkaService.removeConsumer(this.getGroupId(webhookUUID))
-      console.error(`Webhook not found. Removing consumer for ${webhookUUID}.`)
+      console.error(
+        `Webhook not found. Skipping processing for ${webhookUUID} and disconnecting consumer.`
+      )
+      await consumer.stop()
+      await consumer.disconnect()
+      return
+    }
+
+    payloads = payloads.filter((payload) => shouldProcessEvent(payload, thisWebhook))
+
+    if (payloads.length === 0) {
+      console.log(`No events to process for webhook ${webhookUUID}.`)
       return
     }
 
@@ -114,13 +131,18 @@ export class WebhooksService implements OnModuleInit {
     return await this.webhooksDao.getWebhooks(workspace)
   }
 
-  async createWebhook(workspace: Workspace, webhookDTO: WebhookDTO) {
-    const newWebhook = await this.webhooksDao.createWebhook(workspace, webhookDTO)
+  async createWebhook(workspace: Workspace, webhookDTO: WebhookDTO, uuid?: string) {
+    const newWebhook = await this.webhooksDao.createWebhook(workspace, webhookDTO, uuid)
     await this.initiateConsumer(newWebhook, workspace)
-    return
+    return newWebhook
   }
 
   async deleteWebhook(workspace: Workspace, uuid: string) {
     await this.webhooksDao.deleteWebhook(workspace, uuid)
+  }
+
+  async updateWebhook(workspace: Workspace, uuid: string, webhookDTO: WebhookDTO) {
+    await this.deleteWebhook(workspace, uuid)
+    return await this.createWebhook(workspace, webhookDTO, uuid)
   }
 }
