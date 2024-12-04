@@ -13,6 +13,21 @@ export type TrenchConfig = {
    * The Trench API URL. E.g. https://api.trench.dev
    */
   serverUrl: string;
+  /**
+   * Whether to enable event batching. When enabled, events will be batched together
+   * and sent periodically or when batch size is reached. Defaults to false.
+   */
+  batchingEnabled?: boolean;
+  /**
+   * Maximum number of events to collect before sending a batch. Default is 100.
+   * Only applies when batchingEnabled is true.
+   */
+  batchSize?: number;
+  /**
+   * Maximum time in milliseconds to wait before sending a batch. Default is 5000ms.
+   * Only applies when batchingEnabled is true.
+   */
+  batchTimeout?: number;
 };
 
 export interface BaseEvent {
@@ -111,11 +126,20 @@ export interface BaseEvent {
 
 const KEY_ANONYMOUS_ID = 'anonymousId';
 const KEY_TRAITS = 'traits';
+const DEFAULT_BATCH_SIZE = 100;
+const DEFAULT_BATCH_TIMEOUT = 5000;
+
 export function trench(config: TrenchConfig) {
   const globalPrefix = '__trench__';
   let isTrenchLoaded = false;
   let anonymousId: string | undefined;
   let currentUserId: string | undefined;
+  let eventBatch: BaseEvent[] = [];
+  let batchTimeout: NodeJS.Timeout | null = null;
+
+  const batchSize = config.batchSize || DEFAULT_BATCH_SIZE;
+  const batchTimeoutMs = config.batchTimeout || DEFAULT_BATCH_TIMEOUT;
+
   function setGlobalValue(key: string, value: any): void {
     const prefixedKey = `${globalPrefix}${key}`;
     if (typeof globalThis !== 'undefined') {
@@ -182,17 +206,43 @@ export function trench(config: TrenchConfig) {
     }
   }
 
-  async function sendEvents(events: BaseEvent[]): Promise<void> {
+  async function flushEventBatch(): Promise<void> {
+    if (eventBatch.length === 0) return;
+
+    const eventsToSend = [...eventBatch];
+    eventBatch = [];
+
+    if (batchTimeout) {
+      clearTimeout(batchTimeout);
+      batchTimeout = null;
+    }
+
+    await sendEvents(eventsToSend);
+  }
+
+  async function queueEvent(event: BaseEvent): Promise<void> {
     if (config.enabled === false) {
       return;
     }
 
-    const lastEvents = getGlobalValue<BaseEvent[]>('lastEvents');
-
-    if (lastEvents && JSON.stringify(events) === JSON.stringify(lastEvents)) {
+    if (!config.batchingEnabled) {
+      await sendEvents([event]);
       return;
     }
-    setGlobalValue('lastEvents', events);
+
+    eventBatch.push(event);
+
+    if (eventBatch.length >= batchSize) {
+      await flushEventBatch();
+    } else if (!batchTimeout) {
+      batchTimeout = setTimeout(() => flushEventBatch(), batchTimeoutMs);
+    }
+  }
+
+  async function sendEvents(events: BaseEvent[]): Promise<void> {
+    if (config.enabled === false) {
+      return;
+    }
 
     await fetch(`${removeTrailingSlash(config.serverUrl)}/events`, {
       method: 'POST',
@@ -218,16 +268,14 @@ export function trench(config: TrenchConfig) {
         return;
       }
 
-      await sendEvents([
-        {
-          anonymousId: payload.userId ? undefined : getAnonymousId(),
-          userId: payload.userId ?? getAnonymousId(),
-          event: payload.event,
-          properties: payload.properties,
-          context: getContext(),
-          type: 'track',
-        },
-      ]);
+      await queueEvent({
+        anonymousId: payload.userId ? undefined : getAnonymousId(),
+        userId: payload.userId ?? getAnonymousId(),
+        event: payload.event,
+        properties: payload.properties,
+        context: getContext(),
+        type: 'track',
+      });
     },
 
     page: async ({ payload }: { payload: BaseEvent }): Promise<void> => {
@@ -235,16 +283,14 @@ export function trench(config: TrenchConfig) {
         return;
       }
 
-      await sendEvents([
-        {
-          anonymousId: payload.userId ? undefined : getAnonymousId(),
-          userId: payload.userId ?? getAnonymousId(),
-          event: '$pageview',
-          properties: payload.properties,
-          context: getContext(),
-          type: 'page',
-        },
-      ]);
+      await queueEvent({
+        anonymousId: payload.userId ? undefined : getAnonymousId(),
+        userId: payload.userId ?? getAnonymousId(),
+        event: '$pageview',
+        properties: payload.properties,
+        context: getContext(),
+        type: 'page',
+      });
     },
 
     identify: async ({
@@ -268,15 +314,13 @@ export function trench(config: TrenchConfig) {
 
         setGlobalValue(KEY_TRAITS, traits);
 
-        await sendEvents([
-          {
-            anonymousId: getAnonymousId(),
-            userId: payload.userId ?? getAnonymousId(),
-            event: 'identify',
-            traits,
-            type: 'identify',
-          },
-        ]);
+        await queueEvent({
+          anonymousId: getAnonymousId(),
+          userId: payload.userId ?? getAnonymousId(),
+          event: 'identify',
+          traits,
+          type: 'identify',
+        });
       }
     },
 
@@ -292,15 +336,13 @@ export function trench(config: TrenchConfig) {
         }
 
         if (groupId) {
-          await sendEvents([
-            {
-              userId: getCurrentUserId() ?? getAnonymousId(),
-              groupId,
-              event: 'group',
-              traits,
-              type: 'group',
-            },
-          ]);
+          await queueEvent({
+            userId: getCurrentUserId() ?? getAnonymousId(),
+            groupId,
+            event: 'group',
+            traits,
+            type: 'group',
+          });
         }
       },
     },

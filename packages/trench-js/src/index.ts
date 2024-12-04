@@ -31,6 +31,9 @@ class Trench {
     });
 
     if (config.autoCaptureEvents) {
+      if (config.batchingEnabled === undefined) {
+        config.batchingEnabled = true;
+      }
       this.page({});
       this.enableAutoCapture();
     }
@@ -52,17 +55,18 @@ class Trench {
         sendPageView();
       });
 
-      // TODO: Re-enable automatic click tracking once auto-batching events is implemented
-      // window.addEventListener('click', (event) => {
-      //   const target = event.target as HTMLElement;
-      //   const eventName = target.getAttribute('data-event-name') || 'click';
-      //   this.track(eventName, {
-      //     tagName: target.tagName,
-      //     id: target.id,
-      //     className: target.className,
-      //     textContent: target.textContent,
-      //   });
-      // });
+      window.addEventListener('click', (event) => {
+        const target = event.target as HTMLElement;
+        const eventName = target.getAttribute('data-event-name') || 'click';
+        if (target.textContent) {
+          this.track(eventName, {
+            tagName: target.tagName,
+            id: target.id,
+            className: target.className,
+            textContent: target.textContent,
+          });
+        }
+      });
 
       window.addEventListener('popstate', () => {
         sendPageView();
