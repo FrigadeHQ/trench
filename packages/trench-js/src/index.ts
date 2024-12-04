@@ -58,12 +58,22 @@ class Trench {
       window.addEventListener('click', (event) => {
         const target = event.target as HTMLElement;
         const eventName = target.getAttribute('data-event-name') || 'click';
-        if (target.textContent) {
+        function extractTextContent(element: HTMLElement): string | null {
+          return (
+            element.textContent?.trim() ||
+            element.getAttribute('alt')?.trim() ||
+            element.getAttribute('title')?.trim() ||
+            null
+          );
+        }
+
+        const textContent = extractTextContent(target);
+        if (textContent && textContent.length < 30) {
           this.track(eventName, {
             tagName: target.tagName,
             id: target.id,
             className: target.className,
-            textContent: target.textContent,
+            textContent,
           });
         }
       });
