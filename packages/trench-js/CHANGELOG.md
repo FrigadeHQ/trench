@@ -1,5 +1,11 @@
 # trench-js
 
+## 0.0.17
+
+### Patch Changes
+
+- 9964a3f: Skip tracking clicks on events with no names
+
 ## 0.0.16
 
 ### Patch Changes
