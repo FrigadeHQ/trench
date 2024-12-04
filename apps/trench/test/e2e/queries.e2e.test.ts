@@ -17,9 +17,9 @@ describe('queries/', () => {
     expect(createRes.body.total).toEqual(1)
     const eventUuid = createRes.body.results[0].uuid
     // Wait for the event to be created
-    const results = await waitForQueryResults(`uuid=${eventUuid}`)
-    expect(results).toHaveLength(1)
-    expect(results[0].uuid).toEqual(eventUuid)
+    const queryResults = await waitForQueryResults(`uuid=${eventUuid}`)
+    expect(queryResults.results).toHaveLength(1)
+    expect(queryResults.results[0].uuid).toEqual(eventUuid)
 
     // Execute the query
     const query = `SELECT * FROM events WHERE uuid = '${eventUuid}'`
