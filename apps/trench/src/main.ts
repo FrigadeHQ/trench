@@ -62,7 +62,7 @@ async function bootstrap(nodeNumber: number) {
   await app.listen(port, '0.0.0.0')
 }
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' && process.env.FORCE_CLUSTER_MODE !== 'true') {
   console.log('Running in single instance dev mode')
   bootstrap(1)
 } else {

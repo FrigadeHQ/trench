@@ -130,6 +130,14 @@ export class WorkspacesService {
     await this.clickhouseService.command(query)
   }
 
+  async getWorkspaces(): Promise<Workspace[]> {
+    const result = await this.clickhouseService.queryResults(`
+      SELECT *
+      FROM workspaces
+    `)
+    return result.map((row) => mapRowToWorkspace(row))
+  }
+
   async updateWorkspace(
     workspaceId: string,
     updateWorkspaceDto: UpdateWorkspaceDto

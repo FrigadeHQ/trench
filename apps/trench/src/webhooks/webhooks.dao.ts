@@ -4,6 +4,7 @@ import { Webhook, WebhookDTO } from './webhooks.interface'
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Cache } from 'cache-manager'
 import { v4 as uuidv4 } from 'uuid'
+import { Workspace } from '../workspaces/workspaces.interface'
 const CACHE_KEY = 'webhooks'
 @Injectable()
 export class WebhooksDao {
@@ -12,13 +13,18 @@ export class WebhooksDao {
     @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) {}
 
-  async getWebhooks(): Promise<Webhook[]> {
-    const cachedWebhooks = await this.cacheManager.get<Webhook[]>(CACHE_KEY)
+  getCacheKey(workspace: Workspace): string {
+    return `${CACHE_KEY}_${workspace.workspaceId}`
+  }
+
+  async getWebhooks(workspace: Workspace): Promise<Webhook[]> {
+    const cacheKey = this.getCacheKey(workspace)
+    const cachedWebhooks = await this.cacheManager.get<Webhook[]>(cacheKey)
     if (cachedWebhooks) {
       return cachedWebhooks
     }
     const query = 'SELECT * FROM webhooks'
-    const result = await this.clickhouse.queryResults(query)
+    const result = await this.clickhouse.queryResults(query, workspace.databaseName)
     const resultData = result.map((row: any) => ({
       uuid: row.uuid,
       url: row.url,
@@ -28,27 +34,35 @@ export class WebhooksDao {
       eventNames: row.event_names,
       flatten: row.flatten,
     }))
-    await this.cacheManager.set(CACHE_KEY, resultData)
+    await this.cacheManager.set(cacheKey, resultData, 60000) // Cache for 1 minute
     return resultData
   }
 
-  async createWebhook(webhookDTO: WebhookDTO): Promise<Webhook> {
+  async createWebhook(
+    workspace: Workspace,
+    webhookDTO: WebhookDTO,
+    existingUuid?: string
+  ): Promise<Webhook> {
     if (!webhookDTO.url) {
       throw new BadRequestException('URL is required to create a webhook')
     }
 
-    const uuid = uuidv4()
-    await this.clickhouse.insert('webhooks', [
-      {
-        uuid,
-        url: webhookDTO.url,
-        enable_batching: webhookDTO.enableBatching ?? false,
-        event_types: webhookDTO.eventTypes ?? ['*'],
-        event_names: webhookDTO.eventNames ?? ['*'],
-        flatten: webhookDTO.flatten ?? false,
-      },
-    ])
-    await this.cacheManager.del(CACHE_KEY)
+    const uuid = existingUuid ?? uuidv4()
+    await this.clickhouse.insert(
+      'webhooks',
+      [
+        {
+          uuid,
+          url: webhookDTO.url,
+          enable_batching: webhookDTO.enableBatching ?? false,
+          event_types: webhookDTO.eventTypes ?? ['*'],
+          event_names: webhookDTO.eventNames ?? ['*'],
+          flatten: webhookDTO.flatten ?? false,
+        },
+      ],
+      workspace.databaseName
+    )
+    await this.cacheManager.del(this.getCacheKey(workspace))
 
     return {
       uuid,
@@ -61,8 +75,11 @@ export class WebhooksDao {
     }
   }
 
-  async deleteWebhook(uuid: string): Promise<void> {
-    await this.clickhouse.query(`ALTER TABLE webhooks DELETE WHERE uuid = '${uuid}'`)
-    await this.cacheManager.del(CACHE_KEY)
+  async deleteWebhook(workspace: Workspace, uuid: string): Promise<void> {
+    await this.clickhouse.query(
+      `ALTER TABLE webhooks DELETE WHERE uuid = '${uuid}'`,
+      workspace.databaseName
+    )
+    await this.cacheManager.del(this.getCacheKey(workspace))
   }
 }

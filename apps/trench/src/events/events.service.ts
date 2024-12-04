@@ -22,8 +22,8 @@ export class EventsService {
     return this.eventsDao.createEvents(workspace, eventDTOs)
   }
 
-  async getEventsByUUIDs(uuids: string[]): Promise<Event[]> {
-    return this.eventsDao.getEventsByUUIDs(uuids)
+  async getEventsByUUIDs(workspace: Workspace, uuids: string[]): Promise<Event[]> {
+    return this.eventsDao.getEventsByUUIDs(workspace, uuids)
   }
 
   async getEventsByQuery(

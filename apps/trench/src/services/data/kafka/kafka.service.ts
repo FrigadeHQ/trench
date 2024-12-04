@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { Kafka, Producer } from 'kafkajs'
+import { Consumer, Kafka, Producer } from 'kafkajs'
 import { KafkaEventWithUUID } from './kafka.interface'
 import { DEFAULT_KAFKA_CLIENT_ID, DEFAULT_KAFKA_PARTITIONS } from '../../../common/constants'
 
@@ -71,43 +71,32 @@ export class KafkaService {
   async initiateConsumer(
     topic: string,
     groupId: string,
-    eachBatch: (payloads: any[]) => Promise<void>,
+    eachBatch: (payloads: any[], consumer: Consumer) => Promise<void>,
     enableBatching: boolean = false
   ) {
     const consumer = this.kafka.consumer({ groupId })
     await consumer.connect()
     await consumer.subscribe({ topic, fromBeginning: false })
 
-    if (enableBatching) {
-      await consumer.run({
-        eachBatch: async ({ batch }) => {
-          await eachBatch(batch.messages.map((message) => JSON.parse(message.value.toString())))
-          await consumer.commitOffsets(
-            batch.messages.map((message) => ({
-              topic: batch.topic,
-              partition: batch.partition,
-              offset: message.offset,
-            }))
-          )
-        },
-      })
-    } else {
-      await consumer.run({
-        eachMessage: async ({ topic, partition, message }) => {
-          await eachBatch([JSON.parse(message.value.toString())])
-          await consumer.commitOffsets([{ topic, partition, offset: message.offset }])
-        },
-      })
-    }
-  }
-
-  async removeConsumer(groupId: string) {
     try {
-      const consumer = this.kafka.consumer({ groupId })
-      await consumer.disconnect()
-      console.log(`Consumer with groupId ${groupId} has been removed.`)
+      if (enableBatching) {
+        await consumer.run({
+          eachBatch: async ({ batch }) => {
+            await eachBatch(
+              batch.messages.map((message) => JSON.parse(message.value.toString())),
+              consumer
+            )
+          },
+        })
+      } else {
+        await consumer.run({
+          eachMessage: async ({ topic, partition, message }) => {
+            await eachBatch([JSON.parse(message.value.toString())], consumer)
+          },
+        })
+      }
     } catch (e) {
-      console.log(`Consumer with groupId ${groupId} not found.`, e)
+      console.log(`Error initiating consumer for groupId ${groupId}.`, e)
     }
   }
 }

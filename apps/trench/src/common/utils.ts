@@ -4,6 +4,8 @@ export function flatten(data: any): Record<string, any> {
   function recurse(cur: any, prop: string) {
     if (Object(cur) !== cur) {
       result[prop] = cur
+    } else if (cur instanceof Date) {
+      result[prop] = cur.toISOString()
     } else if (Array.isArray(cur)) {
       for (let i = 0; i < cur.length; i++) {
         recurse(cur[i], prop + '_' + i)

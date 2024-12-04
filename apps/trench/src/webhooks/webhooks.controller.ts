@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Delete, Body, Param, UseGuards } from '@nestjs/common'
+import { Controller, Get, Post, Delete, Put, Body, Param, UseGuards, Request } from '@nestjs/common'
 import { WebhooksService } from './webhooks.service'
 import { PaginatedWebhookResponse, Webhook, WebhookDTO } from './webhooks.interface'
 import { PrivateApiGuard } from '../middlewares/private-api.guard'
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger'
 import { PaginatedResponse } from '../common/models'
+import { getWorkspace } from '../common/request'
 
 @ApiBearerAuth()
 @Controller('webhooks')
@@ -19,8 +20,9 @@ export class WebhooksController {
       'The webhooks have been successfully retrieved. Requires private API key in Bearer token.',
     type: PaginatedWebhookResponse,
   })
-  async getWebhooks(): Promise<PaginatedWebhookResponse> {
-    const result = await this.webhooksService.getWebhooks()
+  async getWebhooks(@Request() request: Request): Promise<PaginatedWebhookResponse> {
+    const workspace = getWorkspace(request)
+    const result = await this.webhooksService.getWebhooks(workspace)
     return {
       results: result,
       limit: 0,
@@ -37,8 +39,26 @@ export class WebhooksController {
       'The webhook has been successfully created. Requires private API key in Bearer token.',
     type: Webhook,
   })
-  async createWebhook(@Body() webhookDTO: WebhookDTO) {
-    return this.webhooksService.createWebhook(webhookDTO)
+  async createWebhook(@Request() request: Request, @Body() webhookDTO: WebhookDTO) {
+    const workspace = getWorkspace(request)
+    return this.webhooksService.createWebhook(workspace, webhookDTO)
+  }
+
+  @Put(':uuid')
+  @ApiOperation({ summary: 'Update a webhook' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'The webhook has been successfully updated. Requires private API key in Bearer token.',
+    type: Webhook,
+  })
+  async updateWebhook(
+    @Request() request: Request,
+    @Param('uuid') uuid: string,
+    @Body() webhookDTO: WebhookDTO
+  ) {
+    const workspace = getWorkspace(request)
+    return this.webhooksService.updateWebhook(workspace, uuid, webhookDTO)
   }
 
   @Delete(':uuid')
@@ -48,7 +68,8 @@ export class WebhooksController {
     description:
       'The webhook has been successfully deleted. Requires private API key in Bearer token.',
   })
-  async deleteWebhook(@Param('uuid') uuid: string) {
-    return this.webhooksService.deleteWebhook(uuid)
+  async deleteWebhook(@Request() request: Request, @Param('uuid') uuid: string) {
+    const workspace = getWorkspace(request)
+    return this.webhooksService.deleteWebhook(workspace, uuid)
   }
 }

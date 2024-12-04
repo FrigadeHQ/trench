@@ -17,10 +17,10 @@ export class EventsDao {
     private kafkaService: KafkaService
   ) {}
 
-  async getEventsByUUIDs(uuids: string[]): Promise<Event[]> {
+  async getEventsByUUIDs(workspace: Workspace, uuids: string[]): Promise<Event[]> {
     const escapedUUIDs = uuids.map((uuid) => `'${escapeString(uuid)}'`).join(', ')
     const query = `SELECT * FROM events WHERE uuid IN (${escapedUUIDs})`
-    const result = await this.clickhouse.queryResults(query)
+    const result = await this.clickhouse.queryResults(query, workspace.databaseName)
     return result.map((row: any) => mapRowToEvent(row))
   }
 

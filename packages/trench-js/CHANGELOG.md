@@ -1,5 +1,27 @@
 # trench-js
 
+## 0.0.17
+
+### Patch Changes
+
+- 9964a3f: Skip tracking clicks on events with no names
+
+## 0.0.16
+
+### Patch Changes
+
+- f286470: Enables batching as well as click tracking in autocapture mode
+- Updated dependencies [f286470]
+  - analytics-plugin-trench@0.0.9
+
+## 0.0.15
+
+### Patch Changes
+
+- 66e98aa: Fixes an issue where `identify` is not properly setting the traits
+- Updated dependencies [66e98aa]
+  - analytics-plugin-trench@0.0.8
+
 ## 0.0.14
 
 ### Patch Changes
