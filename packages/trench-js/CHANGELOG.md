@@ -1,5 +1,13 @@
 # trench-js
 
+## 0.0.16
+
+### Patch Changes
+
+- f286470: Enables batching as well as click tracking in autocapture mode
+- Updated dependencies [f286470]
+  - analytics-plugin-trench@0.0.9
+
 ## 0.0.15
 
 ### Patch Changes
