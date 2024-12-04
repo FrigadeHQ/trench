@@ -87,4 +87,10 @@ describe('events/', () => {
     expect(queryResults.results[0].properties.plan).toEqual('premium')
     expect(queryResults.results[0].properties.country).toEqual('USA')
   })
+
+  test('should return an error when querying for a non-existent event', async () => {
+    await expect(waitForQueryResults('event=NonExistentEvent')).rejects.toThrow(
+      'Timeout: No results found'
+    )
+  })
 })
