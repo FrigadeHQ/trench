@@ -44,6 +44,14 @@ The example uses the [Trench JavaScript client](https://github.com/trench-dev/tr
       serverUrl: 'YOUR_SERVER_URL'
     });
     ```
+    Optionally, you can identify a user with the `identify` method:
+
+    ```javascript
+    trench.identify('user-id', {
+      email: 'test@example.com',
+      // Add any other traits you want to associate with the user
+    })
+    ```
 
   </Step>
 
@@ -51,33 +59,14 @@ The example uses the [Trench JavaScript client](https://github.com/trench-dev/tr
     Now you can send a sample event to Trench Cloud. Here is an example of how to send an event:
 
     ```javascript
-    trench.track({
-      userId: '550e8400-e29b-41d4-a716-446655440000',
-      event: 'ConnectedAccount',
-      properties: {
-        totalAccounts: 4,
-        country: 'Denmark'
-      }
-    }).then(response => {
-      console.log('Event sent successfully:', response);
-    }).catch(error => {
-      console.error('Error sending event:', error);
-    });
+    trench.track("Test Event");
     ```
 
+    This will send an event with the name `Test Event`.
   </Step>
 
   <Step title="Verify the Event">
-    You can verify that the event was received by querying the events endpoint. Use your private API key for this:
-
-    ```bash
-    curl -i -X GET \
-       -H "Authorization: Bearer private-YOUR_PRIVATE_API_KEY" \
-       'YOUR_SERVER_URL/events?event=ConnectedAccount'
-    ```
-
-    This will return a JSON response with the event that was just sent. Alternatively, you can verify the event was received in the `Events` tab of the Trench Cloud dashboard.
-
+    You can verify that the event was received by opening the `Events` tab in the Trench Cloud dashboard.
   </Step>
 </Steps>
 
