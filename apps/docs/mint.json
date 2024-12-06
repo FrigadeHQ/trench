@@ -75,7 +75,7 @@
     "website": "https://trench.dev"
   },
   "api": {
-    "baseUrl": "https://sandbox.trench.dev",
+    "baseUrl": "https://api.trench.dev",
     "auth": {
       "method": "bearer"
     }
