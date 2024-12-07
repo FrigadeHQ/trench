@@ -34,7 +34,7 @@ All `identify` calls are sent to the same underlying `events` ClickHouse table, 
 SELECT * FROM events WHERE userId = 'user-123'
 ```
 
-To get the tracking events and the users most recent traits, you can join the `events` and `identify` events:
+To get the tracking events and the user's most recently provided email, you can join the `track` and `identify` event types:
 
 ```sql
 SELECT 
