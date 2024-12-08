@@ -43,8 +43,8 @@ describe('workspaces/', () => {
 
     // Query the created event using the public API key
     const queryResults = await waitForQueryResults(`uuid=${eventUuid}`, newPrivateApiKey)
-    expect(queryResults).toHaveLength(1)
-    expect(queryResults[0].uuid).toEqual(eventUuid)
+    expect(queryResults.results).toHaveLength(1)
+    expect(queryResults.results[0].uuid).toEqual(eventUuid)
 
     // Ensure the new private api key cannot be used to create new workspaces
     const createWorkspaceRes = await authenticatedPost('/workspaces', newPrivateApiKey).send({

@@ -12,7 +12,7 @@ export function escapeString(str: string) {
  * The date will also be escaped to be safe to use in a ClickHouse query.
  */
 export function formatToClickhouseDate(date: Date): string {
-  const isoString = date.toISOString();
-  const clickhouseDate = isoString.replace('Z', '');
-  return escapeString(clickhouseDate);
+  const isoString = date.toISOString()
+  const clickhouseDate = isoString.replace('Z', '')
+  return escapeString(clickhouseDate)
 }
