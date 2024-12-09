@@ -53,7 +53,7 @@ export async function waitForQueryResults(query: string, privateApiKey?: string)
   while (true) {
     const res = await authenticatedGet(`/events?${query}`, privateApiKey)
     if (res.body.results && res.body.results.length > 0) {
-      return res.body.results
+      return res.body
     }
     if (Date.now() - startTime > maxWaitTime) {
       throw new Error(`Timeout: No results found within ${maxWaitTime / 1000} seconds`)

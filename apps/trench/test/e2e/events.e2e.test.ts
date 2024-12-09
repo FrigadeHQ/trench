@@ -14,13 +14,14 @@ describe('events/', () => {
     })
     expect(createRes.statusCode).toEqual(201)
     expect(createRes.body.results).toHaveLength(1)
+    expect(createRes.body.total).toEqual(1)
     expect(createRes.body.results[0].uuid).toBeDefined()
     const uuid = createRes.body.results[0].uuid
 
     // Fetch the created event using the newly created util function
-    const results = await waitForQueryResults(`uuid=${uuid}`)
-    expect(results).toHaveLength(1)
-    expect(results[0].uuid).toEqual(uuid)
+    const queryResults = await waitForQueryResults(`uuid=${uuid}`)
+    expect(queryResults.results).toHaveLength(1)
+    expect(queryResults.results[0].uuid).toEqual(uuid)
   })
 
   test('should create a new event with instanceId, event name with spaces, and userId, then fetch it', async () => {
@@ -39,6 +40,7 @@ describe('events/', () => {
     })
     expect(createRes.statusCode).toEqual(201)
     expect(createRes.body.results).toHaveLength(1)
+    expect(createRes.body.total).toEqual(1)
     expect(createRes.body.results[0].uuid).toBeDefined()
     const eventUuid = createRes.body.results[0].uuid
 
@@ -46,11 +48,11 @@ describe('events/', () => {
     const results = await waitForQueryResults(
       `uuid=${eventUuid}&event=User%20Logged%20In&userId=user-123&instanceId=instance-456`
     )
-    expect(results).toHaveLength(1)
-    expect(results[0].uuid).toEqual(eventUuid)
-    expect(results[0].event).toEqual('User Logged In')
-    expect(results[0].userId).toEqual('user-123')
-    expect(results[0].instanceId).toEqual('instance-456')
+    expect(results.total).toEqual(1)
+    expect(results.results[0].uuid).toEqual(eventUuid)
+    expect(results.results[0].event).toEqual('User Logged In')
+    expect(results.results[0].userId).toEqual('user-123')
+    expect(results.results[0].instanceId).toEqual('instance-456')
   })
 
   test('should create a new event with properties and fetch it using properties', async () => {
@@ -71,17 +73,24 @@ describe('events/', () => {
     })
     expect(createRes.statusCode).toEqual(201)
     expect(createRes.body.results).toHaveLength(1)
+    expect(createRes.body.total).toEqual(1)
     expect(createRes.body.results[0].uuid).toBeDefined()
     const eventUuid = createRes.body.results[0].uuid
 
     // Fetch the created event using the properties
-    const results = await waitForQueryResults(
+    const queryResults = await waitForQueryResults(
       `uuid=${eventUuid}&properties.plan=premium&properties.country=USA`
     )
-    expect(results).toHaveLength(1)
-    expect(results[0].uuid).toEqual(eventUuid)
-    expect(results[0].event).toEqual('User Updated Profile')
-    expect(results[0].properties.plan).toEqual('premium')
-    expect(results[0].properties.country).toEqual('USA')
+    expect(queryResults.total).toEqual(1)
+    expect(queryResults.results[0].uuid).toEqual(eventUuid)
+    expect(queryResults.results[0].event).toEqual('User Updated Profile')
+    expect(queryResults.results[0].properties.plan).toEqual('premium')
+    expect(queryResults.results[0].properties.country).toEqual('USA')
+  })
+
+  test('should return an error when querying for a non-existent event', async () => {
+    await expect(waitForQueryResults('event=NonExistentEvent')).rejects.toThrow(
+      'Timeout: No results found'
+    )
   })
 })

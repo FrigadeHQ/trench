@@ -103,16 +103,21 @@ export class EventsDao {
     if (!isReadOnlyQuery(clickhouseQuery)) {
       throw new BadRequestException('The provided query is not read-only')
     }
+    const totalQuery = `SELECT COUNT(*) AS count FROM events ${whereClause}`
 
     try {
-      const result = await this.clickhouse.queryResults(clickhouseQuery, workspace.databaseName)
+      const [result, total] = await Promise.all([
+        this.clickhouse.queryResults(clickhouseQuery, workspace.databaseName),
+        this.clickhouse.queryResults(totalQuery, workspace.databaseName),
+      ])
       const results = result.map((row: any) => mapRowToEvent(row))
+      const totalCount = +total[0].count
 
       return {
         results: results,
         limit: maxRecords,
         offset: +offset || 0,
-        total: null,
+        total: totalCount,
       }
     } catch (error) {
       throw new BadRequestException(`Error querying events: ${error.message}`)
