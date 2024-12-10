@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { ClickHouseService } from '../click-house/click-house.service'
 import { KafkaService } from '../kafka/kafka.service'
 import { DEFAULT_WORKSPACE_ID } from '../../../common/constants'
@@ -9,6 +9,7 @@ import { Workspace } from '../../../workspaces/workspaces.interface'
 
 @Injectable()
 export class BootstrapService {
+  private readonly logger = new Logger(BootstrapService.name)
   constructor(
     private readonly clickhouseService: ClickHouseService,
     private readonly kafkaService: KafkaService
@@ -34,12 +35,12 @@ export class BootstrapService {
   }
 
   async bootstrapWorkspace(workspace: Workspace) {
-    console.log(`Creating topics and running migrations for workspace ${workspace.name}`)
+    this.logger.log(`Creating topics and running migrations for workspace ${workspace.name}`)
     const kafkaTopicName = await this.kafkaService.createTopicIfNotExists(
       getKafkaTopicFromWorkspace(workspace)
     )
     await this.clickhouseService.runMigrations(workspace.databaseName, kafkaTopicName)
-    console.log(
+    this.logger.log(
       `Successfully finished creating topics and running migrations for workspace ${workspace.name}`
     )
   }
