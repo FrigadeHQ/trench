@@ -5,3 +5,48 @@ openapi: post /queries
 ---
 
 <Info>This endpoint requires your [private API key](/api-reference/overview#authentication).</Info>
+
+This endpoint allows you to execute read-only queries against your Trench data. 
+The endpoint will proxy the request to the underlying ClickHouse database.
+For more information about ClickHouse's query language, see the [official documentation](https://clickhouse.com/docs/en/sql-reference).
+
+## Examples
+
+### Quering event properties, context, and traits
+
+To query a specific nested property, you can use the `JSONExtract` function. For example, to query all events where the `totalAccounts` property is greater than 3, you can use the following query:
+
+```sql
+SELECT * FROM events WHERE JSONExtract(properties, 'totalAccounts', 'UInt64') > 3
+```
+
+Similarly, you can query the context and traits:
+
+```sql
+SELECT * FROM events WHERE JSONExtract(context, 'country', 'String') = 'Denmark'
+```
+
+### Joining identified users with their events
+
+All `identify` calls are sent to the same underlying `events` ClickHouse table, so you can join events with identified users using the `userId` column. For example, to query all events for a user with the ID `user-123`, you can use the following query:
+
+```sql
+SELECT * FROM events WHERE userId = 'user-123'
+```
+
+To get the tracking events and the user's most recently provided email, you can join the `track` and `identify` event types:
+
+```sql
+SELECT 
+    i.email,
+    e.*
+FROM 
+    events e 
+LEFT JOIN 
+    (SELECT userId, type, JSONExtract(traits, 'email', 'String') AS email FROM events) i 
+ON 
+    e.userId = i.userId
+WHERE 
+    e.type = 'track' 
+    AND i.type = 'identify';
+```
