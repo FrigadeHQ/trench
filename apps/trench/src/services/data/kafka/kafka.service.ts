@@ -79,22 +79,25 @@ export class KafkaService {
     await consumer.subscribe({ topic, fromBeginning: false })
 
     try {
-      if (enableBatching) {
-        await consumer.run({
-          eachBatch: async ({ batch }) => {
+      await consumer.run({
+        eachBatch: async ({ batch }) => {
+          if (enableBatching) {
+            // Process all messages in batch at once
             await eachBatch(
               batch.messages.map((message) => JSON.parse(message.value.toString())),
               consumer
             )
-          },
-        })
-      } else {
-        await consumer.run({
-          eachMessage: async ({ topic, partition, message }) => {
-            await eachBatch([JSON.parse(message.value.toString())], consumer)
-          },
-        })
-      }
+          } else {
+            // Process messages one at a time
+            for (const message of batch.messages) {
+              await eachBatch([JSON.parse(message.value.toString())], consumer)
+            }
+          }
+        },
+        autoCommit: true,
+        autoCommitInterval: 1000,
+        partitionsConsumedConcurrently: 4,
+      })
     } catch (e) {
       console.log(`Error initiating consumer for groupId ${groupId}.`, e)
     }

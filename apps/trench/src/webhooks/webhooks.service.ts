@@ -74,7 +74,6 @@ export class WebhooksService implements OnModuleInit {
     payloads = payloads.filter((payload) => shouldProcessEvent(payload, thisWebhook))
 
     if (payloads.length === 0) {
-      console.log(`No events to process for webhook ${webhookUUID}.`)
       return
     }
 
@@ -115,15 +114,18 @@ export class WebhooksService implements OnModuleInit {
       const payload = {
         data: events,
       }
-      await fetch(webhook.url, {
+      const response = await fetch(webhook.url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(webhook.flatten ? flatten(payload) : payload),
       })
+      if (!response.ok) {
+        console.error('Error sending webhook:', webhook.url, response.statusText)
+      }
     } catch (error) {
-      console.error('Error sending webhook:', error.message)
+      console.error('Error sending webhook:', webhook.url, error.message)
     }
   }
 
