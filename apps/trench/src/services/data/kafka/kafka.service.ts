@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { Consumer, Kafka, Producer } from 'kafkajs'
 import { KafkaEventWithUUID } from './kafka.interface'
 import { DEFAULT_KAFKA_CLIENT_ID, DEFAULT_KAFKA_PARTITIONS } from '../../../common/constants'
 
 @Injectable()
 export class KafkaService {
+  private readonly logger = new Logger(KafkaService.name)
   private hasConnectedToProducer = false
   private kafka: Kafka
   private producer: Producer
@@ -28,13 +29,13 @@ export class KafkaService {
         process.env.KAFKA_PARTITIONS
           ? Number(process.env.KAFKA_PARTITIONS)
           : DEFAULT_KAFKA_PARTITIONS
-      ).then(() => console.log(`Created topic ${topic}`))
+      ).then(() => this.logger.log(`Created topic ${topic}`))
 
       if (process.env.NODE_ENV !== 'development') {
         await topicPromise
       }
     } catch (e) {
-      console.log(`Skipping topic creation, topic ${process.env.KAFKA_TOPIC} already exists.`)
+      this.logger.log(`Skipping topic creation, topic ${process.env.KAFKA_TOPIC} already exists.`)
     }
 
     return topic
@@ -99,7 +100,7 @@ export class KafkaService {
         partitionsConsumedConcurrently: 4,
       })
     } catch (e) {
-      console.log(`Error initiating consumer for groupId ${groupId}.`, e)
+      this.logger.log(`Error initiating consumer for groupId ${groupId}.`, e)
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { createClient, ClickHouseClient } from '@clickhouse/client'
 import * as fs from 'fs'
 import * as path from 'path'
@@ -12,6 +12,7 @@ import {
 
 @Injectable()
 export class ClickHouseService {
+  private readonly logger = new Logger(ClickHouseService.name)
   private clientMap: Map<string, ClickHouseClient> = new Map()
 
   getClient(databaseName?: string): ClickHouseClient {
@@ -83,11 +84,11 @@ export class ClickHouseService {
 
     for (const file of files) {
       if (executedFiles.has(file)) {
-        console.log(`Skipping migration ${file}, already executed `)
+        this.logger.log(`Skipping migration ${file}, already executed `)
         continue
       }
 
-      console.log(`Executing migration ${file}`)
+      this.logger.log(`Executing migration ${file}`)
 
       const filePath = path.join(migrationsDir, file)
       const query = this.applySubstitutions(fs.readFileSync(filePath, 'utf8'), kafkaTopicName)
@@ -105,7 +106,7 @@ export class ClickHouseService {
           if (String(error).includes('already exists')) {
             continue
           }
-          console.error(`Error executing migration ${file} with query ${query}: ${error}`)
+          this.logger.error(`Error executing migration ${file} with query ${query}: ${error}`, error.stack)
           throw error
         }
       }
@@ -116,7 +117,7 @@ export class ClickHouseService {
         },
       ])
 
-      console.log(`Migration ${file} executed successfully`)
+      this.logger.log(`Migration ${file} executed successfully`)
     }
   }
 

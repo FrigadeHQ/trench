@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common'
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { KafkaService } from '../services/data/kafka/kafka.service'
 import { WebhooksDao } from './webhooks.dao'
 import { DEFAULT_KAFKA_TOPIC } from '../common/constants'
@@ -15,6 +15,7 @@ import { shouldProcessEvent } from './webhooks.util'
 import { Consumer } from 'kafkajs'
 @Injectable()
 export class WebhooksService implements OnModuleInit {
+  private readonly logger = new Logger(WebhooksService.name)
   constructor(
     private readonly webhooksDao: WebhooksDao,
     private readonly kafkaService: KafkaService,
@@ -23,18 +24,18 @@ export class WebhooksService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    console.log('Starting Kafka consumers... this might take a while...')
+    this.logger.log('Starting Kafka consumers... this might take a while...')
     const workspaces = await this.workspacesService.getWorkspaces()
     for (const workspace of workspaces) {
       const webhooks = await this.webhooksDao.getWebhooks(workspace)
       for (const webhook of webhooks) {
-        console.log('Initiating consumer for webhook:', webhook.uuid, webhook.url)
+        this.logger.log('Initiating consumer for webhook:', webhook.uuid, webhook.url)
         this.initiateConsumer(webhook, workspace)
           .then(() => {
-            console.log(`Consumer for webhook ${webhook.uuid} has been initiated.`)
+            this.logger.log(`Consumer for webhook ${webhook.uuid} has been initiated.`)
           })
           .catch((e) => {
-            console.error(`Error initiating consumer for webhook ${webhook.uuid}.`, e)
+            this.logger.error(`Error initiating consumer for webhook ${webhook.uuid}.`, e.message, e.stack)
           })
       }
     }
@@ -63,7 +64,7 @@ export class WebhooksService implements OnModuleInit {
     const thisWebhook = webhooks.find((webhook) => webhook.uuid === webhookUUID)
 
     if (!thisWebhook) {
-      console.error(
+      this.logger.error(
         `Webhook not found. Skipping processing for ${webhookUUID} and disconnecting consumer.`
       )
       await consumer.stop()
@@ -99,7 +100,7 @@ export class WebhooksService implements OnModuleInit {
     }
 
     if (eventsFound.length < numberOfEventsToFind) {
-      console.error(
+      this.logger.error(
         `Error: Not all events found after ${maxRetries} retries for webhook ${webhookUUID}.`
       )
     }
@@ -122,10 +123,10 @@ export class WebhooksService implements OnModuleInit {
         body: JSON.stringify(webhook.flatten ? flatten(payload) : payload),
       })
       if (!response.ok) {
-        console.error('Error sending webhook:', webhook.url, response.statusText)
+        this.logger.error('Error sending webhook:', webhook.url, response.statusText)
       }
     } catch (error) {
-      console.error('Error sending webhook:', webhook.url, error.message)
+      this.logger.error('Error sending webhook:', webhook.url, error.message, error.stack)
     }
   }
 

@@ -8,6 +8,10 @@ import { AppClusterService } from './appCluster.service'
 import { KafkaService } from './services/data/kafka/kafka.service'
 import { ClickHouseService } from './services/data/click-house/click-house.service'
 import { BootstrapService } from './services/data/bootstrap/bootstrap.service'
+import { Logger } from '@nestjs/common'
+import * as os from 'os'
+
+const logger = new Logger('Main')
 
 const CORS_OPTIONS = {
   origin: '*',
@@ -25,21 +29,21 @@ const CORS_OPTIONS = {
 }
 
 async function bootstrap(nodeNumber: number) {
-  console.log(`Starting node ${nodeNumber}`)
+  logger.log(`Starting node ${nodeNumber}`)
 
   let httpsOptions
 
   if (process.env.API_HTTPS === 'true') {
-    console.log('Using https')
+    logger.log('Using https')
     httpsOptions = {
       key: fs.readFileSync('/app/certs/server.key'),
       cert: fs.readFileSync('/app/certs/server.crt'),
     }
   } else {
-    console.log('Using http')
+    logger.log('Using http')
   }
 
-  const fastifyAdapter = new FastifyAdapter({ https: httpsOptions })
+  const fastifyAdapter = new FastifyAdapter({ https: httpsOptions, logger: true })
   fastifyAdapter.enableCors(CORS_OPTIONS)
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, fastifyAdapter)
 
@@ -58,14 +62,15 @@ async function bootstrap(nodeNumber: number) {
     await bootstrapService.bootstrap()
   }
 
-  console.log('Listening on port', port)
+  logger.log(`Listening on port ${port}`)
   await app.listen(port, '0.0.0.0')
 }
 
 if (process.env.NODE_ENV !== 'production' && process.env.FORCE_CLUSTER_MODE !== 'true') {
-  console.log('Running in single instance dev mode')
+  logger.log('Running in single instance dev mode')
   bootstrap(1)
 } else {
-  console.log('Running in cluster mode')
+  const numCPUs = os.cpus().length
+  logger.log('Running in cluster mode with ' + numCPUs + ' processes')
   AppClusterService.clusterize(bootstrap)
 }
