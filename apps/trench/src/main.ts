@@ -70,7 +70,7 @@ if (process.env.NODE_ENV !== 'production' && process.env.FORCE_CLUSTER_MODE !== 
   logger.log('Running in single instance dev mode')
   bootstrap(1)
 } else {
-  const numCPUs = os.cpus().length
-  logger.log('Running in cluster mode with ' + numCPUs + ' processes')
+  logger.log('Running in cluster mode with ' + os.cpus().length + ' processes')
   AppClusterService.clusterize(bootstrap)
 }
+
