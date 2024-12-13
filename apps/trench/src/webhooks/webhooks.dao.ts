@@ -1,10 +1,10 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common'
-import { ClickHouseService } from '../services/data/click-house/click-house.service'
-import { Webhook, WebhookDTO } from './webhooks.interface'
+import { ClickHouseService } from 'src/services/data/click-house/click-house.service'
+import { Webhook, WebhookDTO } from 'src/webhooks/webhooks.interface'
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Cache } from 'cache-manager'
 import { v4 as uuidv4 } from 'uuid'
-import { Workspace } from '../workspaces/workspaces.interface'
+import { Workspace } from 'src/workspaces/workspaces.interface'
 const CACHE_KEY = 'webhooks'
 @Injectable()
 export class WebhooksDao {

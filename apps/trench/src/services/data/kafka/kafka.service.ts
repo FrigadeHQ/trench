@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { Consumer, Kafka, Producer } from 'kafkajs'
-import { KafkaEventWithUUID } from './kafka.interface'
-import { DEFAULT_KAFKA_CLIENT_ID, DEFAULT_KAFKA_PARTITIONS } from '../../../common/constants'
+import { KafkaEventWithUUID } from 'src/services/data/kafka/kafka.interface'
+import { DEFAULT_KAFKA_CLIENT_ID, DEFAULT_KAFKA_PARTITIONS } from 'src/common/constants'
 
 @Injectable()
 export class KafkaService {

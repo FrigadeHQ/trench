@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common'
 import { Observable } from 'rxjs'
-import { ApiKeysService } from '../api-keys/api-keys.service'
-import { ApiKeyType } from '../api-keys/api-keys.interface'
+import { ApiKeysService } from 'src/api-keys/api-keys.service'
+import { ApiKeyType } from 'src/api-keys/api-keys.interface'
 
 export class ApiGuard implements CanActivate {
   constructor(

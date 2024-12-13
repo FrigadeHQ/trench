@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
-import { ApiKeysService } from './api-keys.service'
-import { ClickHouseModule } from '../services/data/click-house/click-house.module'
+import { ApiKeysService } from 'src/api-keys/api-keys.service'
+import { ClickHouseModule } from 'src/services/data/click-house/click-house.module'
 import { CacheModule } from '@nestjs/cache-manager'
 
 @Module({

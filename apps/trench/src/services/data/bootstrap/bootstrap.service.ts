@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { ClickHouseService } from '../click-house/click-house.service'
-import { KafkaService } from '../kafka/kafka.service'
-import { DEFAULT_WORKSPACE_ID } from '../../../common/constants'
-import { DEFAULT_WORKSPACE_NAME } from '../../../common/constants'
-import { getKafkaTopicFromWorkspace } from '../kafka/kafka.util'
-import { mapRowToWorkspace } from '../../../workspaces/workspaces.util'
-import { Workspace } from '../../../workspaces/workspaces.interface'
+import { ClickHouseService } from 'src/services/data/click-house/click-house.service'
+import { KafkaService } from 'src/services/data/kafka/kafka.service'
+import { DEFAULT_WORKSPACE_ID } from 'src/common/constants'
+import { DEFAULT_WORKSPACE_NAME } from 'src/common/constants'
+import { getKafkaTopicFromWorkspace } from 'src/services/data/kafka/kafka.util'
+import { mapRowToWorkspace } from 'src/workspaces/workspaces.util'
+import { Workspace } from 'src/workspaces/workspaces.interface'
 
 @Injectable()
 export class BootstrapService {

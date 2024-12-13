@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { PaginatedResponse } from '../common/models'
+import { PaginatedResponse } from 'src/common/models'
 
 export class QueriesDTO {
   @ApiProperty({

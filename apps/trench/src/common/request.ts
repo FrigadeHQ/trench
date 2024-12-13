@@ -1,5 +1,5 @@
 import { Request } from '@nestjs/common'
-import { Workspace } from '../workspaces/workspaces.interface'
+import { Workspace } from 'src/workspaces/workspaces.interface'
 
 export function getWorkspace(req: Request): Workspace {
   const workspace = (req as any).workspace

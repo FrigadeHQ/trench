@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Delete, Put, Body, Param, UseGuards, Request } from '@nestjs/common'
-import { WebhooksService } from './webhooks.service'
-import { PaginatedWebhookResponse, Webhook, WebhookDTO } from './webhooks.interface'
-import { PrivateApiGuard } from '../middlewares/private-api.guard'
+import { WebhooksService } from 'src/webhooks/webhooks.service'
+import { PaginatedWebhookResponse, Webhook, WebhookDTO } from 'src/webhooks/webhooks.interface'
+import { PrivateApiGuard } from 'src/middlewares/private-api.guard'
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger'
-import { PaginatedResponse } from '../common/models'
-import { getWorkspace } from '../common/request'
+import { PaginatedResponse } from 'src/common/models'
+import { getWorkspace } from 'src/common/request'
 
 @ApiBearerAuth()
 @Controller('webhooks')
