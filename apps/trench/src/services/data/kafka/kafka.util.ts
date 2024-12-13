@@ -1,4 +1,4 @@
-import { Workspace } from '../../../workspaces/workspaces.interface'
+import { Workspace } from 'src/workspaces/workspaces.interface'
 
 export function getKafkaTopicFromWorkspace(workspace: Workspace): string {
   if (workspace.isDefault) {

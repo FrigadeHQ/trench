@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common'
-import { ClickHouseService } from '../services/data/click-house/click-house.service'
+import { ClickHouseService } from 'src/services/data/click-house/click-house.service'
 import {
   convertJsonKeysToCamelCase,
   convertObjectToArray,
   convertToKebabCase,
   isReadOnlyQuery,
   parseJsonFields,
-} from './queries.util'
-import { QueriesDTO } from './queries.interface'
-import { WorkspacesService } from '../workspaces/workspaces.service'
-import { Workspace } from '../workspaces/workspaces.interface'
+} from 'src/queries/queries.util'
+import { QueriesDTO } from 'src/queries/queries.interface'
+import { WorkspacesService } from 'src/workspaces/workspaces.service'
+import { Workspace } from 'src/workspaces/workspaces.interface'
 
 @Injectable()
 export class QueriesService {

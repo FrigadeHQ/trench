@@ -1,14 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { ClickHouseService } from '../services/data/click-house/click-house.service'
-import { escapeString, formatToClickhouseDate } from '../services/data/click-house/click-house.util'
-import { Event, EventDTO, EventsQuery, PaginatedEventResponse } from './events.interface'
-import { KafkaService } from '../services/data/kafka/kafka.service'
-import { KafkaEventWithUUID } from '../services/data/kafka/kafka.interface'
+import { ClickHouseService } from 'src/services/data/click-house/click-house.service'
+import { escapeString, formatToClickhouseDate } from 'src/services/data/click-house/click-house.util'
+import { Event, EventDTO, EventsQuery, PaginatedEventResponse } from 'src/events/events.interface'
+import { KafkaService } from 'src/services/data/kafka/kafka.service'
+import { KafkaEventWithUUID } from 'src/services/data/kafka/kafka.interface'
 import { v4 as uuidv4 } from 'uuid'
-import { mapRowToEvent } from './events.util'
-import { Workspace } from '../workspaces/workspaces.interface'
-import { getKafkaTopicFromWorkspace } from '../services/data/kafka/kafka.util'
-import { isReadOnlyQuery } from '../queries/queries.util'
+import { mapRowToEvent } from 'src/events/events.util'
+import { Workspace } from 'src/workspaces/workspaces.interface'
+import { getKafkaTopicFromWorkspace } from 'src/services/data/kafka/kafka.util'
+import { isReadOnlyQuery } from 'src/queries/queries.util'
 
 @Injectable()
 export class EventsDao {

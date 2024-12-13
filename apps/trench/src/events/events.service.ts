@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import { EventDTO, EventsQuery, PaginatedEventResponse } from './events.interface'
-import { EventsDao } from './events.dao'
-import { Event } from './events.interface'
-import { Workspace } from '../workspaces/workspaces.interface'
+import { EventDTO, EventsQuery, PaginatedEventResponse } from 'src/events/events.interface'
+import { EventsDao } from 'src/events/events.dao'
+import { Event } from 'src/events/events.interface'
+import { Workspace } from 'src/workspaces/workspaces.interface'
 
 @Injectable()
 export class EventsService {

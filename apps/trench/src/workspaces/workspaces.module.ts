@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common'
-import { WorkspacesService } from './workspaces.service'
-import { ClickHouseModule } from '../services/data/click-house/click-house.module'
-import { WorkspacesController } from './workspaces.controller'
-import { ApiKeysModule } from '../api-keys/api-keys.module'
-import { BootstrapModule } from '../services/data/bootstrap/bootstrap.module'
+import { WorkspacesService } from 'src/workspaces/workspaces.service'
+import { ClickHouseModule } from 'src/services/data/click-house/click-house.module'
+import { WorkspacesController } from 'src/workspaces/workspaces.controller'
+import { ApiKeysModule } from 'src/api-keys/api-keys.module'
+import { BootstrapModule } from 'src/services/data/bootstrap/bootstrap.module'
 
 @Module({
   imports: [ClickHouseModule, ApiKeysModule, BootstrapModule],

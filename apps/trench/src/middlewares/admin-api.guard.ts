@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { ApiKeysService } from '../api-keys/api-keys.service'
-import { ApiGuard } from './api.guard'
+import { ApiKeysService } from 'src/api-keys/api-keys.service'
+import { ApiGuard } from 'src/middlewares/api.guard'
 
 @Injectable()
 export class AdminApiGuard extends ApiGuard {

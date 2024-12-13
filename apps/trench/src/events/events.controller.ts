@@ -1,11 +1,11 @@
 import { Body, Controller, Get, Post, Query, Request, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { EventsService } from './events.service'
+import { EventsService } from 'src/events/events.service'
 
-import { EventsDTO, EventsQuery, PaginatedEventResponse } from './events.interface'
-import { PublicApiGuard } from '../middlewares/public-api.guard'
-import { PrivateApiGuard } from '../middlewares/private-api.guard'
-import { getWorkspace } from '../common/request'
+import { EventsDTO, EventsQuery, PaginatedEventResponse } from 'src/events/events.interface'
+import { PublicApiGuard } from 'src/middlewares/public-api.guard'
+import { PrivateApiGuard } from 'src/middlewares/private-api.guard'
+import { getWorkspace } from 'src/common/request'
 
 @ApiBearerAuth()
 @ApiTags('events')

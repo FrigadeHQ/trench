@@ -1,10 +1,10 @@
 import { Controller, Post, Body, HttpException, HttpStatus, UseGuards, Req } from '@nestjs/common'
-import { QueriesService } from './queries.service'
-import { PaginatedQueryResponse, QueriesDTO } from './queries.interface'
-import { PrivateApiGuard } from '../middlewares/private-api.guard'
-import { PaginatedResponse } from '../common/models'
+import { QueriesService } from 'src/queries/queries.service'
+import { PaginatedQueryResponse, QueriesDTO } from 'src/queries/queries.interface'
+import { PrivateApiGuard } from 'src/middlewares/private-api.guard'
+import { PaginatedResponse } from 'src/common/models'
 import { ApiOperation, ApiResponse } from '@nestjs/swagger'
-import { getWorkspace } from '../common/request'
+import { getWorkspace } from 'src/common/request'
 
 @Controller('queries')
 @UseGuards(PrivateApiGuard)

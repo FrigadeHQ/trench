@@ -10,9 +10,9 @@ import {
   Get,
 } from '@nestjs/common'
 
-import { AdminApiGuard } from '../middlewares/admin-api.guard'
-import { WorkspacesService } from './workspaces.service'
-import { CreateWorkspaceDto, Workspace } from './workspaces.interface'
+import { AdminApiGuard } from 'src/middlewares/admin-api.guard'
+import { WorkspacesService } from 'src/workspaces/workspaces.service'
+import { CreateWorkspaceDto, Workspace } from 'src/workspaces/workspaces.interface'
 import { ApiOperation, ApiResponse } from '@nestjs/swagger'
 
 @Controller('workspaces')

@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common'
-import { WebhooksService } from './webhooks.service'
-import { ClickHouseModule } from '../services/data/click-house/click-house.module'
-import { KafkaModule } from '../services/data/kafka/kafka.module'
-import { EventsModule } from '../events/events.module'
-import { WebhooksDao } from './webhooks.dao'
-import { WebhooksController } from './webhooks.controller'
-import { ApiKeysService } from '../api-keys/api-keys.service'
-import { ApiKeysModule } from '../api-keys/api-keys.module'
+import { WebhooksService } from 'src/webhooks/webhooks.service'
+import { ClickHouseModule } from 'src/services/data/click-house/click-house.module'
+import { KafkaModule } from 'src/services/data/kafka/kafka.module'
+import { EventsModule } from 'src/events/events.module'
+import { WebhooksDao } from 'src/webhooks/webhooks.dao'
+import { WebhooksController } from 'src/webhooks/webhooks.controller'
+import { ApiKeysService } from 'src/api-keys/api-keys.service'
+import { ApiKeysModule } from 'src/api-keys/api-keys.module'
 import { CacheModule } from '@nestjs/cache-manager'
-import { WorkspacesModule } from '../workspaces/workspaces.module'
+import { WorkspacesModule } from 'src/workspaces/workspaces.module'
 
 @Module({
   imports: [

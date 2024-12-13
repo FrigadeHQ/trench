@@ -2,13 +2,13 @@ import { Injectable, Logger } from '@nestjs/common'
 import { createClient, ClickHouseClient } from '@clickhouse/client'
 import * as fs from 'fs'
 import * as path from 'path'
-import { Migration } from './click-house.interface'
-import { md5 } from '../../../common/crypto'
+import { Migration } from 'src/services/data/click-house/click-house.interface'
+import { md5 } from 'src/common/crypto'
 import {
   DEFAULT_KAFKA_BROKERS,
   DEFAULT_KAFKA_PARTITIONS,
   DEFAULT_KAFKA_TOPIC,
-} from '../../../common/constants'
+} from 'src/common/constants'
 
 @Injectable()
 export class ClickHouseService {
