@@ -48,6 +48,10 @@
       "pages": ["introduction", "quickstart", "cloud-quickstart", "contributing"]
     },
     {
+      "group": "Guides",
+      "pages": ["guides/grafana"]
+    },
+    {
       "group": "SDK and API",
       "pages": ["client", "api-reference/overview"]
     },
