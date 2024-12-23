@@ -1,0 +1,119 @@
+---
+title: Grafana
+sidebarTitle: Grafana
+description: Step-by-step guide to setup Trench with Grafana dashboard
+---
+
+# Setting up Grafana with Trench
+
+This guide will walk you through setting up Grafana with Trench to visualize your analytics data.
+
+## Prerequisites
+- Docker installed
+- Trench running locally follow [Self-host Quickstart](/quickstart)
+
+## Setup Steps
+
+<Steps>
+
+<Step title="Run Grafana Container">
+
+Run the following command to start Grafana. This will make Grafana available at http://localhost:3001 and connect it to your Trench installation.
+
+
+
+```bash
+docker run -d \
+  --name grafana-trench \
+  --network trench_app-network \
+  -p 3001:3000 \
+  grafana/grafana:latest
+```
+
+</Step>
+
+<Step title="Login to Grafana, use default credentials:">
+
+- Username: `admin`
+- Password: `admin`
+
+<img src="/images/grafana-login.jpeg" alt="Grafana Login" />
+
+</Step>
+
+<Step title="Install the ClickHouse plugin in Grafana.">
+
+Go to plugins section and install the ClickHouse plugin.
+
+<img src="/images/grafana-plugin-install.png" alt="Grafana Install ClickHouse" />
+
+</Step>
+
+<Step title="Configure ClickHouse Data Source">
+
+1. Go to Data Sources section and click on `Add data source`.
+2. Select `ClickHouse` as the data source.
+3. Configure the data source with these settings:
+   - Host: `clickhouse`
+   - Port: `8123`
+   - Protocol: `http`
+   - Username: `user`
+   - Password: `password`
+
+
+<img src="/images/grafana-config-datasource.png" alt="Grafana ClickHouse Config" />
+
+</Step>
+
+<Step title="Setup Grafana Dashboard">
+
+  You can import the pre-built dashboard using the JSON configuration provided. Download the [JSON configuration](https://raw.githubusercontent.com/FrigadeHQ/trench/refs/heads/main/apps/docs/json/grafana-dashboard.json) and import it into Grafana.
+
+  The Dashboard includes:
+  - Unique pageviews over time
+  - Time series visualization
+  - 6-hour time window by default
+
+</Step>
+
+<Step title="Test Setup">
+
+Here's an example of sending pageview data:
+
+```bash
+curl --location 'http://localhost:4000/events' \
+--header 'Authorization: Bearer public-d613be4e-di03-4b02-9058-70aa4j04ff28' \
+--header 'Content-Type: application/json' \
+--data '{
+"events": [
+    {
+      "userId": "550e8400-e29b-41d4-a716-4466554400",
+      "type": "track",
+      "event": "$pageview",
+      "properties": {
+        "totalAccounts": 4,
+        "country": "Denmark"
+      }
+    }
+  ]
+}'
+```
+
+</Step>
+
+<Step title="View the dashboard">
+
+New pageviews should be visible in the dashboard.
+
+<img src="/images/grafana-dashboard.png" alt="Grafana Pageviews" />
+
+#### Next Steps
+- Customize the dashboard based on your needs
+- Add more panels for different metrics
+- Set up alerts
+
+</Step>
+
+</Steps>
+
+
