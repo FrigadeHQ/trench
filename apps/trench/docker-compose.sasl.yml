@@ -18,26 +18,33 @@ services:
     ports:
       - '${API_PORT}:${API_PORT}'
     depends_on:
-      - clickhouse
-      - kafka
+      kafka:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
     networks:
       - app-network
     restart: unless-stopped
     environment:
-      # Kafka SASL authentication (no SSL)
+      - KAFKA_BROKERS=kafka:9095
       - KAFKA_SSL_ENABLED=false
       - KAFKA_SASL_MECHANISM=PLAIN
       - KAFKA_SASL_USERNAME=kafka_user
       - KAFKA_SASL_PASSWORD=kafka_password
-      - CLICKHOUSE_APPLY_KAFKA_AUTH=true
   clickhouse:
-    image: clickhouse/clickhouse-server
+    image: clickhouse/clickhouse-server:24.8
     restart: always
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "wget -qO- http://localhost:8123/ping | grep -q 'Ok'"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
     ports:
       - '8123:8123'
       - '9000:9000'
     volumes:
-      - clickhouse-data:/var/lib/clickhouse # Data storage
+      - clickhouse-data:/var/lib/clickhouse
+      - ./clickhouse-kafka-auth-config-example/clickhouse-sasl.xml:/etc/clickhouse-server/config.d/kafka.xml:ro
     environment:
       - CLICKHOUSE_USER=${CLICKHOUSE_USER}
       - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
@@ -48,11 +55,12 @@ services:
     networks:
       - app-network
   kafka:
-    image: bitnami/kafka:latest
+    image: bitnamilegacy/kafka:3.7.0
     ports:
       - 9092:9092
       - 9093:9093
       - 9094:9094
+      - 9095:9095
     deploy:
       resources:
         limits:
@@ -61,18 +69,28 @@ services:
     environment:
       - KAFKA_CFG_NODE_ID=0
       - KAFKA_CFG_PROCESS_ROLES=controller,broker
-      # SASL_PLAINTEXT listeners (no SSL)
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      - KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR=1
       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,SASL_PLAINTEXT://:9095,EXTERNAL://:9094
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,SASL_PLAINTEXT://kafka:9095,EXTERNAL://localhost:9094
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,SASL_PLAINTEXT:SASL_PLAINTEXT,EXTERNAL:PLAINTEXT
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      # SASL configuration
       - KAFKA_CFG_SASL_ENABLED_MECHANISMS=PLAIN
       - KAFKA_CFG_SASL_MECHANISM_INTER_BROKER_PROTOCOL=PLAIN
       - KAFKA_CFG_SASL_JAAS_CONFIG=org.apache.kafka.common.security.plain.PlainLoginModule required username="kafka_user" password="kafka_password" user_kafka_user="kafka_password" user_admin="admin_password";
+      - KAFKA_CFG_LISTENER_NAME_SASL_PLAINTEXT_SASL_ENABLED_MECHANISMS=PLAIN
+      - KAFKA_CFG_LISTENER_NAME_SASL_PLAINTEXT_PLAIN_SASL_JAAS_CONFIG=org.apache.kafka.common.security.plain.PlainLoginModule required username="kafka_user" password="kafka_password" user_kafka_user="kafka_password" user_admin="admin_password";
     volumes:
       - kafka-data:/bitnami/kafka
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "/opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 60
     networks:
       - app-network
 volumes:

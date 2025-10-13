@@ -23,8 +23,10 @@ services:
     networks:
       - app-network
     restart: unless-stopped
+    environment:
+      - KAFKA_BROKERS=kafka:9092
   clickhouse:
-    image: clickhouse/clickhouse-server
+    image: clickhouse/clickhouse-server:24.8
     restart: always
     ports:
       - '8123:8123'
@@ -42,7 +44,7 @@ services:
     networks:
       - app-network
   kafka:
-    image: bitnami/kafka:latest
+    image: bitnamilegacy/kafka:3.7.0
     ports:
       - 9092:9092
       - 9093:9093

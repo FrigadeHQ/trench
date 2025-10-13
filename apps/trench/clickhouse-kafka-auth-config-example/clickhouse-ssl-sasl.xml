@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<clickhouse>
+    <kafka>
+        <security_protocol>sasl_ssl</security_protocol>
+        <sasl_mechanism>PLAIN</sasl_mechanism>
+        <sasl_username>kafka_user</sasl_username>
+        <sasl_password>kafka_password</sasl_password>
+        <enable_ssl_certificate_verification>false</enable_ssl_certificate_verification>
+    </kafka>
+</clickhouse>

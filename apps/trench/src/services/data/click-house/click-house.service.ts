@@ -41,63 +41,11 @@ export class ClickHouseService {
     const kafkaInstanceId = md5(kafkaBrokerList + kafkaTopicList).slice(0, 6)
     const kafkaPartitions = process.env.KAFKA_PARTITIONS ?? DEFAULT_KAFKA_PARTITIONS
 
-    let result = sql
+    return sql
       .replaceAll('{kafka_brokers}', kafkaBrokerList)
       .replaceAll('{kafka_topic}', kafkaTopicList)
       .replaceAll('{kafka_instance_id}', kafkaInstanceId)
       .replaceAll('{kafka_partitions}', kafkaPartitions.toString())
-
-    const applyKafkaAuth = (process.env.CLICKHOUSE_APPLY_KAFKA_AUTH ?? 'true').toLowerCase() === 'true'
-    
-    if (applyKafkaAuth) {
-      const sslEnabled = (process.env.KAFKA_SSL_ENABLED ?? '').toLowerCase() === 'true'
-      const sslRejectUnauthorized = (process.env.KAFKA_SSL_REJECT_UNAUTHORIZED ?? 'true').toLowerCase() === 'true'
-      
-      const saslMechanism = process.env.KAFKA_SASL_MECHANISM
-      const saslUsername = process.env.KAFKA_SASL_USERNAME
-      const saslPassword = process.env.KAFKA_SASL_PASSWORD
-      
-      let securityProtocol = 'plaintext'
-      if (sslEnabled && saslMechanism) {
-        securityProtocol = 'sasl_ssl'
-      } else if (sslEnabled) {
-        securityProtocol = 'ssl'
-      } else if (saslMechanism) {
-        securityProtocol = 'sasl_plaintext'
-      }
-
-      let authSettings = ''
-      
-      if (securityProtocol !== 'plaintext') {
-        authSettings += `,\n    kafka_security_protocol = '${securityProtocol}'`
-      }
-      
-      if (saslMechanism && saslUsername && saslPassword) {
-        authSettings += `,\n    kafka_sasl_mechanism = '${saslMechanism}'`
-        authSettings += `,\n    kafka_sasl_username = '${saslUsername}'`
-        authSettings += `,\n    kafka_sasl_password = '${saslPassword}'`
-      }
-      
-      if (sslEnabled) {
-        if (process.env.KAFKA_SSL_CA) {
-          authSettings += `,\n    kafka_ssl_ca_cert = '${process.env.KAFKA_SSL_CA}'`
-        }
-        if (process.env.KAFKA_SSL_CERT) {
-          authSettings += `,\n    kafka_ssl_client_cert = '${process.env.KAFKA_SSL_CERT}'`
-        }
-        if (process.env.KAFKA_SSL_KEY) {
-          authSettings += `,\n    kafka_ssl_client_key = '${process.env.KAFKA_SSL_KEY}'`
-        }
-        authSettings += `,\n    kafka_ssl_reject_unauthorized = ${sslRejectUnauthorized}`
-      }
-
-      result = result.replace(
-        /kafka_num_consumers = {kafka_partitions}/,
-        `kafka_num_consumers = {kafka_partitions}${authSettings}`
-      )
-    }
-
-    return result
   }
 
   async runMigrations(databaseName?: string, kafkaTopicName?: string) {
