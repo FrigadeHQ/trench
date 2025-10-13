@@ -11,9 +11,45 @@ export class KafkaService {
   private producer: Producer
 
   constructor() {
+    const sslEnabled = (process.env.KAFKA_SSL_ENABLED ?? '').toLowerCase() === 'true'
+    const sslRejectUnauthorizedEnv = (process.env.KAFKA_SSL_REJECT_UNAUTHORIZED ?? '').toLowerCase()
+    const sslRejectUnauthorized = sslRejectUnauthorizedEnv
+      ? sslRejectUnauthorizedEnv === 'true'
+      : true
+
+    const hasSslMaterial = Boolean(
+      process.env.KAFKA_SSL_CA || process.env.KAFKA_SSL_CERT || process.env.KAFKA_SSL_KEY
+    )
+
+    const sslConfig = sslEnabled
+      ? hasSslMaterial
+        ? {
+            rejectUnauthorized: sslRejectUnauthorized,
+            ca: process.env.KAFKA_SSL_CA ? [process.env.KAFKA_SSL_CA] : undefined,
+            cert: process.env.KAFKA_SSL_CERT || undefined,
+            key: process.env.KAFKA_SSL_KEY || undefined,
+          }
+        : true
+      : undefined
+
+    const saslMechanism = (process.env.KAFKA_SASL_MECHANISM ?? '').toLowerCase()
+    const hasSaslCreds = Boolean(
+      saslMechanism && process.env.KAFKA_SASL_USERNAME && process.env.KAFKA_SASL_PASSWORD
+    )
+
+    const saslConfig = hasSaslCreds
+      ? {
+          mechanism: saslMechanism as any, // 'plain' | 'scram-sha-256' | 'scram-sha-512'
+          username: process.env.KAFKA_SASL_USERNAME,
+          password: process.env.KAFKA_SASL_PASSWORD,
+        }
+      : undefined
+
     this.kafka = new Kafka({
       clientId: process.env.KAFKA_CLIENT_ID ?? DEFAULT_KAFKA_CLIENT_ID,
       brokers: process.env.KAFKA_BROKERS.split(','),
+      ssl: sslConfig,
+      sasl: saslConfig,
     })
     this.producer = this.kafka.producer()
     this.connectToProducer()

@@ -171,6 +171,64 @@ If you have questions or need assistance, you can join our [Slack group](https:/
    }
    ```
 
+### Kafka authentication
+
+Trench supports connecting to Kafka clusters that require SASL and/or SSL. Configure via the following environment variables (all optional):
+
+- `KAFKA_SSL_ENABLED`: Enable SSL/TLS when connecting to brokers. Values: `true`/`false` (default: `false`).
+- `KAFKA_SSL_REJECT_UNAUTHORIZED`: Whether to verify broker certificates. Values: `true`/`false` (default: `true`). Set to `false` when using self-signed certs in development.
+- `KAFKA_SSL_CA`: CA certificate contents (PEM). Use when brokers use a custom CA.
+- `KAFKA_SSL_CERT`: Client certificate contents (PEM) if mutual TLS is required.
+- `KAFKA_SSL_KEY`: Client private key (PEM) if mutual TLS is required.
+- `KAFKA_SASL_MECHANISM`: One of `plain`, `scram-sha-256`, or `scram-sha-512`.
+- `KAFKA_SASL_USERNAME`: SASL username (required when `KAFKA_SASL_MECHANISM` is set).
+- `KAFKA_SASL_PASSWORD`: SASL password (required when `KAFKA_SASL_MECHANISM` is set).
+- `CLICKHOUSE_APPLY_KAFKA_AUTH`: Whether to apply Kafka auth parameters in ClickHouse migrations. Values: `true`/`false` (default: `true`). Set to `false` if Kafka auth is configured in ClickHouse config files instead.
+
+Notes:
+- For SSL cert variables, provide the PEM content directly (including header/footer) or mount files and load into env before starting.
+- When using Bitnami Kafka images locally, the default `docker-compose.yml` uses PLAINTEXT; set the appropriate broker listeners and advertise SSL/SASL endpoints in your Kafka deployment if required.
+- The `CLICKHOUSE_APPLY_KAFKA_AUTH` flag controls whether Kafka authentication parameters are automatically added to ClickHouse Kafka engine tables during migrations. Set to `false` if you prefer to configure Kafka auth in ClickHouse configuration files.
+
+### Testing Kafka Authentication
+
+Trench includes additional Docker Compose files for testing different Kafka authentication scenarios:
+
+#### SASL-Only Authentication
+```bash
+# Test with SASL authentication (no SSL)
+docker-compose -f docker-compose.yml -f docker-compose.sasl.yml up --build
+```
+
+This setup uses:
+- `KAFKA_SASL_MECHANISM=PLAIN`
+- `KAFKA_SASL_USERNAME=kafka_user`
+- `KAFKA_SASL_PASSWORD=kafka_password`
+- `KAFKA_SSL_ENABLED=false`
+
+#### SSL+SASL Authentication
+```bash
+# Generate SSL certificates first
+./scripts/generate-kafka-certs.sh
+
+# Set environment variables for SSL certificates
+export KAFKA_SSL_CA=$(cat ./certs/ca.pem)
+export KAFKA_SSL_CERT=$(cat ./certs/client.pem)
+export KAFKA_SSL_KEY=$(cat ./certs/client.key)
+
+# Test with both SSL and SASL authentication
+docker-compose -f docker-compose.yml -f docker-compose.ssl-sasl.yml up --build
+```
+
+This setup uses:
+- `KAFKA_SSL_ENABLED=true`
+- `KAFKA_SSL_REJECT_UNAUTHORIZED=false` (for self-signed certs)
+- `KAFKA_SASL_MECHANISM=PLAIN`
+- `KAFKA_SASL_USERNAME=kafka_user`
+- `KAFKA_SASL_PASSWORD=kafka_password`
+
+Both test configurations automatically apply Kafka authentication parameters to ClickHouse migrations via `CLICKHOUSE_APPLY_KAFKA_AUTH=true`.
+
 ### 2. Trench Cloud ☁️
 
 If you don't want to selfhost, you can get started with Trench in a few minutes via:

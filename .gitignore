@@ -119,3 +119,5 @@ ios/Pods
 !.yarn/plugins
 
 .turbo
+
+certs

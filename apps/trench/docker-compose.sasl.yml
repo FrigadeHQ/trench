@@ -1,0 +1,82 @@
+services:
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: production-build
+      args:
+        API_DOMAIN: ${API_DOMAIN}
+    env_file:
+      - .env
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/certs
+      - /app/schemas
+      - /app/dist
+    command: node /app/dist/main.js -i -1
+    ports:
+      - '${API_PORT}:${API_PORT}'
+    depends_on:
+      - clickhouse
+      - kafka
+    networks:
+      - app-network
+    restart: unless-stopped
+    environment:
+      # Kafka SASL authentication (no SSL)
+      - KAFKA_SSL_ENABLED=false
+      - KAFKA_SASL_MECHANISM=PLAIN
+      - KAFKA_SASL_USERNAME=kafka_user
+      - KAFKA_SASL_PASSWORD=kafka_password
+      - CLICKHOUSE_APPLY_KAFKA_AUTH=true
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    restart: always
+    ports:
+      - '8123:8123'
+      - '9000:9000'
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse # Data storage
+    environment:
+      - CLICKHOUSE_USER=${CLICKHOUSE_USER}
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    networks:
+      - app-network
+  kafka:
+    image: bitnami/kafka:latest
+    ports:
+      - 9092:9092
+      - 9093:9093
+      - 9094:9094
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      # SASL_PLAINTEXT listeners (no SSL)
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,SASL_PLAINTEXT://:9095,EXTERNAL://:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,SASL_PLAINTEXT://kafka:9095,EXTERNAL://localhost:9094
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,SASL_PLAINTEXT:SASL_PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      # SASL configuration
+      - KAFKA_CFG_SASL_ENABLED_MECHANISMS=PLAIN
+      - KAFKA_CFG_SASL_MECHANISM_INTER_BROKER_PROTOCOL=PLAIN
+      - KAFKA_CFG_SASL_JAAS_CONFIG=org.apache.kafka.common.security.plain.PlainLoginModule required username="kafka_user" password="kafka_password" user_kafka_user="kafka_password" user_admin="admin_password";
+    volumes:
+      - kafka-data:/bitnami/kafka
+    networks:
+      - app-network
+volumes:
+  clickhouse-data:
+  kafka-data:
+networks:
+  app-network:
