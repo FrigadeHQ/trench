@@ -4,16 +4,16 @@ import {
   Body,
   UseGuards,
   Delete,
-  Param,
   Put,
-  NotFoundException,
   Get,
+  Request,
 } from '@nestjs/common'
 
 import { AdminApiGuard } from 'src/middlewares/admin-api.guard'
 import { WorkspacesService } from 'src/workspaces/workspaces.service'
 import { CreateWorkspaceDto, Workspace } from 'src/workspaces/workspaces.interface'
 import { ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { getWorkspace } from 'src/common/request'
 
 @Controller('workspaces')
 @UseGuards(AdminApiGuard)
@@ -33,12 +33,13 @@ export class WorkspacesController {
     return newWorkspace
   }
 
-  @Delete(':workspaceId')
-  async delete(@Param('workspaceId') workspaceId: string) {
-    await this.workspacesService.deleteWorkspace(workspaceId)
+  @Delete()
+  async delete(@Request() request: Request) {
+    const workspace = getWorkspace(request)
+    await this.workspacesService.deleteWorkspace(workspace.workspaceId)
   }
 
-  @Put(':workspaceId')
+  @Put()
   @ApiOperation({ summary: 'Update a workspace' })
   @ApiResponse({
     status: 200,
@@ -46,32 +47,25 @@ export class WorkspacesController {
       'The workspace has been successfully updated. Requires private API key in Bearer token.',
     type: Workspace,
   })
-  async update(
-    @Param('workspaceId') workspaceId: string,
-    @Body() updateWorkspaceDto: CreateWorkspaceDto
-  ) {
-    // Assuming the method name should be 'updateWorkspace' based on the error
+  async update(@Request() request: Request, @Body() updateWorkspaceDto: CreateWorkspaceDto) {
+    const workspace = getWorkspace(request)
     const updatedWorkspace = await this.workspacesService.updateWorkspace(
-      workspaceId,
+      workspace.workspaceId,
       updateWorkspaceDto
     )
 
     return updatedWorkspace
   }
 
-  @Get(':workspaceId')
-  @ApiOperation({ summary: 'Get a workspace by ID' })
+  @Get()
+  @ApiOperation({ summary: 'Get the authenticated workspace' })
   @ApiResponse({
     status: 200,
     description: 'The workspace has been successfully retrieved.',
     type: Workspace,
   })
-  async getById(@Param('workspaceId') workspaceId: string) {
-    const workspace = await this.workspacesService.getWorkspaceById(workspaceId)
-
-    if (!workspace) {
-      throw new NotFoundException('Workspace not found')
-    }
+  async getById(@Request() request: Request) {
+    const workspace = getWorkspace(request)
 
     return workspace
   }
